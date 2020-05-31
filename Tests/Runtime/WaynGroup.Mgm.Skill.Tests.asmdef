@@ -1,0 +1,29 @@
+{
+    "name": "WaynGroup.Mgm.Skill.Tests",
+    "references": [
+        "UnityEngine.TestRunner",
+        "UnityEditor.TestRunner",
+        "Unity.Entities",
+        "Unity.Collections",
+        "Unity.Entities.Hybrid",
+        "Unity.Entities.Hybrid.Tests",
+        "Unity.Entities.Tests",
+        "Unity.PerformanceTesting",
+        "Unity.Burst",
+        "WaynGroup.Mgm.Skill",
+        "SimpleSkill"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
