@@ -146,7 +146,7 @@ public class EffectSystemTest : DotsTest
                 _world.UpdateSystem<SkillDeactivationSystem>();
                 _world.UpdateSystem<Effect1ConsumerSystem>();
                 _world.UpdateSystem<Effect2ConsumerSystem>();
-                _world.WaitForAllSystemsToComplete();
+                _world.CompleteAllSystems();
             }).Run();
         }
 

@@ -67,10 +67,7 @@ public class TestWorld
 
     public void CompleteAllSystems()
     {
-        foreach (ComponentSystemBase system in world.Systems)
-        {
-            CompleteSystem(system);
-        }
+        world.EntityManager.CompleteAllJobs();
     }
 
     public void WaitForAllSystemsToComplete()
