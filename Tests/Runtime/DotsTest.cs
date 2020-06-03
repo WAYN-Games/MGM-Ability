@@ -21,7 +21,7 @@ namespace WaynGroup.Mgm.Skill.Tests
         [TearDown]
         public void TearDown()
         {
-            _world.CompleteAllSystems();
+            _world.CompleteAllJobs();
             _world.Dispose();
         }
 

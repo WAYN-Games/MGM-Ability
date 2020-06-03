@@ -7,5 +7,4 @@ namespace WaynGroup.Mgm.Skill
     {
         public Entity Value;
     }
-
 }

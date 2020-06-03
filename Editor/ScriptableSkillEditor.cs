@@ -6,6 +6,7 @@ using System.Reflection;
 using UnityEditor;
 using UnityEditor.UIElements;
 
+using UnityEngine;
 using UnityEngine.UIElements;
 
 using WaynGroup.Mgm.Skill;
@@ -112,7 +113,12 @@ public class ScriptableSkillEditor : Editor
             Type type = EffectTypes.Where(t => $"{t.Assembly.GetName().Name} {t.FullName}".Equals(sp.managedReferenceFullTypename)).FirstOrDefault();
             if (type == null)
             {
-                effectsContainer.Add(new Label($"Missing type : {sp.managedReferenceFullTypename}"));
+                // https://issuetracker.unity3d.com/issues/serializereference-serialized-reference-data-lost-when-the-class-name-is-refactored
+                Debug.LogWarning($"Undefined effect type on {serializedObject.targetObject.name} effect.");
+                effectsContainer.Add(new Button(() => { RemoveEffect(i); })
+                {
+                    text = "Undefined effect type to remove"
+                });
             }
             else
             {
@@ -136,6 +142,7 @@ public class ScriptableSkillEditor : Editor
         {
             text = type.Name
         };
+
         foreach (FieldInfo property in type.GetFields().Where(p => p.DeclaringType.Equals(type)))
         {
             SerializedProperty local_sp = sp.FindPropertyRelative(property.Name);
@@ -145,8 +152,8 @@ public class ScriptableSkillEditor : Editor
             };
             propField.Bind(serializedObject);
             foldout.Add(propField);
-            AddRemoveButton(index, foldout);
         }
+        AddRemoveButton(index, foldout);
         return foldout;
     }
 

@@ -5,15 +5,14 @@ using Unity.Jobs;
 namespace WaynGroup.Mgm.Skill
 {
     /// <summary>
-    /// System that fake the user input simulating a skill cast every frame.
+    /// System that fake the user input simulating all skill cast every frame.
     /// </summary>
     [UpdateBefore(typeof(SkillUpdateSystem))]
     public class UserInputSimulationSystem : SystemBase
     {
-
         protected override void OnUpdate()
         {
-            Dependency = Entities.ForEach((ref DynamicBuffer<SkillBuffer> skillBuffer) =>
+            Entities.ForEach((ref DynamicBuffer<SkillBuffer> skillBuffer) =>
             {
                 NativeArray<SkillBuffer> sbArray = skillBuffer.AsNativeArray();
                 for (int i = 0; i < sbArray.Length; i++)
@@ -25,7 +24,7 @@ namespace WaynGroup.Mgm.Skill
 
 
             }).WithBurst()
-            .ScheduleParallel(Dependency);
+            .ScheduleParallel();
         }
     }
 }

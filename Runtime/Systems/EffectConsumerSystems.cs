@@ -9,24 +9,55 @@ namespace WaynGroup.Mgm.Skill
 
 
 
-
-
-
-    public abstract class EffectConsumerSystem<EFFECT> : SystemBase where EFFECT : struct, IEffect
+    public interface IEffectContext<EFFECT> where EFFECT : struct, IEffect
     {
-        // FIXME should be set private, temporary set public for test purposes.
-        public NativeStream EffectStream;
-
-        private NativeMultiHashMap<Entity, EFFECT> Effects;
-
-        private JobHandle ProducerJobHandle;
+        Entity Target { get; set; }
+        EFFECT Effect { get; set; }
+    }
 
 
-        public void RegisterProducerDependency(JobHandle jh)
+    public abstract class EffectConsumerSystem<EFFECT, EFFECT_CTX> : SystemBase where EFFECT : struct, IEffect
+        where EFFECT_CTX : struct, IEffectContext<EFFECT>
+    {
+
+        /// <summary>
+        ///  The stream to Read/Write the contextualized effect. 
+        /// </summary>
+        private NativeStream EffectStream;
+
+        /// <summary>
+        /// A map o effect per targeted entity to improve consumer job performance.
+        /// </summary>
+        protected NativeMultiHashMap<Entity, EFFECT_CTX> Effects;
+
+        /// <summary>
+        /// The trigger job handle to make sure we finished trigerring all necessary effect before consuming the effects.
+        /// </summary>
+        private JobHandle TriggerJobHandle;
+
+        protected override void OnCreate()
         {
-            ProducerJobHandle = jh;
+            base.OnCreate();
+
+            // Allocate the map only on create to avoid allocating every frame.
+            Effects = new NativeMultiHashMap<Entity, EFFECT_CTX>(0, Allocator.Persistent);
         }
 
+
+        /// <summary>
+        /// Setup the dependecy between the trigger job and the consumer job to make sure we finished trigerring all necessary effect before consuming the effects.
+        /// </summary>
+        /// <param name="triggerJobHandle">The trigger job JobHandle.</param>
+        public void RegisterTriggerDependency(JobHandle triggerJobHandle)
+        {
+            TriggerJobHandle = triggerJobHandle;
+        }
+
+        /// <summary>
+        /// Get a NativeStream.Writer to write the effects to consume. 
+        /// </summary>
+        /// <param name="foreachCount">The number of chunk of thread that writes to the NativeStream</param>
+        /// <returns></returns>
         public NativeStream.Writer GetConsumerWriter(int foreachCount)
         {
             EffectStream = new NativeStream(foreachCount, Allocator.TempJob);
@@ -48,44 +79,49 @@ namespace WaynGroup.Mgm.Skill
             }
         }
 
+        /// <summary>
+        /// Delegate the effect consumption logic to the derived class.
+        /// </summary>
         protected abstract void Consume();
 
-        protected NativeMultiHashMap<Entity, EFFECT> GetEffects()
-        {
-            return Effects;
-        }
-
+        /// <summary>
+        /// This job reads all the effects to apply and dsipatche them into a map by targeted entity.
+        /// This ensures better performance overall in consuming the effect.
+        /// </summary>
         [BurstCompile]
         struct RemapEffects : IJobParallelFor
         {
-            [ReadOnly] public NativeStream.Reader effectReader;
-            public NativeMultiHashMap<Entity, EFFECT>.ParallelWriter effectsWriter;
+            [ReadOnly] public NativeStream.Reader EffectReader;
+            public NativeMultiHashMap<Entity, EFFECT_CTX>.ParallelWriter EffectsWriter;
             public void Execute(int index)
             {
-                effectReader.BeginForEachIndex(index);
-                int rangeItemCount = effectReader.RemainingItemCount;
+                EffectReader.BeginForEachIndex(index);
+                int rangeItemCount = EffectReader.RemainingItemCount;
                 for (int j = 0; j < rangeItemCount; j++)
                 {
 
-                    ContextualizedEffect<EFFECT> effect = effectReader.Read<ContextualizedEffect<EFFECT>>();
-                    effectsWriter.Add(effect.Target, effect.Effect);
+                    EFFECT_CTX effect = EffectReader.Read<EFFECT_CTX>();
+                    EffectsWriter.Add(effect.Target, effect);
                 }
 
-                effectReader.EndForEachIndex();
+                EffectReader.EndForEachIndex();
             }
         }
 
+        /// <summary>
+        /// Clear the effect map and allocate additional capacity if needed.
+        /// </summary>
         [BurstCompile]
-        struct Allocate : IJob
+        struct SetupEffectMap : IJob
         {
-            [ReadOnly] public NativeStream.Reader effectReader;
-            public NativeMultiHashMap<Entity, EFFECT> effects;
+            [ReadOnly] public NativeStream.Reader EffectReader;
+            public NativeMultiHashMap<Entity, EFFECT_CTX> Effects;
             public void Execute()
             {
-                effects.Clear();
-                if (effects.Capacity < effectReader.ComputeItemCount())
+                Effects.Clear();
+                if (Effects.Capacity < EffectReader.ComputeItemCount())
                 {
-                    effects.Capacity = effectReader.ComputeItemCount();
+                    Effects.Capacity = EffectReader.ComputeItemCount();
                 }
             }
         }
@@ -93,38 +129,36 @@ namespace WaynGroup.Mgm.Skill
         protected sealed override void OnUpdate()
         {
 
-            Dependency = JobHandle.CombineDependencies(Dependency, ProducerJobHandle);
+            Dependency = JobHandle.CombineDependencies(Dependency, TriggerJobHandle);
+
+            // If the producer did not actually write anything to the stream, the native stream will not be flaged as created.
+            // In that case we don't need to do anything.
+            // Not doing this checks actually result in a non authrorized access to the memory and crashes Unity.
             if (!EffectStream.IsCreated) return;
+
             NativeStream.Reader effectReader = EffectStream.AsReader();
-
-
-            Allocate AllocateJob = new Allocate()
+            SetupEffectMap AllocateJob = new SetupEffectMap()
             {
-                effectReader = effectReader,
-                effects = Effects
+                EffectReader = effectReader,
+                Effects = Effects
             };
+            Dependency = AllocateJob.Schedule(Dependency);
 
-            NativeMultiHashMap<Entity, EFFECT>.ParallelWriter effectsWriter = Effects.AsParallelWriter();
 
+            NativeMultiHashMap<Entity, EFFECT_CTX>.ParallelWriter effectsWriter = Effects.AsParallelWriter();
             RemapEffects RemapEffectsJob = new RemapEffects()
             {
-                effectReader = effectReader,
-                effectsWriter = Effects.AsParallelWriter()
+                EffectReader = effectReader,
+                EffectsWriter = Effects.AsParallelWriter()
             };
-
-            Dependency = AllocateJob.Schedule(Dependency);
             Dependency = RemapEffectsJob.Schedule(effectReader.ForEachCount, 1, Dependency);
 
+            // Call the effect consumption logic defined in hte derived class.
             Consume();
-
 
             Dependency = EffectStream.Dispose(Dependency);
         }
 
-        protected override void OnCreate()
-        {
-            base.OnCreate();
-            Effects = new NativeMultiHashMap<Entity, EFFECT>(0, Allocator.Persistent);
-        }
+
     }
 }

@@ -8,11 +8,26 @@ using WaynGroup.Mgm.Skill;
 [CreateAssetMenu(fileName = "NewSkill", menuName = "MGM/Skill", order = 1)]
 public class ScriptableSkill : ScriptableObject
 {
+    /// <summary>
+    /// A unique Id generated when creating the skill in the editor.
+    /// </summary>
     public Guid Id = new Guid();
+    /// <summary>
+    /// The name of the skill.
+    /// </summary>
     public string Name;
+    /// <summary>
+    /// The time necessary for the skill to recahrge before it can be reused.
+    /// </summary>
     public float CoolDown;
+    /// <summary>
+    /// The time needed by the skill between the user input and the trigerring of the skill effect.
+    /// </summary>
     public float CastTime;
-    public int Test;
+
+    /// <summary>
+    /// The list of effect that are applied after the CastTime has elapsed.
+    /// </summary>
     [SerializeReference]
     public List<IEffect> Effects;
 

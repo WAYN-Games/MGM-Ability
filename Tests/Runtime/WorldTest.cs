@@ -18,7 +18,7 @@ public class EffectSystemTest : DotsTest
     {
         for (int i = 0; i < count; i++)
         {
-            Skill Skill = new Skill(0, 0, i);
+            Skill Skill = new Skill(0, 0);
 
             buffer.Add(new SkillBuffer()
             {
@@ -86,22 +86,19 @@ public class EffectSystemTest : DotsTest
 
 
         // Act
-        _world.UpdateAndCompleteSystem<UserInputSimulationSystem>();
-        _world.UpdateAndCompleteSystem<SkillUpdateSystem>();
+        _world.UpdateSystem<UserInputSimulationSystem>();
+        _world.UpdateSystem<SkillUpdateSystem>();
+        _world.CompleteAllJobs();
 
         // Assert
-
         AssertSkillActivationState(entity, true);
         AssertSkillActivationState(entity2, true);
 
         // Act
-        _world.UpdateAndCompleteSystem<Effect1TriggerSystem>();
-        Assert.AreEqual(20, _world.GetReference().GetExistingSystem<Effect1ConsumerSystem>().EffectStream.ComputeItemCount());
-
-        _world.UpdateAndCompleteSystem<Effect2TriggerSystem>();
-        Assert.AreEqual(20, _world.GetReference().GetExistingSystem<Effect2ConsumerSystem>().EffectStream.ComputeItemCount());
-
-        _world.UpdateAndCompleteSystem<SkillDeactivationSystem>();
+        _world.UpdateSystem<Effect1TriggerSystem>();
+        _world.UpdateSystem<Effect2TriggerSystem>();
+        _world.UpdateSystem<SkillDeactivationSystem>();
+        _world.CompleteAllJobs();
 
         // Assert
 
@@ -109,11 +106,13 @@ public class EffectSystemTest : DotsTest
         AssertSkillActivationState(entity2, false);
 
         // Act
-        _world.UpdateAndCompleteSystem<Effect1ConsumerSystem>();
+        _world.UpdateSystem<Effect1ConsumerSystem>();
+        _world.CompleteAllJobs();
         // Assert
         Assert.AreEqual(80, _entityManager.GetComponentData<Health>(target).Value);
         // Act
-        _world.UpdateAndCompleteSystem<Effect2ConsumerSystem>();
+        _world.UpdateSystem<Effect2ConsumerSystem>();
+        _world.CompleteAllJobs();
         // Assert
         Assert.AreEqual(60, _entityManager.GetComponentData<Health>(target).Value);
 
@@ -146,7 +145,7 @@ public class EffectSystemTest : DotsTest
                 _world.UpdateSystem<SkillDeactivationSystem>();
                 _world.UpdateSystem<Effect1ConsumerSystem>();
                 _world.UpdateSystem<Effect2ConsumerSystem>();
-                _world.CompleteAllSystems();
+                _world.CompleteAllJobs();
             }).Run();
         }
 
