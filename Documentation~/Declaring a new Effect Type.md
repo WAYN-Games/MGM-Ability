@@ -7,6 +7,8 @@ Note : The code snipet explained below are generated in a single file through th
 You only need to update the parts of the file where there is a '// YOUR CODE : ' comment.
 There should be no reason fo you to edit the generated code. (except for the NAMESPACE)
 
+![alt text](https://github.com/WAYNGROUP/MGM-Skill/blob/master/Documentation~/images/NewEffectType.png?raw=true)
+
 
 ## The effect declaration
 ```C#
