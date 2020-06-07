@@ -27,4 +27,4 @@ MonoBehaviour:
     00000001:
       type: {class: Effect2, ns: WaynGroup.Mgm.Skill.Demo, asm: SimpleSkill}
       data:
-        Value: 0
+        Value: 10

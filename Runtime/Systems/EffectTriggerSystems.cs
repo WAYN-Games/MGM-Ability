@@ -80,12 +80,12 @@ namespace WaynGroup.Mgm.Skill
                 EffectContextWriter.PrepareChunk(chunk);
 
                 ConsumerWriter.BeginForEachIndex(chunkIndex);
-                for (int entityIndex = 0; entityIndex < chunk.Count; entityIndex++)
+                for (int entityIndex = 0; entityIndex < chunk.Count; ++entityIndex)
                 {
 
                     NativeArray<SkillBuffer> SkillBufferArray = skillBufffers[entityIndex].AsNativeArray();
                     NativeArray<EFFECT_BUFFER> effectBufferArray = effectBuffers[entityIndex].AsNativeArray();
-                    for (int skillIndex = 0; skillIndex < SkillBufferArray.Length; skillIndex++)
+                    for (int skillIndex = 0; skillIndex < SkillBufferArray.Length; ++skillIndex)
                     {
 
                         Skill Skill = SkillBufferArray[skillIndex];

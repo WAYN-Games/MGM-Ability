@@ -113,7 +113,6 @@ public class ScriptableSkillEditor : Editor
             Type type = EffectTypes.Where(t => $"{t.Assembly.GetName().Name} {t.FullName}".Equals(sp.managedReferenceFullTypename)).FirstOrDefault();
             if (type == null)
             {
-                // https://issuetracker.unity3d.com/issues/serializereference-serialized-reference-data-lost-when-the-class-name-is-refactored
                 Debug.LogWarning($"Undefined effect type on {serializedObject.targetObject.name} effect.");
                 effectsContainer.Add(new Button(() => { RemoveEffect(i); })
                 {

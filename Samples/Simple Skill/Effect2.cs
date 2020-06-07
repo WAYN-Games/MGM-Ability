@@ -63,7 +63,18 @@ namespace WaynGroup.Mgm.Skill.Demo
             /// <param name="effect">The effect to contextualize.</param>
             public void WriteContextualizedEffect(int entityIndex, ref NativeStream.Writer consumerWriter, Effect2 effect, Entity target)
             {
-                consumerWriter.Write(new Effect2Context() { AttackPower = _attackPowers[entityIndex].Value, Target = target, Effect = effect });
+                float attackPower = 1;
+                if (_attackPowers.Length > entityIndex)
+                {
+                    attackPower = _attackPowers[entityIndex].Value;
+                }
+
+                consumerWriter.Write(new Effect2Context()
+                {
+                    AttackPower = attackPower,
+                    Target = target,
+                    Effect = effect
+                });
             }
         }
 

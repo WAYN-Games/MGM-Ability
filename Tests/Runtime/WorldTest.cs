@@ -67,6 +67,7 @@ public class EffectSystemTest : DotsTest
 
         Entity target = _entityManager.CreateEntity();
         _entityManager.AddComponentData(target, new Health() { Value = 100 });
+        _entityManager.AddComponentData(target, new Armor() { Value = 1 });
 
         Entity entity = _entityManager.CreateEntity();
         PrepareAttacker(target, entity);
@@ -179,5 +180,6 @@ public class EffectSystemTest : DotsTest
             AddEffect2ToSkill(_entityManager.AddBuffer<Effect2Buffer>(entity), i, 5);
         }
         _entityManager.AddComponentData(entity, new Target() { Value = target });
+        _entityManager.AddComponentData(entity, new AttackPower() { Value = 1 });
     }
 }
