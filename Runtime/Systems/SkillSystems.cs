@@ -1,4 +1,4 @@
-﻿using Unity.Collections;
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs;
 
@@ -30,15 +30,12 @@ namespace WaynGroup.Mgm.Skill
                     }
                     sbArray[i] = Skill;
                 }
-            }).WithoutBurst()
-            .ScheduleParallel(Dependency);
+            }).ScheduleParallel(Dependency);
         }
-
     }
 
     public class SkillDeactivationSystem : SystemBase
     {
-
         protected override void OnUpdate()
         {
             Dependency = Entities.ForEach((ref DynamicBuffer<SkillBuffer> skillBuffer) =>
@@ -53,8 +50,7 @@ namespace WaynGroup.Mgm.Skill
                     }
                     sbArray[i] = Skill;
                 }
-            }).WithBurst()
-            .ScheduleParallel(Dependency);
+            }).ScheduleParallel(Dependency);
         }
     }
 }
