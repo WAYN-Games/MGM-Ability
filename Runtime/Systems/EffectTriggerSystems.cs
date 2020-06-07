@@ -1,4 +1,4 @@
-using Unity.Burst;
+﻿using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 
@@ -90,9 +90,9 @@ namespace WaynGroup.Mgm.Skill
 
                         Skill Skill = SkillBufferArray[skillIndex];
                         if (!Skill.ShouldApplyEffects()) continue;
-                        for (int e = 0; e < effectBufferArray.Length; e++)
+                        for (int effectIndex = 0; effectIndex < effectBufferArray.Length; effectIndex++)
                         {
-                            EFFECT_BUFFER EffectBuffer = effectBufferArray[e];
+                            EFFECT_BUFFER EffectBuffer = effectBufferArray[effectIndex];
                             if (EffectBuffer.SkillIndex != skillIndex) continue;
 
                             EffectContextWriter.WriteContextualizedEffect(entityIndex, ref ConsumerWriter, EffectBuffer.Effect, targets[entityIndex].Value);
