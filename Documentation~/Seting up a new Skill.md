@@ -22,7 +22,15 @@ Selecting an effect in the list and clicking the 'Add' button will add it to the
 
 ![Effect on skill](https://github.com/WAYNGROUP/MGM-Skill/blob/master/Documentation~/images/EffectListOnSkill.png)
 
+## Add the skill to an entity
+
+On a game object in the hierary, add the Skill Auhtoring component and populate the list of skill with the scriptable skill assets.
+
+![Skill on entity](https://github.com/WAYNGROUP/MGM-Skill/blob/master/Documentation~/images/Add%20skills%20to%20entity.png)
+
+
 # Known issue
 
 Removing or renaming an effect will cause an error in the deserialization porcess of the scriptable skill.
 To restore the scriptable skill asset you can edit the asset with a text editor and change / remove the concerned effect.
+
