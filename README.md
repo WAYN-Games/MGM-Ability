@@ -11,6 +11,7 @@ It allows the definition of custom effects that can be composed to form any kind
  - Skill ressource constraint
  - Support for over time skill
  - Support for area of effect skill
+ - More samples (hopefully with VFX and sounds at some point)
  
 ## Documentation
 [Seting up a new Skill](https://github.com/WAYNGROUP/MGM-Skill/blob/master/Documentation~/Seting%20up%20a%20new%20Skill.md)
