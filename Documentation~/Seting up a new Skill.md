@@ -26,7 +26,7 @@ Selecting an effect in the list and clicking the 'Add' button will add it to the
 
 On a game object in the hierary, add the Skill Auhtoring component and populate the list of skill with the scriptable skill assets.
 
-![Skill on entity](https://github.com/WAYNGROUP/MGM-Skill/blob/master/Documentation~/images/Add%20skills%20to%20entity.png)
+![Skill on entity](https://github.com/WAYNGROUP/MGM-Skill/blob/master/Documentation~/images/Add%20skills%20to%20entity.PNG)
 
 
 # Known issue
