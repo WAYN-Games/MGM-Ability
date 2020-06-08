@@ -44,6 +44,9 @@ namespace WaynGroup.Mgm.Skill
         }
     }
 
+    /// <summary>
+    /// This system will determine if the current target is in range of a skill.
+    /// </summary>
     [UpdateInGroup(typeof(SkillUpdateSystemGroup))]
     public class SkillUpdateRangeSystem : SystemBase
     {
@@ -70,6 +73,10 @@ namespace WaynGroup.Mgm.Skill
 
     }
 
+    /// <summary>
+    /// This system put the skill in cooldown.
+    /// It's run after all effect have beed trigered.
+    /// </summary>
     public class SkillDeactivationSystem : SystemBase
     {
 
