@@ -15,7 +15,7 @@ namespace WaynGroup.Mgm.Skill
         EFFECT Effect { get; set; }
     }
 
-
+    [AlwaysUpdateSystem]
     public abstract class EffectConsumerSystem<EFFECT, EFFECT_CTX> : SystemBase where EFFECT : struct, IEffect
         where EFFECT_CTX : struct, IEffectContext<EFFECT>
     {
