@@ -61,7 +61,7 @@ Generaly speaking this additional context it the data belonging to the caster an
 
 
 
-## The trigger ssytem
+## The trigger system
 ```C#
 	[UpdateBefore(typeof(NewEffectConsumerSystem))]
     public class NewEffectTriggerSystem : EffectTriggerSystem<NewEffectBuffer, NewEffect, NewEffectConsumerSystem, NewEffectTriggerSystem.TargetEffectWriter, NewEffectContext>
@@ -134,7 +134,7 @@ This is done in the GetContextWriter method. This method is called by the base c
 If you don't need additional context data for your effect, you have noting to change.
 If you need additional data, let's say the position, you need to declare the necessary component data on hte entity in the GetEffectContextEntityQueryDesc method.
 
-## The trigger ssytem
+## The consumer system
 ```C#
   [UpdateAfter(typeof(NewEffectTriggerSystem))]
     public class NewEffectConsumerSystem : EffectConsumerSystem<NewEffect, NewEffectContext>

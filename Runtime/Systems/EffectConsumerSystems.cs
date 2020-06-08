@@ -15,7 +15,7 @@ namespace WaynGroup.Mgm.Skill
         EFFECT Effect { get; set; }
     }
 
-
+    [AlwaysUpdateSystem] // System should always update to ensure the disposal of the native stream and avoid memory leaks.
     public abstract class EffectConsumerSystem<EFFECT, EFFECT_CTX> : SystemBase where EFFECT : struct, IEffect
         where EFFECT_CTX : struct, IEffectContext<EFFECT>
     {
@@ -23,12 +23,14 @@ namespace WaynGroup.Mgm.Skill
         /// <summary>
         ///  The stream to Read/Write the contextualized effect. 
         /// </summary>
-        private NativeStream EffectStream;
+        private NativeStream _effectStream;
 
         /// <summary>
         /// A map o effect per targeted entity to improve consumer job performance.
         /// </summary>
-        protected NativeMultiHashMap<Entity, EFFECT_CTX> Effects;
+        protected NativeMultiHashMap<Entity, EFFECT_CTX> _effects;
+
+        private int _forEachCount;
 
         /// <summary>
         /// The trigger job handle to make sure we finished trigerring all necessary effect before consuming the effects.
@@ -40,7 +42,7 @@ namespace WaynGroup.Mgm.Skill
             base.OnCreate();
 
             // Allocate the map only on create to avoid allocating every frame.
-            Effects = new NativeMultiHashMap<Entity, EFFECT_CTX>(0, Allocator.Persistent);
+            _effects = new NativeMultiHashMap<Entity, EFFECT_CTX>(0, Allocator.Persistent);
         }
 
 
@@ -60,8 +62,9 @@ namespace WaynGroup.Mgm.Skill
         /// <returns></returns>
         public NativeStream.Writer GetConsumerWriter(int foreachCount)
         {
-            EffectStream = new NativeStream(foreachCount, Allocator.TempJob);
-            return EffectStream.AsWriter();
+            _effectStream = new NativeStream(foreachCount, Allocator.TempJob);
+            _forEachCount = foreachCount;
+            return _effectStream.AsWriter();
         }
 
 
@@ -69,13 +72,13 @@ namespace WaynGroup.Mgm.Skill
         {
             base.OnDestroy();
 
-            if (EffectStream.IsCreated)
+            if (_effectStream.IsCreated)
             {
-                EffectStream.Dispose(Dependency);
+                _effectStream.Dispose(Dependency);
             }
-            if (Effects.IsCreated)
+            if (_effects.IsCreated)
             {
-                Effects.Dispose(Dependency);
+                _effects.Dispose(Dependency);
             }
         }
 
@@ -134,29 +137,29 @@ namespace WaynGroup.Mgm.Skill
             // If the producer did not actually write anything to the stream, the native stream will not be flaged as created.
             // In that case we don't need to do anything.
             // Not doing this checks actually result in a non authrorized access to the memory and crashes Unity.
-            if (!EffectStream.IsCreated) return;
+            if (!_effectStream.IsCreated) return;
 
-            NativeStream.Reader effectReader = EffectStream.AsReader();
+            NativeStream.Reader effectReader = _effectStream.AsReader();
             SetupEffectMap AllocateJob = new SetupEffectMap()
             {
                 EffectReader = effectReader,
-                Effects = Effects
+                Effects = _effects
             };
             Dependency = AllocateJob.Schedule(Dependency);
 
 
-            NativeMultiHashMap<Entity, EFFECT_CTX>.ParallelWriter effectsWriter = Effects.AsParallelWriter();
+            NativeMultiHashMap<Entity, EFFECT_CTX>.ParallelWriter effectsWriter = _effects.AsParallelWriter();
             RemapEffects RemapEffectsJob = new RemapEffects()
             {
                 EffectReader = effectReader,
-                EffectsWriter = Effects.AsParallelWriter()
+                EffectsWriter = _effects.AsParallelWriter()
             };
-            Dependency = RemapEffectsJob.Schedule(effectReader.ForEachCount, 1, Dependency);
+            Dependency = RemapEffectsJob.Schedule(_forEachCount, 1, Dependency);
 
             // Call the effect consumption logic defined in hte derived class.
             Consume();
 
-            Dependency = EffectStream.Dispose(Dependency);
+            Dependency = _effectStream.Dispose(Dependency);
         }
 
 

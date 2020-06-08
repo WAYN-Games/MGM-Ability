@@ -1,4 +1,6 @@
-﻿using Unity.Burst;
+﻿using System.Linq;
+
+using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 
@@ -37,7 +39,7 @@ namespace WaynGroup.Mgm.Skill
         /// <returns>EntityQueryDesc</returns>
         protected virtual EntityQueryDesc GetEffectContextEntityQueryDesc()
         {
-            return null;
+            return new EntityQueryDesc();
         }
 
         protected override void OnCreate()
@@ -53,9 +55,19 @@ namespace WaynGroup.Mgm.Skill
                         ComponentType.ReadOnly<EFFECT_BUFFER>()
                 }
             };
+
             EntityQueryDesc contextQueryDesc = GetEffectContextEntityQueryDesc();
 
-            _query = contextQueryDesc == null ? GetEntityQuery(baseEntityQueryDesc) : GetEntityQuery(baseEntityQueryDesc, GetEffectContextEntityQueryDesc());
+            EntityQueryDesc entityQueryDesc = new EntityQueryDesc()
+            {
+                All = baseEntityQueryDesc.All.Concat(contextQueryDesc.All).ToArray(),
+                Any = baseEntityQueryDesc.Any.Concat(contextQueryDesc.Any).ToArray(),
+                None = baseEntityQueryDesc.None.Concat(contextQueryDesc.None).ToArray(),
+                Options = contextQueryDesc.Options
+            };
+
+
+            _query = GetEntityQuery(entityQueryDesc);
 
         }
 
@@ -82,7 +94,6 @@ namespace WaynGroup.Mgm.Skill
                 ConsumerWriter.BeginForEachIndex(chunkIndex);
                 for (int entityIndex = 0; entityIndex < chunk.Count; ++entityIndex)
                 {
-
                     NativeArray<SkillBuffer> SkillBufferArray = skillBufffers[entityIndex].AsNativeArray();
                     NativeArray<EFFECT_BUFFER> effectBufferArray = effectBuffers[entityIndex].AsNativeArray();
                     for (int skillIndex = 0; skillIndex < SkillBufferArray.Length; ++skillIndex)
