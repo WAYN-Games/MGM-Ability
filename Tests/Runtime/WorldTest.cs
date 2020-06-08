@@ -18,7 +18,7 @@ public class EffectSystemTest : DotsTest
     {
         for (int i = 0; i < count; i++)
         {
-            Skill Skill = new Skill(0, 0);
+            Skill Skill = new Skill(0, 0, new Range() { Min = float.MinValue, Max = float.MaxValue });
 
             buffer.Add(new SkillBuffer()
             {
@@ -78,7 +78,7 @@ public class EffectSystemTest : DotsTest
 
         _world
             .WithSystem<UserInputSimulationSystem>()
-            .WithSystem<SkillUpdateSystem>()
+            .WithSystem<SkillUpdateTimingsSystem>()
             .WithSystem<Effect1TriggerSystem>()
             .WithSystem<Effect2TriggerSystem>()
             .WithSystem<SkillDeactivationSystem>()
@@ -88,7 +88,7 @@ public class EffectSystemTest : DotsTest
 
         // Act
         _world.UpdateSystem<UserInputSimulationSystem>();
-        _world.UpdateSystem<SkillUpdateSystem>();
+        _world.UpdateSystem<SkillUpdateTimingsSystem>();
         _world.CompleteAllJobs();
 
         // Assert

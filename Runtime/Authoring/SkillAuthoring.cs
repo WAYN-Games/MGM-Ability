@@ -24,7 +24,7 @@ public class SkillAuthoring : MonoBehaviour, IConvertGameObjectToEntity
                 Debug.LogError($"Skill #{i} is missing reference on Game Object {name}");
                 continue;
             }
-            Skill Skill = new Skill(Skills[i].CoolDown, Skills[i].CastTime);
+            Skill Skill = new Skill(Skills[i].CoolDown, Skills[i].CastTime, Skills[i].Range);
             skillBuffer.Add(new SkillBuffer()
             {
                 Skill = Skill

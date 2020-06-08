@@ -2,7 +2,6 @@
 
 namespace WaynGroup.Mgm.Skill
 {
-
     /// <summary>
     /// The runtime representation of a skill.
     /// </summary>
@@ -12,12 +11,16 @@ namespace WaynGroup.Mgm.Skill
         public SkillState State { get; private set; }
         private Timing CoolDown;
         private Timing CastTime;
+        public Range Range;
+        public bool IsInRange;
 
-        public Skill(float coolDown, float castTime) : this()
+        public Skill(float coolDown, float castTime, Range range) : this()
         {
             State = SkillState.CooledDown;
             CoolDown = new Timing(coolDown);
             CastTime = new Timing(castTime);
+            Range = range;
+            IsInRange = false;
         }
 
         /// <summary>
@@ -36,6 +39,7 @@ namespace WaynGroup.Mgm.Skill
         public SkillCastResult TryCast()
         {
             if (State == SkillState.CoolingDown) return SkillCastResult.NotReady;
+            if (!IsInRange) return SkillCastResult.OutOfRange;
 
             if (State != SkillState.Casting)
             {
