@@ -1,5 +1,6 @@
 ﻿using Unity.Burst;
 using Unity.Collections;
+using Unity.Collections.LowLevel.Unsafe;
 using Unity.Entities;
 
 namespace WaynGroup.Mgm.Skill.Demo
@@ -44,7 +45,7 @@ namespace WaynGroup.Mgm.Skill.Demo
 
             // The array should be declared private as it's only use is within this structure and [ReadOnly] beacause we only write to the stream.
             // [ReadOnly] is not the c# 'readonly' modifer, the AttackPowers can be assigned but array it point ot can not be written to.
-            [ReadOnly] private NativeArray<AttackPower> _attackPowers;
+            [ReadOnly] [NativeDisableContainerSafetyRestriction] private NativeArray<AttackPower> _attackPowers;
 
             /// <summary>
             /// Cache the component data array needed to write the effect context.
