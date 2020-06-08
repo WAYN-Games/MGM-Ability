@@ -4,17 +4,20 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [0.1.2] - In progress
+## [0.1.2] - 08/06/2020
 
-### Bug Fixes
+### Fixed
 
-- Fixed #4 Error with JobsDebugger enabled
+- [#3 Possible memory leak](https://github.com/WAYNGROUP/MGM-Skill/issues/3)
+- [#4 Error with JobsDebugger enabled](https://github.com/WAYNGROUP/MGM-Skill/issues/4)
+- [#5 Trigger context entity description is a OR, should be an AND](https://github.com/WAYNGROUP/MGM-Skill/issues/5)
+
 
 ## [0.1.1] - 07/06/2020
 
-### Bug Fixes
+### Fixed
 
-- Fixed unused loop variable
+- [#1 unused loop variable](https://github.com/WAYNGROUP/MGM-Skill/pull/1)
 
 ## [0.1.0] - 31/05/2020
 
