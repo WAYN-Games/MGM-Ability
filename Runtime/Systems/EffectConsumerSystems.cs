@@ -15,7 +15,7 @@ namespace WaynGroup.Mgm.Skill
         EFFECT Effect { get; set; }
     }
 
-    [AlwaysUpdateSystem]
+    [AlwaysUpdateSystem] // System should always update to ensure the disposal of the native stream and avoid memory leaks.
     public abstract class EffectConsumerSystem<EFFECT, EFFECT_CTX> : SystemBase where EFFECT : struct, IEffect
         where EFFECT_CTX : struct, IEffectContext<EFFECT>
     {
