@@ -104,7 +104,7 @@ namespace WaynGroup.Mgm.Skill.Demo
     {
         protected override void Consume()
         {
-            NativeMultiHashMap<Entity, Effect2Context> effects = Effects;
+            NativeMultiHashMap<Entity, Effect2Context> effects = _effects;
             Entities.WithReadOnly(effects).ForEach((ref Entity entity, ref Health health, ref Armor armor) =>
             {
                 NativeMultiHashMap<Entity, Effect2Context>.Enumerator effectEnumerator = effects.GetValuesForKey(entity);

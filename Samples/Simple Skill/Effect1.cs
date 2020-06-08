@@ -61,7 +61,7 @@ namespace WaynGroup.Mgm.Skill.Demo
     {
         protected override void Consume()
         {
-            NativeMultiHashMap<Entity, Effect1Context> effects = Effects;
+            NativeMultiHashMap<Entity, Effect1Context> effects = _effects;
             Entities.WithReadOnly(effects).ForEach((ref Entity entity, ref Health health) =>
             {
                 NativeMultiHashMap<Entity, Effect1Context>.Enumerator effectEnumerator = effects.GetValuesForKey(entity);
