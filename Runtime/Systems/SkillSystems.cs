@@ -30,7 +30,7 @@ namespace WaynGroup.Mgm.Skill
                     }
                     sbArray[i] = Skill;
                 }
-            }).WithoutBurst()
+            }).WithBurst()
             .ScheduleParallel(Dependency);
         }
 
