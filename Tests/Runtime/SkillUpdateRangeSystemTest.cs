@@ -1,5 +1,5 @@
-﻿
-using NUnit.Framework;
+﻿using NUnit.Framework;
+
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
@@ -7,10 +7,10 @@ using Unity.Transforms;
 using WaynGroup.Mgm.Skill;
 using WaynGroup.Mgm.Skill.Tests;
 
-public class SkillUpdateSystemTest : DotsTest
+public class SkillUpdateRangeSystemTest : DotsTest
 {
     [Test]
-    public void SkillUpdateRangeSystem_IsBelowMinRange()
+    public void IsBelowMinRange()
     {
         // Arrange
         Entity target = _entityManager.CreateEntity();
@@ -34,7 +34,7 @@ public class SkillUpdateSystemTest : DotsTest
     }
 
     [Test]
-    public void SkillUpdateRangeSystem_IsAtMinRange()
+    public void IsAtMinRange()
     {
         // Arrange
         Entity target = _entityManager.CreateEntity();
@@ -58,7 +58,7 @@ public class SkillUpdateSystemTest : DotsTest
     }
 
     [Test]
-    public void SkillUpdateRangeSystem_IsInRange()
+    public void IsInRange()
     {
         // Arrange
         Entity target = _entityManager.CreateEntity();
@@ -81,7 +81,7 @@ public class SkillUpdateSystemTest : DotsTest
     }
 
     [Test]
-    public void SkillUpdateRangeSystem_IsAtMaxRange()
+    public void IsAtMaxRange()
     {
         // Arrange
         Entity target = _entityManager.CreateEntity();
@@ -104,7 +104,7 @@ public class SkillUpdateSystemTest : DotsTest
     }
 
     [Test]
-    public void SkillUpdateRangeSystem_IsAboveMaxRange()
+    public void IsAboveMaxRange()
     {
         // Arrange
         Entity target = _entityManager.CreateEntity();

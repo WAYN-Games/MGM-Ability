@@ -16,7 +16,7 @@ namespace WaynGroup.Mgm.Skill
 
         public Skill(float coolDown, float castTime, Range range) : this()
         {
-            State = SkillState.CooledDown;
+            State = SkillState.CoolingDown;
             CoolDown = new Timing(coolDown);
             CastTime = new Timing(castTime);
             Range = range;

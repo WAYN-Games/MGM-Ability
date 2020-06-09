@@ -11,6 +11,8 @@ namespace WaynGroup.Mgm.Skill
 
     }
 
+
+
     /// <summary>
     /// This system update each skill timmings (cast and cooldown).
     /// Once a timing is elapsed, the skill state is updated to the proper value.
