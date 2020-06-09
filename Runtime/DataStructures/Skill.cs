@@ -26,7 +26,7 @@ namespace WaynGroup.Mgm.Skill
         /// <summary>
         /// Mark the skill as inactive so that it's effects are no longer applied.
         /// </summary>
-        public void Deactivate()
+        public void StartCooloingDown()
         {
             CoolDown.Reset();
             State = SkillState.CoolingDown;
@@ -49,15 +49,6 @@ namespace WaynGroup.Mgm.Skill
             }
 
             return SkillCastResult.AlreadyCasting;
-        }
-
-        /// <summary>
-        /// Determine if the skill effects should be applied.
-        /// </summary>
-        /// <returns>True if the skill effects should be aplied, false otherwise.</returns>
-        public bool ShouldApplyEffects()
-        {
-            return State == SkillState.Active;
         }
 
         /// <summary>

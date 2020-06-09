@@ -76,8 +76,8 @@ namespace WaynGroup.Mgm.Skill
     }
 
     /// <summary>
-    /// This system put the skill in cooldown.
-    /// It's run after all effect have beed trigered.
+    /// This system put the skill in cooldown if it's effect were triggered.
+    /// It's run after all effect have been trigered.
     /// </summary>
     public class SkillDeactivationSystem : SystemBase
     {
@@ -90,10 +90,12 @@ namespace WaynGroup.Mgm.Skill
                 for (int i = 0; i < sbArray.Length; i++)
                 {
                     Skill Skill = sbArray[i];
+
                     if (Skill.State == SkillState.Active)
                     {
-                        Skill.Deactivate();
+                        Skill.StartCooloingDown();
                     }
+
                     sbArray[i] = Skill;
                 }
             }).WithBurst()
