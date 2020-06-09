@@ -27,7 +27,7 @@ public class SkillUpdateRangeSystemTest : DotsTest
 
         // Act
         _world.UpdateSystem<SkillUpdateRangeSystem>();
-
+        _world.CompleteAllJobs();
         // Assert
         Assert.False(_entityManager.GetBuffer<SkillBuffer>(attacker)[0].Skill.IsInRange);
 
@@ -51,7 +51,7 @@ public class SkillUpdateRangeSystemTest : DotsTest
 
         // Act
         _world.UpdateSystem<SkillUpdateRangeSystem>();
-
+        _world.CompleteAllJobs();
         // Assert
         Assert.True(_entityManager.GetBuffer<SkillBuffer>(attacker)[0].Skill.IsInRange);
 
@@ -75,7 +75,7 @@ public class SkillUpdateRangeSystemTest : DotsTest
 
         // Act
         _world.UpdateSystem<SkillUpdateRangeSystem>();
-
+        _world.CompleteAllJobs();
         // Assert
         Assert.True(_entityManager.GetBuffer<SkillBuffer>(attacker)[0].Skill.IsInRange);
     }
@@ -98,7 +98,7 @@ public class SkillUpdateRangeSystemTest : DotsTest
 
         // Act
         _world.UpdateSystem<SkillUpdateRangeSystem>();
-
+        _world.CompleteAllJobs();
         // Assert
         Assert.True(_entityManager.GetBuffer<SkillBuffer>(attacker)[0].Skill.IsInRange);
     }
@@ -121,7 +121,7 @@ public class SkillUpdateRangeSystemTest : DotsTest
 
         // Act
         _world.UpdateSystem<SkillUpdateRangeSystem>();
-
+        _world.CompleteAllJobs();
         // Assert
         Assert.False(_entityManager.GetBuffer<SkillBuffer>(attacker)[0].Skill.IsInRange);
     }

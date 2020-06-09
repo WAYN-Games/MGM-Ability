@@ -30,14 +30,15 @@ namespace WaynGroup.Mgm.Skill
                 {
 
                     Skill Skill = sbArray[i];
-                    if (Skill.State == SkillState.CoolingDown)
-                    {
-                        Skill.UpdateCoolDowns(DeltaTime);
-                    }
                     if (Skill.State == SkillState.Casting)
                     {
                         Skill.UpdateCastTime(DeltaTime);
                     }
+                    if (Skill.State == SkillState.CoolingDown)
+                    {
+                        Skill.UpdateCoolDowns(DeltaTime);
+                    }
+
                     sbArray[i] = Skill;
                 }
             }).WithBurst()
@@ -63,7 +64,6 @@ namespace WaynGroup.Mgm.Skill
                 NativeArray<SkillBuffer> sbArray = skillBuffer.AsNativeArray();
                 for (int i = 0; i < sbArray.Length; i++)
                 {
-
                     Skill Skill = sbArray[i];
                     float distance = math.distance(translations[caster].Value, translations[target.Value].Value);
                     Skill.IsInRange = Skill.Range.Min <= distance && distance <= Skill.Range.Max;
