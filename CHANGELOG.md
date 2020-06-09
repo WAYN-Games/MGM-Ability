@@ -10,6 +10,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - Support for Min and Max range constraint on skill
 
+### Changed 
+
+- Update to com.unity.entities 0.11.0-preview.7 (no impact)
+
 ## [0.1.2] - 08/06/2020
 
 ### Fixed
