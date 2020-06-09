@@ -18,8 +18,8 @@ public class EffectSystemTest : DotsTest
     {
         for (int i = 0; i < count; i++)
         {
-            Skill Skill = new Skill(0, 0);
-
+            Skill Skill = new Skill(0, 0, new Range() { Min = float.MinValue, Max = float.MaxValue });
+            Skill.IsInRange = true;
             buffer.Add(new SkillBuffer()
             {
                 Skill = Skill
@@ -78,7 +78,7 @@ public class EffectSystemTest : DotsTest
 
         _world
             .WithSystem<UserInputSimulationSystem>()
-            .WithSystem<SkillUpdateSystem>()
+            .WithSystem<SkillUpdateTimingsSystem>()
             .WithSystem<Effect1TriggerSystem>()
             .WithSystem<Effect2TriggerSystem>()
             .WithSystem<SkillDeactivationSystem>()
@@ -87,13 +87,30 @@ public class EffectSystemTest : DotsTest
 
 
         // Act
+        _world.GetReference().SetTime(new Unity.Core.TimeData(0, 1));
+
+
+        AssertSkillActivationState(entity, SkillState.CoolingDown);
+        AssertSkillActivationState(entity2, SkillState.CoolingDown);
+
+        _world.UpdateSystem<SkillUpdateTimingsSystem>();
+        _world.CompleteAllJobs();
+
+        AssertSkillActivationState(entity, SkillState.CooledDown);
+        AssertSkillActivationState(entity2, SkillState.CooledDown);
+
         _world.UpdateSystem<UserInputSimulationSystem>();
-        _world.UpdateSystem<SkillUpdateSystem>();
+        _world.CompleteAllJobs();
+
+        AssertSkillActivationState(entity, SkillState.Casting);
+        AssertSkillActivationState(entity2, SkillState.Casting);
+
+        _world.UpdateSystem<SkillUpdateTimingsSystem>();
         _world.CompleteAllJobs();
 
         // Assert
-        AssertSkillActivationState(entity, true);
-        AssertSkillActivationState(entity2, true);
+        AssertSkillActivationState(entity, SkillState.Active);
+        AssertSkillActivationState(entity2, SkillState.Active);
 
         // Act
         _world.UpdateSystem<Effect1TriggerSystem>();
@@ -103,8 +120,8 @@ public class EffectSystemTest : DotsTest
 
         // Assert
 
-        AssertSkillActivationState(entity, false);
-        AssertSkillActivationState(entity2, false);
+        AssertSkillActivationState(entity, SkillState.CoolingDown);
+        AssertSkillActivationState(entity2, SkillState.CoolingDown);
 
         // Act
         _world.UpdateSystem<Effect1ConsumerSystem>();
@@ -153,14 +170,14 @@ public class EffectSystemTest : DotsTest
 
     }
 
-    private void AssertSkillActivationState(Entity entity, bool expectedState)
+    private void AssertSkillActivationState(Entity entity, SkillState expectedState)
     {
         Assert.True(_entityManager.HasComponent<SkillBuffer>(entity));
         NativeArray<SkillBuffer> sba = _entityManager.GetBuffer<SkillBuffer>(entity).AsNativeArray();
         Assert.AreEqual(2, sba.Length);
         foreach (SkillBuffer sb in sba)
         {
-            Assert.AreEqual(expectedState, sb.Skill.ShouldApplyEffects());
+            Assert.AreEqual(expectedState, sb.Skill.State);
         }
     }
 

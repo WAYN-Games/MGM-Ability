@@ -13,6 +13,6 @@
     }
   ],
   "dependencies": {
-    "com.unity.entities": "0.9.1-preview.15"
+    "com.unity.entities": "0.11.0-preview.7"
   }
 }

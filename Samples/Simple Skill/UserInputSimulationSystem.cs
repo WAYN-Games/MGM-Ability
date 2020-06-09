@@ -7,7 +7,7 @@ namespace WaynGroup.Mgm.Skill
     /// <summary>
     /// System that fake the user input simulating all skill cast every frame.
     /// </summary>
-    [UpdateBefore(typeof(SkillUpdateSystem))]
+    [UpdateBefore(typeof(SkillUpdateSystemGroup))]
     public class UserInputSimulationSystem : SystemBase
     {
         protected override void OnUpdate()

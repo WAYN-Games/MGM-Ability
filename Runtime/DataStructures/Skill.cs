@@ -2,7 +2,6 @@
 
 namespace WaynGroup.Mgm.Skill
 {
-
     /// <summary>
     /// The runtime representation of a skill.
     /// </summary>
@@ -12,18 +11,22 @@ namespace WaynGroup.Mgm.Skill
         public SkillState State { get; private set; }
         private Timing CoolDown;
         private Timing CastTime;
+        public Range Range;
+        public bool IsInRange;
 
-        public Skill(float coolDown, float castTime) : this()
+        public Skill(float coolDown, float castTime, Range range) : this()
         {
-            State = SkillState.CooledDown;
+            State = SkillState.CoolingDown;
             CoolDown = new Timing(coolDown);
             CastTime = new Timing(castTime);
+            Range = range;
+            IsInRange = false;
         }
 
         /// <summary>
         /// Mark the skill as inactive so that it's effects are no longer applied.
         /// </summary>
-        public void Deactivate()
+        public void StartCooloingDown()
         {
             CoolDown.Reset();
             State = SkillState.CoolingDown;
@@ -36,6 +39,7 @@ namespace WaynGroup.Mgm.Skill
         public SkillCastResult TryCast()
         {
             if (State == SkillState.CoolingDown) return SkillCastResult.NotReady;
+            if (!IsInRange) return SkillCastResult.OutOfRange;
 
             if (State != SkillState.Casting)
             {
@@ -45,15 +49,6 @@ namespace WaynGroup.Mgm.Skill
             }
 
             return SkillCastResult.AlreadyCasting;
-        }
-
-        /// <summary>
-        /// Determine if the skill effects should be applied.
-        /// </summary>
-        /// <returns>True if the skill effects should be aplied, false otherwise.</returns>
-        public bool ShouldApplyEffects()
-        {
-            return State == SkillState.Active;
         }
 
         /// <summary>

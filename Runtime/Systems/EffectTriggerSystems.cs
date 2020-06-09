@@ -100,7 +100,7 @@ namespace WaynGroup.Mgm.Skill
                     {
 
                         Skill Skill = SkillBufferArray[skillIndex];
-                        if (!Skill.ShouldApplyEffects()) continue;
+                        if (Skill.State != SkillState.Active) continue;
                         for (int effectIndex = 0; effectIndex < effectBufferArray.Length; effectIndex++)
                         {
                             EFFECT_BUFFER EffectBuffer = effectBufferArray[effectIndex];

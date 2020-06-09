@@ -17,6 +17,10 @@ public class ScriptableSkill : ScriptableObject
     /// </summary>
     public string Name;
     /// <summary>
+    /// The distance constraints that need to be met in order to cast the skill.
+    /// </summary>
+    public Range Range;
+    /// <summary>
     /// The time necessary for the skill to recahrge before it can be reused.
     /// </summary>
     public float CoolDown;
@@ -31,4 +35,11 @@ public class ScriptableSkill : ScriptableObject
     [SerializeReference]
     public List<IEffect> Effects;
 
+}
+
+[Serializable]
+public struct Range
+{
+    public float Min;
+    public float Max;
 }

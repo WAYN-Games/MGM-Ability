@@ -11,14 +11,19 @@
         "Unity.PerformanceTesting",
         "Unity.Burst",
         "WaynGroup.Mgm.Skill",
-        "SimpleSkill"
+        "SimpleSkill",
+        "Unity.Transforms",
+        "Unity.Mathematics"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": true,
     "precompiledReferences": [
-        "nunit.framework.dll"
+        "nunit.framework.dll",
+        "Castle.Core.dll",
+        "NSubstitute.dll",
+        "System.Threading.Tasks.Extensions.dll"
     ],
     "autoReferenced": false,
     "defineConstraints": [

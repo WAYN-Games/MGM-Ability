@@ -13,6 +13,9 @@ MonoBehaviour:
   m_Name: AutoAttack
   m_EditorClassIdentifier: 
   Name: AutoAttack
+  Range:
+    Min: 0.5
+    Max: 10
   CoolDown: 3
   CastTime: 2
   Effects:
