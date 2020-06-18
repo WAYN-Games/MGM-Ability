@@ -6,6 +6,11 @@ using Unity.Entities;
 
 namespace WaynGroup.Mgm.Skill
 {
+    [UpdateAfter(typeof(SkillUpdateSystemGroup))]
+    public class SkillTriggerSystemGroup : ComponentSystemGroup
+    {
+
+    }
 
     /// <summary>
     /// Base system to trigger effects. It provides the shared functionality of checking which skill is active and which target(s) are affected.
@@ -15,7 +20,7 @@ namespace WaynGroup.Mgm.Skill
     /// <typeparam name="CONSUMER">The system in charge of consuming the effects once triggered.</typeparam>
     /// <typeparam name="CTX_WRITER">The writer struct in charge of populating the context surroinding the triggered effect like informations about the caster (position, strength,...).</typeparam>
     /// <typeparam name="EFFECT_CTX">The struct containing the effect and it's context like informations about the caster (position, strength,...)</typeparam>
-    [UpdateBefore(typeof(SkillDeactivationSystem))]
+    [UpdateInGroup(typeof(SkillTriggerSystemGroup))]
     public abstract class EffectTriggerSystem<EFFECT_BUFFER, EFFECT, CONSUMER, CTX_WRITER, EFFECT_CTX> : SystemBase
         where EFFECT : struct, IEffect
         where CONSUMER : EffectConsumerSystem<EFFECT, EFFECT_CTX>
@@ -29,7 +34,7 @@ namespace WaynGroup.Mgm.Skill
         private EffectConsumerSystem<EFFECT, EFFECT_CTX> _conusmerSystem;
 
         /// <summary>
-        /// The base query to select entity taht are eligible to this system.
+        /// The base query to select entity that are eligible to this system.
         /// </summary>
         private EntityQuery _query;
 
@@ -82,6 +87,7 @@ namespace WaynGroup.Mgm.Skill
             [ReadOnly] public ArchetypeChunkBufferType<SkillBuffer> SkillBufferChunk;
             [ReadOnly] public ArchetypeChunkBufferType<EFFECT_BUFFER> EffectBufferChunk;
             [ReadOnly] public ArchetypeChunkComponentType<Target> TargetChunk;
+            [ReadOnly] public ArchetypeChunkEntityType EntityChunk;
             public NativeStream.Writer ConsumerWriter;
 
             public void Execute(ArchetypeChunk chunk, int chunkIndex, int firstEntityIndex)
@@ -89,6 +95,7 @@ namespace WaynGroup.Mgm.Skill
                 BufferAccessor<SkillBuffer> skillBufffers = chunk.GetBufferAccessor(SkillBufferChunk);
                 BufferAccessor<EFFECT_BUFFER> effectBuffers = chunk.GetBufferAccessor(EffectBufferChunk);
                 NativeArray<Target> targets = chunk.GetNativeArray(TargetChunk);
+                NativeArray<Entity> entities = chunk.GetNativeArray(EntityChunk);
                 EffectContextWriter.PrepareChunk(chunk);
 
                 ConsumerWriter.BeginForEachIndex(chunkIndex);
@@ -106,7 +113,7 @@ namespace WaynGroup.Mgm.Skill
                             EFFECT_BUFFER EffectBuffer = effectBufferArray[effectIndex];
                             if (EffectBuffer.SkillIndex != skillIndex) continue;
 
-                            EffectContextWriter.WriteContextualizedEffect(entityIndex, ref ConsumerWriter, EffectBuffer.Effect, targets[entityIndex].Value);
+                            EffectContextWriter.WriteContextualizedEffect(entityIndex, ref ConsumerWriter, EffectBuffer.Effect, EffectBuffer.Effect.Affects == EffectAffectType.Target ? targets[entityIndex].Value : entities[effectIndex]);
 
                         }
                     }
@@ -129,6 +136,7 @@ namespace WaynGroup.Mgm.Skill
                 EffectBufferChunk = GetArchetypeChunkBufferType<EFFECT_BUFFER>(true),
                 SkillBufferChunk = GetArchetypeChunkBufferType<SkillBuffer>(true),
                 TargetChunk = GetArchetypeChunkComponentType<Target>(true),
+                EntityChunk = GetArchetypeChunkEntityType(),
                 ConsumerWriter = _conusmerSystem.GetConsumerWriter(_query.CalculateChunkCount()),
                 EffectContextWriter = GetContextWriter()
             }.ScheduleParallel(_query, Dependency);

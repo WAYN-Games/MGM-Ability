@@ -16,6 +16,7 @@ public class ScriptableSkill : ScriptableObject
     /// The name of the skill.
     /// </summary>
     public string Name;
+
     /// <summary>
     /// The distance constraints that need to be met in order to cast the skill.
     /// </summary>
@@ -28,7 +29,12 @@ public class ScriptableSkill : ScriptableObject
     /// The time needed by the skill between the user input and the trigerring of the skill effect.
     /// </summary>
     public float CastTime;
-
+    /// <summary>
+    /// The list of costs that are check to cast the skill.
+    /// A corresponding effect is automatically added to the list of effect at runtime to consume the associated ressource.
+    /// </summary>
+    [SerializeReference]
+    public List<ISkillCost> Costs;
     /// <summary>
     /// The list of effect that are applied after the CastTime has elapsed.
     /// </summary>

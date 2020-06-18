@@ -16,18 +16,26 @@ MonoBehaviour:
   Range:
     Min: 0.5
     Max: 10
-  CoolDown: 3
-  CastTime: 2
-  Effects:
+  CoolDown: 0.3
+  CastTime: 0.2
+  Costs:
   - id: 0
+  Effects:
   - id: 1
+  - id: 2
   references:
     version: 1
     00000000:
+      type: {class: ManaCost, ns: WaynGroup.Mgm.Skill.Demo, asm: SimpleSkill}
+      data:
+        Cost: 1
+    00000001:
       type: {class: Effect1, ns: WaynGroup.Mgm.Skill.Demo, asm: SimpleSkill}
       data:
-        Value: 10
-    00000001:
+        Value: 3
+        <Affects>k__BackingField: 0
+    00000002:
       type: {class: Effect2, ns: WaynGroup.Mgm.Skill.Demo, asm: SimpleSkill}
       data:
-        Value: 10
+        Value: 5
+        <Affects>k__BackingField: 0

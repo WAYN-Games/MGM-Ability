@@ -2,11 +2,15 @@
 using Unity.Collections;
 using Unity.Entities;
 
+using UnityEngine;
+
 namespace WaynGroup.Mgm.Skill.Demo
 {
     public struct Effect1 : IEffect
     {
         public int Value;
+
+        [field: SerializeField] public EffectAffectType Affects { get; set; }
 
         public void Convert(Entity entity, EntityManager dstManager, int skillIndex)
         {
@@ -26,7 +30,6 @@ namespace WaynGroup.Mgm.Skill.Demo
         public Effect1 Effect { get; set; }
     }
 
-    [UpdateBefore(typeof(Effect1ConsumerSystem))]
     public class Effect1TriggerSystem : EffectTriggerSystem<Effect1Buffer, Effect1, Effect1ConsumerSystem, Effect1TriggerSystem.EffectWriter, Effect1Context>
     {
 
@@ -54,9 +57,6 @@ namespace WaynGroup.Mgm.Skill.Demo
         }
     }
 
-
-
-    [UpdateAfter(typeof(Effect1TriggerSystem))]
     public class Effect1ConsumerSystem : EffectConsumerSystem<Effect1, Effect1Context>
     {
         protected override void Consume()

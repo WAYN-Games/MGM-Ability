@@ -13,6 +13,7 @@ namespace WaynGroup.Mgm.Skill
         private Timing CastTime;
         public Range Range;
         public bool IsInRange;
+        public bool HasEnougthRessource;
 
         public Skill(float coolDown, float castTime, Range range) : this()
         {
@@ -21,6 +22,7 @@ namespace WaynGroup.Mgm.Skill
             CastTime = new Timing(castTime);
             Range = range;
             IsInRange = false;
+            HasEnougthRessource = true;
         }
 
         /// <summary>
@@ -40,6 +42,7 @@ namespace WaynGroup.Mgm.Skill
         {
             if (State == SkillState.CoolingDown) return SkillCastResult.NotReady;
             if (!IsInRange) return SkillCastResult.OutOfRange;
+            if (!HasEnougthRessource) return SkillCastResult.NotEnougthRessource;
 
             if (State != SkillState.Casting)
             {

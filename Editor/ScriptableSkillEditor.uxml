@@ -10,9 +10,15 @@
     <editor:PropertyField name="range-property" binding-path="Range" />
     <editor:PropertyField name="cool-down-property" binding-path="CoolDown" />
     <editor:PropertyField name="cast-time-property" binding-path="CastTime" />
-    <engine:VisualElement name="effect-picker-container" class="container">
-    </engine:VisualElement>
-    <engine:VisualElement name="effects-container" class="container">
-    </engine:VisualElement>
+
+    <engine:Foldout text="Costs" class="header">
+      <engine:VisualElement name="cost-picker-container" class="container" />
+      <engine:VisualElement name="costs-container" class="container" />
+    </engine:Foldout>
+    <engine:Foldout text="Effects" class="header">
+      <engine:VisualElement name="effect-picker-container" class="container" />
+      <engine:VisualElement name="effects-container" class="container" />
+    </engine:Foldout>
+
   </engine:VisualElement>
 </engine:UXML>

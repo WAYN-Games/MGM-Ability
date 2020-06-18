@@ -7,7 +7,11 @@ using Unity.Jobs;
 namespace WaynGroup.Mgm.Skill
 {
 
+    [UpdateAfter(typeof(SkillTriggerSystemGroup))]
+    public class SkillConsumerSystemGroup : ComponentSystemGroup
+    {
 
+    }
 
     public interface IEffectContext<EFFECT> where EFFECT : struct, IEffect
     {
@@ -15,7 +19,7 @@ namespace WaynGroup.Mgm.Skill
         EFFECT Effect { get; set; }
     }
 
-    [AlwaysUpdateSystem] // System should always update to ensure the disposal of the native stream and avoid memory leaks.
+    [UpdateInGroup(typeof(SkillConsumerSystemGroup))]
     public abstract class EffectConsumerSystem<EFFECT, EFFECT_CTX> : SystemBase where EFFECT : struct, IEffect
         where EFFECT_CTX : struct, IEffectContext<EFFECT>
     {

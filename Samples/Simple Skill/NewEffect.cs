@@ -1,50 +1,53 @@
-using Unity.Burst;
+﻿using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
+
+using UnityEngine;
 
 using WaynGroup.Mgm.Skill;
 
 namespace NAMESAPCE
 {
-    public struct #SCRIPTNAME# : IEffect
+    public struct NewEffect : IEffect
     {
+        [field: SerializeField] public EffectAffectType Affects { get; set; }
+
         // YOUR CODE : delcare all necesasry data inherant to the effect consumption, could be a the effect power, damage type,...
 
-		#NOTRIM#
+
 
         // Mandatory for Authoring, do not edit
         public void Convert(Entity entity, EntityManager dstManager, int skillIndex)
         {
-            EffectUtility.AddEffect<#SCRIPTNAME#Buffer, #SCRIPTNAME#>(entity, dstManager, skillIndex, this);
+            EffectUtility.AddEffect<NewEffectBuffer, NewEffect>(entity, dstManager, skillIndex, this);
         }
     }
 
     // Mandatory for Authoring, do not edit
-    public struct #SCRIPTNAME#Buffer : IEffectBufferElement<#SCRIPTNAME#>
+    public struct NewEffectBuffer : IEffectBufferElement<NewEffect>
     {
         public int SkillIndex { get; set; }
-        public #SCRIPTNAME# Effect { get; set; }
+        public NewEffect Effect { get; set; }
     }
 
-    public struct #SCRIPTNAME#Context : IEffectContext<#SCRIPTNAME#>
+    public struct NewEffectContext : IEffectContext<NewEffect>
     {
         // YOUR CODE : delcare all necesasry contextual data for the effect consumption, could be a position, attack power,...
 
-		#NOTRIM#
+
 
         // Mandatory for Authoring, do not edit
         public Entity Target { get; set; }
-        public #SCRIPTNAME# Effect { get; set; }
+        public NewEffect Effect { get; set; }
     }
 
-    [UpdateBefore(typeof(#SCRIPTNAME#ConsumerSystem))]
-    public class #SCRIPTNAME#TriggerSystem : EffectTriggerSystem<#SCRIPTNAME#Buffer, #SCRIPTNAME#, #SCRIPTNAME#ConsumerSystem, #SCRIPTNAME#TriggerSystem.TargetEffectWriter, #SCRIPTNAME#Context>
+    public class NewEffectTriggerSystem : EffectTriggerSystem<NewEffectBuffer, NewEffect, NewEffectConsumerSystem, NewEffectTriggerSystem.TargetEffectWriter, NewEffectContext>
     {
 
         [BurstCompile]
-        public struct TargetEffectWriter : IEffectContextWriter<#SCRIPTNAME#>
+        public struct TargetEffectWriter : IEffectContextWriter<NewEffect>
         {
-			// YOUR CODE : declare the public [ReadOnly] component data chunk accessor and the private [ReadOnly] native array to cache the component data
+            // YOUR CODE : declare the public [ReadOnly] component data chunk accessor and the private [ReadOnly] native array to cache the component data
 
             /// <summary>
             /// Cache the component data array needed to write the effect context.
@@ -61,14 +64,15 @@ namespace NAMESAPCE
             /// <param name="entityIndex">The casting entity.</param>
             /// <param name="consumerWriter">The corresponding effect consumer stream.</param>
             /// <param name="effect">The effect to contextualize.</param>
-            public void WriteContextualizedEffect(int entityIndex, ref NativeStream.Writer consumerWriter, #SCRIPTNAME# effect, Entity target)
+            public void WriteContextualizedEffect(int entityIndex, ref NativeStream.Writer consumerWriter, NewEffect effect, Entity target)
             {
-				                consumerWriter.Write(new #SCRIPTNAME#Context() {
+                consumerWriter.Write(new NewEffectContext()
+                {
                     Target = target,
                     Effect = effect
                     // YOUR CODE : populate the effect context with additonal contextual data.
                 });
-			}
+            }
         }
 
 
@@ -76,11 +80,11 @@ namespace NAMESAPCE
         {
             return new TargetEffectWriter()
             {
-             	// YOUR CODE : populate the component data chunk accessor
+                // YOUR CODE : populate the component data chunk accessor
             };
         }
 
-		/* Optional
+        /* Optional
         protected override EntityQueryDesc GetEffectContextEntityQueryDesc()
         {
             return new EntityQueryDesc()
@@ -91,20 +95,19 @@ namespace NAMESAPCE
                 }
             };
         }
-		*/
+        */
     }
 
-    [UpdateAfter(typeof(#SCRIPTNAME#TriggerSystem))]
-    public class #SCRIPTNAME#ConsumerSystem : EffectConsumerSystem<#SCRIPTNAME#, #SCRIPTNAME#Context>
+    public class NewEffectConsumerSystem : EffectConsumerSystem<NewEffect, NewEffectContext>
     {
         protected override void Consume()
         {
-            NativeMultiHashMap<Entity, #SCRIPTNAME#Context> effects = _effects;
+            NativeMultiHashMap<Entity, NewEffectContext> effects = _effects;
             Entities.WithReadOnly(effects).ForEach((ref Entity targetEntity/* YOUR CODE : component on the target that are nedded to apply the effect*/) =>
             {
-                NativeMultiHashMap<Entity, #SCRIPTNAME#Context>.Enumerator effectEnumerator = effects.GetValuesForKey(targetEntity);
+                NativeMultiHashMap<Entity, NewEffectContext>.Enumerator effectEnumerator = effects.GetValuesForKey(targetEntity);
 
-     
+
                 while (effectEnumerator.MoveNext())
                 {
                     // YOUR CODE : Consume the effect
@@ -116,4 +119,3 @@ namespace NAMESAPCE
     }
 
 }
-

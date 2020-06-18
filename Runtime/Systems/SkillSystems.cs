@@ -79,6 +79,8 @@ namespace WaynGroup.Mgm.Skill
     /// This system put the skill in cooldown if it's effect were triggered.
     /// It's run after all effect have been trigered.
     /// </summary>
+    //[UpdateInGroup(typeof(SkillTriggerSystemGroup), OrderLast = true)] // --> Does not actually work, the system is ordered first...
+    [UpdateAfter(typeof(SkillTriggerSystemGroup))]
     public class SkillDeactivationSystem : SystemBase
     {
 

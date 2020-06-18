@@ -3,12 +3,16 @@ using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Entities;
 
+using UnityEngine;
+
 namespace WaynGroup.Mgm.Skill.Demo
 {
     public struct Effect2 : IEffect
     {
         // Actual effect data
         public int Value;
+
+        [field: SerializeField] public EffectAffectType Affects { get; set; }
 
         // Mandatory for Authoring, do not edit
         public void Convert(Entity entity, EntityManager dstManager, int skillIndex)
@@ -34,7 +38,6 @@ namespace WaynGroup.Mgm.Skill.Demo
         public Effect2 Effect { get; set; }
     }
 
-    [UpdateBefore(typeof(Effect2ConsumerSystem))]
     public class Effect2TriggerSystem : EffectTriggerSystem<Effect2Buffer, Effect2, Effect2ConsumerSystem, Effect2TriggerSystem.TargetEffectWriter, Effect2Context>
     {
 
@@ -100,7 +103,6 @@ namespace WaynGroup.Mgm.Skill.Demo
         }
     }
 
-    [UpdateAfter(typeof(Effect2TriggerSystem))]
     public class Effect2ConsumerSystem : EffectConsumerSystem<Effect2, Effect2Context>
     {
         protected override void Consume()

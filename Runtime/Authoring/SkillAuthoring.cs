@@ -41,6 +41,10 @@ public class SkillAuthoring : MonoBehaviour, IConvertGameObjectToEntity
             {
                 effect.Convert(entity, dstManager, i);
             }
+            foreach (ISkillCost cost in Skills[i].Costs)
+            {
+                cost.Convert(entity, dstManager, i);
+            }
         }
     }
 }
