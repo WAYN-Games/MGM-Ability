@@ -31,8 +31,8 @@ public class ScriptableSkillEditor : Editor
 
     SerializedProperty CostsProperty;
 
-    private string[] _costStirngParams = new string[] { "costs-container", "Undefined skill cost type on {0} cost.", "Undefined skill cost type to remove" };
-    private string[] _effectStirngParams = new string[] { "effects-container", "Undefined skill effect type on {0} effect.", "Undefined effect type to remove" };
+    private readonly string[] _costStirngParams = new string[] { "costs-container", "Undefined skill cost type on {0} cost.", "Undefined skill cost type to remove" };
+    private readonly string[] _effectStirngParams = new string[] { "effects-container", "Undefined skill effect type on {0} effect.", "Undefined effect type to remove" };
 
 
     public void OnEnable()
