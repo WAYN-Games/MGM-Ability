@@ -55,13 +55,13 @@ namespace WaynGroup.Mgm.Skill.Demo
 
                         Skill Skill = SkillBufferArray[skillIndex];
                         bool temp = true;
-                        for (int costIndex = 0; costIndex < costBufferArray.Length; costIndex++)
+                        for (int costIndex = 0; costIndex < costBufferArray.Length; ++costIndex)
                         {
                             COST_BUFFER CostBuffer = costBufferArray[costIndex];
                             if (CostBuffer.SkillIndex != skillIndex) continue;
                             temp &= CostChecker.HasEnougthResourceLeft(CostBuffer.Cost, in resource);
                         }
-                        Skill.HasEnougthRessource = temp;
+                        Skill.HasEnougthRessource &= temp;
                         SkillBufferArray[skillIndex] = Skill;
                     }
                 }

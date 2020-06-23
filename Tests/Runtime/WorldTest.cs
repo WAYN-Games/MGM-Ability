@@ -18,8 +18,10 @@ public class EffectSystemTest : DotsTest
     {
         for (int i = 0; i < count; i++)
         {
-            Skill Skill = new Skill(0, 0, new Range() { Min = float.MinValue, Max = float.MaxValue });
-            Skill.IsInRange = true;
+            Skill Skill = new Skill(0, 0, new Range() { Min = float.MinValue, Max = float.MaxValue })
+            {
+                IsInRange = true
+            };
             buffer.Add(new SkillBuffer()
             {
                 Skill = Skill
