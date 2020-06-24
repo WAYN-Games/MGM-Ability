@@ -2,7 +2,7 @@
 using Unity.Entities;
 using Unity.Jobs;
 
-namespace WaynGroup.Mgm.Skill
+namespace WaynGroup.Mgm.Skill.Demo
 {
     /// <summary>
     /// System that fake the user input simulating all skill cast every frame.

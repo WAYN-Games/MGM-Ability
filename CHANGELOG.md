@@ -10,10 +10,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - Support for cost constraint and consumtion on skill
 - Support for simple target selection from skill (self or target)
+- System groups to organize systems
 
 ### Changed 
 
 - 
+
+### Code Test Coverage
 
 ## [0.2.0] - 09/06/2020
 
