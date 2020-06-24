@@ -2,10 +2,10 @@
 
 using Unity.Entities;
 
-using WaynGroup.Mgm.Skill;
-using WaynGroup.Mgm.Skill.Tests;
+using WaynGroup.Mgm.Ability;
+using WaynGroup.Mgm.Ability.Tests;
 
-public class SkillCostCheckerSystemTest : DotsTest
+public class AbilityCostCheckerSystemTest : DotsTest
 {
     [Test]
     public void DoesNotHaveEnougthOfAllResources()
@@ -13,21 +13,21 @@ public class SkillCostCheckerSystemTest : DotsTest
         // Arrange
         Entity caster = _entityManager.CreateEntity();
 
-        Skill skill = new Skill(1, 1, new Range())
+        Ability ability = new Ability(1, 1, new Range())
         {
             HasEnougthRessource = true
         };
 
-        DynamicBuffer<SkillBuffer> skillBuffer = _entityManager.AddBuffer<SkillBuffer>(caster);
-        skillBuffer.Add(new SkillBuffer()
+        DynamicBuffer<AbilityBuffer> abilityBuffer = _entityManager.AddBuffer<AbilityBuffer>(caster);
+        abilityBuffer.Add(new AbilityBuffer()
         {
-            Skill = skill
+            Ability = ability
         });
 
         DynamicBuffer<TestCostBuffer> testCostBuffer = _entityManager.AddBuffer<TestCostBuffer>(caster);
         testCostBuffer.Add(new TestCostBuffer()
         {
-            SkillIndex = 0,
+            AbilityIndex = 0,
             Cost = new TestCost() { Cost = 10 }
         }
         );
@@ -35,7 +35,7 @@ public class SkillCostCheckerSystemTest : DotsTest
         DynamicBuffer<TestCost1Buffer> testCost1Buffer = _entityManager.AddBuffer<TestCost1Buffer>(caster);
         testCost1Buffer.Add(new TestCost1Buffer()
         {
-            SkillIndex = 0,
+            AbilityIndex = 0,
             Cost = new TestCost1() { Cost = 10 }
         }
         );
@@ -52,7 +52,7 @@ public class SkillCostCheckerSystemTest : DotsTest
         _world.CompleteAllJobs();
 
         //Assert
-        Assert.IsFalse(_entityManager.GetBuffer<SkillBuffer>(caster)[0].Skill.HasEnougthRessource);
+        Assert.IsFalse(_entityManager.GetBuffer<AbilityBuffer>(caster)[0].Ability.HasEnougthRessource);
 
     }
 
@@ -62,21 +62,21 @@ public class SkillCostCheckerSystemTest : DotsTest
         // Arrange
         Entity caster = _entityManager.CreateEntity();
 
-        Skill skill = new Skill(1, 1, new Range())
+        Ability ability = new Ability(1, 1, new Range())
         {
             HasEnougthRessource = true
         };
 
-        DynamicBuffer<SkillBuffer> skillBuffer = _entityManager.AddBuffer<SkillBuffer>(caster);
-        skillBuffer.Add(new SkillBuffer()
+        DynamicBuffer<AbilityBuffer> abilityBuffer = _entityManager.AddBuffer<AbilityBuffer>(caster);
+        abilityBuffer.Add(new AbilityBuffer()
         {
-            Skill = skill
+            Ability = ability
         });
 
         DynamicBuffer<TestCostBuffer> testCostBuffer = _entityManager.AddBuffer<TestCostBuffer>(caster);
         testCostBuffer.Add(new TestCostBuffer()
         {
-            SkillIndex = 0,
+            AbilityIndex = 0,
             Cost = new TestCost() { Cost = 10 }
         }
         );
@@ -84,7 +84,7 @@ public class SkillCostCheckerSystemTest : DotsTest
         DynamicBuffer<TestCost1Buffer> testCost1Buffer = _entityManager.AddBuffer<TestCost1Buffer>(caster);
         testCost1Buffer.Add(new TestCost1Buffer()
         {
-            SkillIndex = 0,
+            AbilityIndex = 0,
             Cost = new TestCost1() { Cost = 10 }
         }
         );
@@ -101,7 +101,7 @@ public class SkillCostCheckerSystemTest : DotsTest
         _world.CompleteAllJobs();
 
         //Assert
-        Assert.IsTrue(_entityManager.GetBuffer<SkillBuffer>(caster)[0].Skill.HasEnougthRessource);
+        Assert.IsTrue(_entityManager.GetBuffer<AbilityBuffer>(caster)[0].Ability.HasEnougthRessource);
     }
 
     [Test]
@@ -110,21 +110,21 @@ public class SkillCostCheckerSystemTest : DotsTest
         // Arrange
         Entity caster = _entityManager.CreateEntity();
 
-        Skill skill = new Skill(1, 1, new Range())
+        Ability ability = new Ability(1, 1, new Range())
         {
             HasEnougthRessource = true
         };
 
-        DynamicBuffer<SkillBuffer> skillBuffer = _entityManager.AddBuffer<SkillBuffer>(caster);
-        skillBuffer.Add(new SkillBuffer()
+        DynamicBuffer<AbilityBuffer> abilityBuffer = _entityManager.AddBuffer<AbilityBuffer>(caster);
+        abilityBuffer.Add(new AbilityBuffer()
         {
-            Skill = skill
+            Ability = ability
         });
 
         DynamicBuffer<TestCostBuffer> testCostBuffer = _entityManager.AddBuffer<TestCostBuffer>(caster);
         testCostBuffer.Add(new TestCostBuffer()
         {
-            SkillIndex = 0,
+            AbilityIndex = 0,
             Cost = new TestCost() { Cost = 10 }
         }
         );
@@ -132,7 +132,7 @@ public class SkillCostCheckerSystemTest : DotsTest
         DynamicBuffer<TestCost1Buffer> testCost1Buffer = _entityManager.AddBuffer<TestCost1Buffer>(caster);
         testCost1Buffer.Add(new TestCost1Buffer()
         {
-            SkillIndex = 0,
+            AbilityIndex = 0,
             Cost = new TestCost1() { Cost = 10 }
         }
         );
@@ -149,7 +149,7 @@ public class SkillCostCheckerSystemTest : DotsTest
         _world.CompleteAllJobs();
 
         //Assert
-        Assert.IsFalse(_entityManager.GetBuffer<SkillBuffer>(caster)[0].Skill.HasEnougthRessource);
+        Assert.IsFalse(_entityManager.GetBuffer<AbilityBuffer>(caster)[0].Ability.HasEnougthRessource);
     }
 
 }

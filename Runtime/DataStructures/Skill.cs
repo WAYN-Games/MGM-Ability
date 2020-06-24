@@ -1,23 +1,23 @@
 ﻿using System;
 
-namespace WaynGroup.Mgm.Skill
+namespace WaynGroup.Mgm.Ability
 {
     /// <summary>
-    /// The runtime representation of a skill.
+    /// The runtime representation of a ability.
     /// </summary>
     [Serializable]
-    public struct Skill
+    public struct Ability
     {
-        public SkillState State { get; set; }
+        public AbilityState State { get; set; }
         private Timing CoolDown;
         private Timing CastTime;
         public Range Range;
         public bool IsInRange;
         public bool HasEnougthRessource;
 
-        public Skill(float coolDown, float castTime, Range range) : this()
+        public Ability(float coolDown, float castTime, Range range) : this()
         {
-            State = SkillState.CoolingDown;
+            State = AbilityState.CoolingDown;
             CoolDown = new Timing(coolDown);
             CastTime = new Timing(castTime);
             Range = range;
@@ -26,36 +26,36 @@ namespace WaynGroup.Mgm.Skill
         }
 
         /// <summary>
-        /// Mark the skill as inactive so that it's effects are no longer applied.
+        /// Mark the ability as inactive so that it's effects are no longer applied.
         /// </summary>
         public void StartCooloingDown()
         {
             CoolDown.Reset();
-            State = SkillState.CoolingDown;
+            State = AbilityState.CoolingDown;
         }
 
         /// <summary>
-        /// Tries to start casting the skill.
+        /// Tries to start casting the ability.
         /// </summary>
         /// <returns>Returns a CastResult.</returns>
-        public SkillCastResult TryCast()
+        public AbilityCastResult TryCast()
         {
-            if (State == SkillState.CoolingDown) return SkillCastResult.NotReady;
-            if (!IsInRange) return SkillCastResult.OutOfRange;
-            if (!HasEnougthRessource) return SkillCastResult.NotEnougthRessource;
+            if (State == AbilityState.CoolingDown) return AbilityCastResult.NotReady;
+            if (!IsInRange) return AbilityCastResult.OutOfRange;
+            if (!HasEnougthRessource) return AbilityCastResult.NotEnougthRessource;
 
-            if (State != SkillState.Casting)
+            if (State != AbilityState.Casting)
             {
                 CastTime.Reset();
-                State = SkillState.Casting;
-                return SkillCastResult.Success;
+                State = AbilityState.Casting;
+                return AbilityCastResult.Success;
             }
 
-            return SkillCastResult.AlreadyCasting;
+            return AbilityCastResult.AlreadyCasting;
         }
 
         /// <summary>
-        /// Update the skill cast time and set the skill state to Active when the cast time is elapsed.
+        /// Update the ability cast time and set the ability state to Active when the cast time is elapsed.
         /// </summary>
         /// <param name="deltaTime">The amount of time elapsed since the last update.</param>
         public void UpdateCastTime(float deltaTime)
@@ -63,12 +63,12 @@ namespace WaynGroup.Mgm.Skill
             CastTime.Update(deltaTime);
             if (CastTime.IsElapsed())
             {
-                State = SkillState.Active;
+                State = AbilityState.Active;
             }
         }
 
         /// <summary>
-        /// Update the skill cooldowns and set the skill state to CooledDown when the cooldowns are elapsed.
+        /// Update the ability cooldowns and set the ability state to CooledDown when the cooldowns are elapsed.
         /// </summary>
         /// <param name="deltaTime">The amount of time elapsed since the last update.</param>
         public void UpdateCoolDowns(float deltaTime)
@@ -76,7 +76,7 @@ namespace WaynGroup.Mgm.Skill
             CoolDown.Update(deltaTime);
             if (CoolDown.IsElapsed())
             {
-                State = SkillState.CooledDown;
+                State = AbilityState.CooledDown;
             }
         }
     }

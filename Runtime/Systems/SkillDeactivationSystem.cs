@@ -2,33 +2,33 @@
 using Unity.Entities;
 using Unity.Jobs;
 
-namespace WaynGroup.Mgm.Skill
+namespace WaynGroup.Mgm.Ability
 {
     /// <summary>
-    /// This system put the skill in cooldown if it's effect were triggered.
+    /// This system put the ability in cooldown if it's effect were triggered.
     /// It's run after all effect have been trigered.
     /// </summary>
-    //[UpdateInGroup(typeof(SkillTriggerSystemGroup), OrderLast = true)] // --> Does not actually work, the system is ordered first...
-    [UpdateAfter(typeof(SkillTriggerSystemGroup))]
-    [UpdateInGroup(typeof(SkillSystemsGroup))]
-    public class SkillDeactivationSystem : SystemBase
+    //[UpdateInGroup(typeof(AbilityTriggerSystemGroup), OrderLast = true)] // --> Does not actually work, the system is ordered first...
+    [UpdateAfter(typeof(AbilityTriggerSystemGroup))]
+    [UpdateInGroup(typeof(AbilitySystemsGroup))]
+    public class AbilityDeactivationSystem : SystemBase
     {
 
         protected override void OnUpdate()
         {
-            Dependency = Entities.ForEach((ref DynamicBuffer<SkillBuffer> skillBuffer) =>
+            Dependency = Entities.ForEach((ref DynamicBuffer<AbilityBuffer> abilityBuffer) =>
             {
-                NativeArray<SkillBuffer> sbArray = skillBuffer.AsNativeArray();
+                NativeArray<AbilityBuffer> sbArray = abilityBuffer.AsNativeArray();
                 for (int i = 0; i < sbArray.Length; i++)
                 {
-                    Skill Skill = sbArray[i];
+                    Ability Ability = sbArray[i];
 
-                    if (Skill.State == SkillState.Active)
+                    if (Ability.State == AbilityState.Active)
                     {
-                        Skill.StartCooloingDown();
+                        Ability.StartCooloingDown();
                     }
 
-                    sbArray[i] = Skill;
+                    sbArray[i] = Ability;
                 }
             }).WithBurst()
             .ScheduleParallel(Dependency);

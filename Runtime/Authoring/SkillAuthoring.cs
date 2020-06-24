@@ -4,44 +4,44 @@ using Unity.Entities;
 
 using UnityEngine;
 
-using WaynGroup.Mgm.Skill;
+using WaynGroup.Mgm.Ability;
 
 
 [DisallowMultipleComponent]
 [RequiresEntityConversion]
-public class SkillAuthoring : MonoBehaviour, IConvertGameObjectToEntity
+public class AbilityAuthoring : MonoBehaviour, IConvertGameObjectToEntity
 {
-    public List<ScriptableSkill> Skills;
+    public List<ScriptableAbility> Abilitys;
 
     public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
     {
-        // Add a buffer to the entity and populate it with all the skill the entity can use.
-        DynamicBuffer<SkillBuffer> skillBuffer = dstManager.AddBuffer<SkillBuffer>(entity);
-        for (int i = 0; i < Skills.Count; i++)
+        // Add a buffer to the entity and populate it with all the ability the entity can use.
+        DynamicBuffer<AbilityBuffer> abilityBuffer = dstManager.AddBuffer<AbilityBuffer>(entity);
+        for (int i = 0; i < Abilitys.Count; i++)
         {
-            if (Skills[i] == null)
+            if (Abilitys[i] == null)
             {
-                Debug.LogError($"Skill #{i} is missing reference on Game Object {name}");
+                Debug.LogError($"Ability #{i} is missing reference on Game Object {name}");
                 continue;
             }
-            Skill Skill = new Skill(Skills[i].CoolDown, Skills[i].CastTime, Skills[i].Range);
-            skillBuffer.Add(new SkillBuffer()
+            Ability Ability = new Ability(Abilitys[i].CoolDown, Abilitys[i].CastTime, Abilitys[i].Range);
+            abilityBuffer.Add(new AbilityBuffer()
             {
-                Skill = Skill
+                Ability = Ability
             });
         }
 
-        // Foreach skill the entity can use, register the skill's effect in one buffer per type of effect.
-        // Each effect is linked to it's skill index in the skill buffer.
-        for (int i = 0; i < Skills.Count; i++)
+        // Foreach ability the entity can use, register the ability's effect in one buffer per type of effect.
+        // Each effect is linked to it's ability index in the ability buffer.
+        for (int i = 0; i < Abilitys.Count; i++)
         {
-            if (Skills[i] == null) continue;
+            if (Abilitys[i] == null) continue;
 
-            foreach (IEffect effect in Skills[i].Effects)
+            foreach (IEffect effect in Abilitys[i].Effects)
             {
                 effect.Convert(entity, dstManager, i);
             }
-            foreach (ISkillCost cost in Skills[i].Costs)
+            foreach (IAbilityCost cost in Abilitys[i].Costs)
             {
                 cost.Convert(entity, dstManager, i);
             }

@@ -1,20 +1,20 @@
 ﻿using Unity.Entities;
 
-namespace WaynGroup.Mgm.Skill.Demo
+namespace WaynGroup.Mgm.Ability.Demo
 {
-    public struct ManaCost : ISkillCost
+    public struct ManaCost : IAbilityCost
     {
         public float Cost;
 
-        public void Convert(Entity entity, EntityManager dstManager, int skillIndex)
+        public void Convert(Entity entity, EntityManager dstManager, int abilityIndex)
         {
-            EffectUtility.AddCost<ManaCostBuffer, ManaCost>(entity, dstManager, skillIndex, this);
+            EffectUtility.AddCost<ManaCostBuffer, ManaCost>(entity, dstManager, abilityIndex, this);
         }
     }
 
-    public struct ManaCostBuffer : ISkillCostBufferElement<ManaCost>
+    public struct ManaCostBuffer : IAbilityCostBufferElement<ManaCost>
     {
-        public int SkillIndex { get; set; }
+        public int AbilityIndex { get; set; }
         public ManaCost Cost { get; set; }
     }
 
@@ -34,7 +34,7 @@ namespace WaynGroup.Mgm.Skill.Demo
         }
     }
 
-    public class ManaCostConsumerSystem : SkillCostConsumerSystem<ManaCost, ManaCostBuffer, Mana, ManaCostConusmer>
+    public class ManaCostConsumerSystem : AbilityCostConsumerSystem<ManaCost, ManaCostBuffer, Mana, ManaCostConusmer>
     {
         protected override ManaCostConusmer GetCostConsumer()
         {
@@ -42,7 +42,7 @@ namespace WaynGroup.Mgm.Skill.Demo
         }
     }
 
-    public class ManaCostCheckerSystem : SkillCostCheckerSystem<ManaCostBuffer, ManaCost, ManaCostChecker, Mana>
+    public class ManaCostCheckerSystem : AbilityCostCheckerSystem<ManaCostBuffer, ManaCost, ManaCostChecker, Mana>
     {
         protected override ManaCostChecker GetCostChecker()
         {

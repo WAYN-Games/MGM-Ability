@@ -4,7 +4,7 @@ using Unity.Entities;
 
 using UnityEngine;
 
-using WaynGroup.Mgm.Skill;
+using WaynGroup.Mgm.Ability;
 
 namespace NAMESAPCE
 {
@@ -17,16 +17,16 @@ namespace NAMESAPCE
 
 
         // Mandatory for Authoring, do not edit
-        public void Convert(Entity entity, EntityManager dstManager, int skillIndex)
+        public void Convert(Entity entity, EntityManager dstManager, int abilityIndex)
         {
-            EffectUtility.AddEffect<NewEffectBuffer, NewEffect>(entity, dstManager, skillIndex, this);
+            EffectUtility.AddEffect<NewEffectBuffer, NewEffect>(entity, dstManager, abilityIndex, this);
         }
     }
 
     // Mandatory for Authoring, do not edit
     public struct NewEffectBuffer : IEffectBufferElement<NewEffect>
     {
-        public int SkillIndex { get; set; }
+        public int AbilityIndex { get; set; }
         public NewEffect Effect { get; set; }
     }
 

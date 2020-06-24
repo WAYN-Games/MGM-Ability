@@ -3,13 +3,13 @@ using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 
-namespace WaynGroup.Mgm.Skill
+namespace WaynGroup.Mgm.Ability
 {
 
-    [UpdateInGroup(typeof(SkillUpdateSystemGroup))]
-    public abstract class SkillCostCheckerSystem<COST_BUFFER, COST, COST_CHECKER, RESOURCE> : SystemBase
-        where COST : struct, ISkillCost
-        where COST_BUFFER : struct, ISkillCostBufferElement<COST>
+    [UpdateInGroup(typeof(AbilityUpdateSystemGroup))]
+    public abstract class AbilityCostCheckerSystem<COST_BUFFER, COST, COST_CHECKER, RESOURCE> : SystemBase
+        where COST : struct, IAbilityCost
+        where COST_BUFFER : struct, IAbilityCostBufferElement<COST>
         where RESOURCE : struct, IComponentData
         where COST_CHECKER : struct, ICostChecker<RESOURCE, COST>
     {
@@ -24,7 +24,7 @@ namespace WaynGroup.Mgm.Skill
             {
                 All = new ComponentType[]
                 {
-                        ComponentType.ReadOnly<SkillBuffer>(),
+                        ComponentType.ReadOnly<AbilityBuffer>(),
                         ComponentType.ReadOnly<COST_BUFFER>(),
                         ComponentType.ReadOnly<RESOURCE>()
                 }
@@ -35,7 +35,7 @@ namespace WaynGroup.Mgm.Skill
         [BurstCompile]
         private struct CostCheckerJob : IJobChunk
         {
-            public ArchetypeChunkBufferType<SkillBuffer> SkillBufferChunk;
+            public ArchetypeChunkBufferType<AbilityBuffer> AbilityBufferChunk;
             [ReadOnly] public ArchetypeChunkBufferType<COST_BUFFER> CostBufferChunk;
             [ReadOnly] public ArchetypeChunkComponentType<RESOURCE> ResourceChunk;
             [ReadOnly] public COST_CHECKER CostChecker;
@@ -43,28 +43,28 @@ namespace WaynGroup.Mgm.Skill
 
             public void Execute(ArchetypeChunk chunk, int chunkIndex, int firstEntityIndex)
             {
-                BufferAccessor<SkillBuffer> skillBufffers = chunk.GetBufferAccessor(SkillBufferChunk);
+                BufferAccessor<AbilityBuffer> abilityBufffers = chunk.GetBufferAccessor(AbilityBufferChunk);
                 BufferAccessor<COST_BUFFER> costBuffers = chunk.GetBufferAccessor(CostBufferChunk);
                 NativeArray<RESOURCE> resources = chunk.GetNativeArray(ResourceChunk);
 
                 for (int entityIndex = 0; entityIndex < chunk.Count; ++entityIndex)
                 {
-                    NativeArray<SkillBuffer> SkillBufferArray = skillBufffers[entityIndex].AsNativeArray();
+                    NativeArray<AbilityBuffer> AbilityBufferArray = abilityBufffers[entityIndex].AsNativeArray();
                     NativeArray<COST_BUFFER> costBufferArray = costBuffers[entityIndex].AsNativeArray();
                     RESOURCE resource = resources[entityIndex];
-                    for (int skillIndex = 0; skillIndex < SkillBufferArray.Length; ++skillIndex)
+                    for (int abilityIndex = 0; abilityIndex < AbilityBufferArray.Length; ++abilityIndex)
                     {
 
-                        Skill Skill = SkillBufferArray[skillIndex];
+                        Ability Ability = AbilityBufferArray[abilityIndex];
                         bool temp = true;
                         for (int costIndex = 0; costIndex < costBufferArray.Length; ++costIndex)
                         {
                             COST_BUFFER CostBuffer = costBufferArray[costIndex];
-                            if (CostBuffer.SkillIndex != skillIndex) continue;
+                            if (CostBuffer.AbilityIndex != abilityIndex) continue;
                             temp &= CostChecker.HasEnougthResourceLeft(CostBuffer.Cost, in resource);
                         }
-                        Skill.HasEnougthRessource &= temp;
-                        SkillBufferArray[skillIndex] = Skill;
+                        Ability.HasEnougthRessource &= temp;
+                        AbilityBufferArray[abilityIndex] = Ability;
                     }
                 }
             }
@@ -76,7 +76,7 @@ namespace WaynGroup.Mgm.Skill
         {
             Dependency = new CostCheckerJob()
             {
-                SkillBufferChunk = GetArchetypeChunkBufferType<SkillBuffer>(false),
+                AbilityBufferChunk = GetArchetypeChunkBufferType<AbilityBuffer>(false),
                 CostBufferChunk = GetArchetypeChunkBufferType<COST_BUFFER>(true),
                 ResourceChunk = GetArchetypeChunkComponentType<RESOURCE>(true),
                 CostChecker = GetCostChecker()

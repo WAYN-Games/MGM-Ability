@@ -4,10 +4,10 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
 
-using WaynGroup.Mgm.Skill;
-using WaynGroup.Mgm.Skill.Tests;
+using WaynGroup.Mgm.Ability;
+using WaynGroup.Mgm.Ability.Tests;
 
-public class SkillUpdateRangeSystemTest : DotsTest
+public class AbilityUpdateRangeSystemTest : DotsTest
 {
     [Test]
     public void IsBelowMinRange()
@@ -19,17 +19,17 @@ public class SkillUpdateRangeSystemTest : DotsTest
         Entity attacker = _entityManager.CreateEntity();
         _entityManager.AddComponentData(attacker, new Target() { Value = target });
         _entityManager.AddComponentData(attacker, new Translation() { Value = new float3(0, 0, 0) });
-        DynamicBuffer<SkillBuffer> skills = _entityManager.AddBuffer<SkillBuffer>(attacker);
-        skills.Add(new Skill() { Range = new Range() { Min = 0.5f, Max = 10f }, IsInRange = true });
+        DynamicBuffer<AbilityBuffer> abilitys = _entityManager.AddBuffer<AbilityBuffer>(attacker);
+        abilitys.Add(new Ability() { Range = new Range() { Min = 0.5f, Max = 10f }, IsInRange = true });
 
 
-        _world.WithSystem<SkillUpdateRangeSystem>();
+        _world.WithSystem<AbilityUpdateRangeSystem>();
 
         // Act
-        _world.UpdateSystem<SkillUpdateRangeSystem>();
+        _world.UpdateSystem<AbilityUpdateRangeSystem>();
         _world.CompleteAllJobs();
         // Assert
-        Assert.False(_entityManager.GetBuffer<SkillBuffer>(attacker)[0].Skill.IsInRange);
+        Assert.False(_entityManager.GetBuffer<AbilityBuffer>(attacker)[0].Ability.IsInRange);
 
     }
 
@@ -43,17 +43,17 @@ public class SkillUpdateRangeSystemTest : DotsTest
         Entity attacker = _entityManager.CreateEntity();
         _entityManager.AddComponentData(attacker, new Target() { Value = target });
         _entityManager.AddComponentData(attacker, new Translation() { Value = new float3(0, 0, 0) });
-        DynamicBuffer<SkillBuffer> skills = _entityManager.AddBuffer<SkillBuffer>(attacker);
-        skills.Add(new Skill() { Range = new Range() { Min = 0.5f, Max = 10f }, IsInRange = false });
+        DynamicBuffer<AbilityBuffer> abilitys = _entityManager.AddBuffer<AbilityBuffer>(attacker);
+        abilitys.Add(new Ability() { Range = new Range() { Min = 0.5f, Max = 10f }, IsInRange = false });
 
 
-        _world.WithSystem<SkillUpdateRangeSystem>();
+        _world.WithSystem<AbilityUpdateRangeSystem>();
 
         // Act
-        _world.UpdateSystem<SkillUpdateRangeSystem>();
+        _world.UpdateSystem<AbilityUpdateRangeSystem>();
         _world.CompleteAllJobs();
         // Assert
-        Assert.True(_entityManager.GetBuffer<SkillBuffer>(attacker)[0].Skill.IsInRange);
+        Assert.True(_entityManager.GetBuffer<AbilityBuffer>(attacker)[0].Ability.IsInRange);
 
     }
 
@@ -67,17 +67,17 @@ public class SkillUpdateRangeSystemTest : DotsTest
         Entity attacker = _entityManager.CreateEntity();
         _entityManager.AddComponentData(attacker, new Target() { Value = target });
         _entityManager.AddComponentData(attacker, new Translation() { Value = new float3(0) });
-        DynamicBuffer<SkillBuffer> skills = _entityManager.AddBuffer<SkillBuffer>(attacker);
-        skills.Add(new Skill() { Range = new Range() { Min = 0.5f, Max = 10f }, IsInRange = false });
+        DynamicBuffer<AbilityBuffer> abilitys = _entityManager.AddBuffer<AbilityBuffer>(attacker);
+        abilitys.Add(new Ability() { Range = new Range() { Min = 0.5f, Max = 10f }, IsInRange = false });
 
 
-        _world.WithSystem<SkillUpdateRangeSystem>();
+        _world.WithSystem<AbilityUpdateRangeSystem>();
 
         // Act
-        _world.UpdateSystem<SkillUpdateRangeSystem>();
+        _world.UpdateSystem<AbilityUpdateRangeSystem>();
         _world.CompleteAllJobs();
         // Assert
-        Assert.True(_entityManager.GetBuffer<SkillBuffer>(attacker)[0].Skill.IsInRange);
+        Assert.True(_entityManager.GetBuffer<AbilityBuffer>(attacker)[0].Ability.IsInRange);
     }
 
     [Test]
@@ -90,17 +90,17 @@ public class SkillUpdateRangeSystemTest : DotsTest
         Entity attacker = _entityManager.CreateEntity();
         _entityManager.AddComponentData(attacker, new Target() { Value = target });
         _entityManager.AddComponentData(attacker, new Translation() { Value = new float3(0) });
-        DynamicBuffer<SkillBuffer> skills = _entityManager.AddBuffer<SkillBuffer>(attacker);
-        skills.Add(new Skill() { Range = new Range() { Min = 0.5f, Max = 10f }, IsInRange = false });
+        DynamicBuffer<AbilityBuffer> abilitys = _entityManager.AddBuffer<AbilityBuffer>(attacker);
+        abilitys.Add(new Ability() { Range = new Range() { Min = 0.5f, Max = 10f }, IsInRange = false });
 
 
-        _world.WithSystem<SkillUpdateRangeSystem>();
+        _world.WithSystem<AbilityUpdateRangeSystem>();
 
         // Act
-        _world.UpdateSystem<SkillUpdateRangeSystem>();
+        _world.UpdateSystem<AbilityUpdateRangeSystem>();
         _world.CompleteAllJobs();
         // Assert
-        Assert.True(_entityManager.GetBuffer<SkillBuffer>(attacker)[0].Skill.IsInRange);
+        Assert.True(_entityManager.GetBuffer<AbilityBuffer>(attacker)[0].Ability.IsInRange);
     }
 
     [Test]
@@ -113,17 +113,17 @@ public class SkillUpdateRangeSystemTest : DotsTest
         Entity attacker = _entityManager.CreateEntity();
         _entityManager.AddComponentData(attacker, new Target() { Value = target });
         _entityManager.AddComponentData(attacker, new Translation() { Value = new float3(0) });
-        DynamicBuffer<SkillBuffer> skills = _entityManager.AddBuffer<SkillBuffer>(attacker);
-        skills.Add(new Skill() { Range = new Range() { Min = 0.5f, Max = 10f }, IsInRange = true });
+        DynamicBuffer<AbilityBuffer> abilitys = _entityManager.AddBuffer<AbilityBuffer>(attacker);
+        abilitys.Add(new Ability() { Range = new Range() { Min = 0.5f, Max = 10f }, IsInRange = true });
 
 
-        _world.WithSystem<SkillUpdateRangeSystem>();
+        _world.WithSystem<AbilityUpdateRangeSystem>();
 
         // Act
-        _world.UpdateSystem<SkillUpdateRangeSystem>();
+        _world.UpdateSystem<AbilityUpdateRangeSystem>();
         _world.CompleteAllJobs();
         // Assert
-        Assert.False(_entityManager.GetBuffer<SkillBuffer>(attacker)[0].Skill.IsInRange);
+        Assert.False(_entityManager.GetBuffer<AbilityBuffer>(attacker)[0].Ability.IsInRange);
     }
 
 }

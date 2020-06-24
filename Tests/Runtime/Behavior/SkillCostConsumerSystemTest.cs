@@ -2,32 +2,32 @@
 
 using Unity.Entities;
 
-using WaynGroup.Mgm.Skill;
-using WaynGroup.Mgm.Skill.Tests;
+using WaynGroup.Mgm.Ability;
+using WaynGroup.Mgm.Ability.Tests;
 
-public class SkillCostConsumerSystemTest : DotsTest
+public class AbilityCostConsumerSystemTest : DotsTest
 {
     [Test]
-    public void ConsumeResourceWhenSkillEnabled()
+    public void ConsumeResourceWhenAbilityEnabled()
     {
         // Arrange
         Entity caster = _entityManager.CreateEntity();
 
-        Skill skill = new Skill(1, 1, new Range())
+        Ability ability = new Ability(1, 1, new Range())
         {
             HasEnougthRessource = true,
-            State = SkillState.Active
+            State = AbilityState.Active
         };
-        DynamicBuffer<SkillBuffer> skillBuffer = _entityManager.AddBuffer<SkillBuffer>(caster);
-        skillBuffer.Add(new SkillBuffer()
+        DynamicBuffer<AbilityBuffer> abilityBuffer = _entityManager.AddBuffer<AbilityBuffer>(caster);
+        abilityBuffer.Add(new AbilityBuffer()
         {
-            Skill = skill
+            Ability = ability
         });
 
         DynamicBuffer<TestCostBuffer> testCostBuffer = _entityManager.AddBuffer<TestCostBuffer>(caster);
         testCostBuffer.Add(new TestCostBuffer()
         {
-            SkillIndex = 0,
+            AbilityIndex = 0,
             Cost = new TestCost() { Cost = 10 }
         }
         );
@@ -35,7 +35,7 @@ public class SkillCostConsumerSystemTest : DotsTest
         DynamicBuffer<TestCost1Buffer> testCost1Buffer = _entityManager.AddBuffer<TestCost1Buffer>(caster);
         testCost1Buffer.Add(new TestCost1Buffer()
         {
-            SkillIndex = 0,
+            AbilityIndex = 0,
             Cost = new TestCost1() { Cost = 5 }
         }
         );
@@ -58,27 +58,27 @@ public class SkillCostConsumerSystemTest : DotsTest
     }
 
     [Test]
-    public void DoNotConsumeResourceWhenSkillIsNotEnabled([Values(SkillState.Casting, SkillState.CooledDown, SkillState.CoolingDown)]SkillState skillState)
+    public void DoNotConsumeResourceWhenAbilityIsNotEnabled([Values(AbilityState.Casting, AbilityState.CooledDown, AbilityState.CoolingDown)]AbilityState abilityState)
     {
         // Arrange
         Entity caster = _entityManager.CreateEntity();
 
-        Skill skill = new Skill(1, 1, new Range())
+        Ability ability = new Ability(1, 1, new Range())
         {
             HasEnougthRessource = true,
-            State = skillState
+            State = abilityState
         };
 
-        DynamicBuffer<SkillBuffer> skillBuffer = _entityManager.AddBuffer<SkillBuffer>(caster);
-        skillBuffer.Add(new SkillBuffer()
+        DynamicBuffer<AbilityBuffer> abilityBuffer = _entityManager.AddBuffer<AbilityBuffer>(caster);
+        abilityBuffer.Add(new AbilityBuffer()
         {
-            Skill = skill
+            Ability = ability
         });
 
         DynamicBuffer<TestCostBuffer> testCostBuffer = _entityManager.AddBuffer<TestCostBuffer>(caster);
         testCostBuffer.Add(new TestCostBuffer()
         {
-            SkillIndex = 0,
+            AbilityIndex = 0,
             Cost = new TestCost() { Cost = 10 }
         }
         );
@@ -86,7 +86,7 @@ public class SkillCostConsumerSystemTest : DotsTest
         DynamicBuffer<TestCost1Buffer> testCost1Buffer = _entityManager.AddBuffer<TestCost1Buffer>(caster);
         testCost1Buffer.Add(new TestCost1Buffer()
         {
-            SkillIndex = 0,
+            AbilityIndex = 0,
             Cost = new TestCost1() { Cost = 5 }
         }
         );

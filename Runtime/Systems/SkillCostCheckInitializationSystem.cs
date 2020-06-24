@@ -1,19 +1,19 @@
 ﻿using Unity.Entities;
 
-namespace WaynGroup.Mgm.Skill
+namespace WaynGroup.Mgm.Ability
 {
-    [UpdateInGroup(typeof(SkillUpdateSystemGroup), OrderFirst = true)]
-    public class SkillCostCheckInitializationSystem : SystemBase
+    [UpdateInGroup(typeof(AbilityUpdateSystemGroup), OrderFirst = true)]
+    public class AbilityCostCheckInitializationSystem : SystemBase
     {
         protected override void OnUpdate()
         {
-            Entities.ForEach((ref DynamicBuffer<SkillBuffer> skillBuffer) =>
+            Entities.ForEach((ref DynamicBuffer<AbilityBuffer> abilityBuffer) =>
             {
-                for (int skillIndex = 0; skillIndex < skillBuffer.Length; ++skillIndex)
+                for (int abilityIndex = 0; abilityIndex < abilityBuffer.Length; ++abilityIndex)
                 {
-                    Skill skill = skillBuffer[skillIndex];
-                    skill.HasEnougthRessource = true;
-                    skillBuffer[skillIndex] = skill;
+                    Ability ability = abilityBuffer[abilityIndex];
+                    ability.HasEnougthRessource = true;
+                    abilityBuffer[abilityIndex] = ability;
                 }
             }).WithBurst()
                 .ScheduleParallel();

@@ -4,17 +4,17 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs;
 
-namespace WaynGroup.Mgm.Skill
+namespace WaynGroup.Mgm.Ability
 {
 
-    public class SkillSystemsGroup : ComponentSystemGroup
+    public class AbilitySystemsGroup : ComponentSystemGroup
     {
 
     }
 
-    [UpdateAfter(typeof(SkillTriggerSystemGroup))]
-    [UpdateInGroup(typeof(SkillSystemsGroup))]
-    public class SkillConsumerSystemGroup : ComponentSystemGroup
+    [UpdateAfter(typeof(AbilityTriggerSystemGroup))]
+    [UpdateInGroup(typeof(AbilitySystemsGroup))]
+    public class AbilityConsumerSystemGroup : ComponentSystemGroup
     {
 
     }
@@ -25,7 +25,7 @@ namespace WaynGroup.Mgm.Skill
         EFFECT Effect { get; set; }
     }
 
-    [UpdateInGroup(typeof(SkillConsumerSystemGroup))]
+    [UpdateInGroup(typeof(AbilityConsumerSystemGroup))]
     public abstract class EffectConsumerSystem<EFFECT, EFFECT_CTX> : SystemBase where EFFECT : struct, IEffect
         where EFFECT_CTX : struct, IEffectContext<EFFECT>
     {

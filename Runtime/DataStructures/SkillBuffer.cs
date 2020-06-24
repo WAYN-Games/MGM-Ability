@@ -1,18 +1,18 @@
 ﻿
 using Unity.Entities;
 
-namespace WaynGroup.Mgm.Skill
+namespace WaynGroup.Mgm.Ability
 {
     /// <summary>
-    /// Buffer of skill.
-    /// Can be implcitly casted to and from Skill.
+    /// Buffer of ability.
+    /// Can be implcitly casted to and from Ability.
     /// </summary>
-    public struct SkillBuffer : IBufferElementData
+    public struct AbilityBuffer : IBufferElementData
     {
-        public Skill Skill;
+        public Ability Ability;
 
-        public static implicit operator Skill(SkillBuffer buffer) => buffer.Skill;
-        public static implicit operator SkillBuffer(Skill skill) => new SkillBuffer() { Skill = skill };
+        public static implicit operator Ability(AbilityBuffer buffer) => buffer.Ability;
+        public static implicit operator AbilityBuffer(Ability ability) => new AbilityBuffer() { Ability = ability };
     }
 
 }

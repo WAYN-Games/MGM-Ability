@@ -9,10 +9,10 @@ using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-using WaynGroup.Mgm.Skill;
+using WaynGroup.Mgm.Ability;
 
-[CustomEditor(typeof(ScriptableSkill))]
-public class ScriptableSkillEditor : Editor
+[CustomEditor(typeof(ScriptableAbility))]
+public class ScriptableAbilityEditor : Editor
 {
     VisualElement root;
 
@@ -31,8 +31,8 @@ public class ScriptableSkillEditor : Editor
 
     SerializedProperty CostsProperty;
 
-    private readonly string[] _costStirngParams = new string[] { "costs-container", "Undefined skill cost type on {0} cost.", "Undefined skill cost type to remove" };
-    private readonly string[] _effectStirngParams = new string[] { "effects-container", "Undefined skill effect type on {0} effect.", "Undefined effect type to remove" };
+    private readonly string[] _costStirngParams = new string[] { "costs-container", "Undefined ability cost type on {0} cost.", "Undefined ability cost type to remove" };
+    private readonly string[] _effectStirngParams = new string[] { "effects-container", "Undefined ability effect type on {0} effect.", "Undefined effect type to remove" };
 
 
     public void OnEnable()
@@ -68,21 +68,21 @@ public class ScriptableSkillEditor : Editor
 
         CostTypes = AppDomain.CurrentDomain.GetAssemblies()
             .SelectMany(s => s.GetTypes())
-            .Where(p => typeof(ISkillCost).IsAssignableFrom(p) && p.IsValueType).ToList();
+            .Where(p => typeof(IAbilityCost).IsAssignableFrom(p) && p.IsValueType).ToList();
     }
 
     private void LoadBaseLayout()
     {
         root = new VisualElement();
         // Import UXML
-        VisualTreeAsset visualTree = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Packages/wayn-group.mgm.skill/Editor/ScriptableSkillEditor.uxml");
+        VisualTreeAsset visualTree = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Packages/wayn-group.mgm.ability/Editor/ScriptableAbilityEditor.uxml");
         TemplateContainer uxmlVe = visualTree.CloneTree();
         root.Add(uxmlVe.contentContainer);
         root.Bind(serializedObject);
 
         // A stylesheet can be added to a VisualElement.
         // The style will be applied to the VisualElement and all of its children.
-        StyleSheet styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>("Packages/wayn-group.mgm.skill/Editor/ScriptableSkillEditor.uss");
+        StyleSheet styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>("Packages/wayn-group.mgm.ability/Editor/ScriptableAbilityEditor.uss");
         root.styleSheets.Add(styleSheet);
 
 

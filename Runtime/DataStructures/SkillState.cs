@@ -1,14 +1,14 @@
 ﻿using System;
 
-namespace WaynGroup.Mgm.Skill
+namespace WaynGroup.Mgm.Ability
 {
     [Serializable]
-    public enum SkillState
+    public enum AbilityState
     {
-        CooledDown,     // Skill is ready to use
-        Casting,        // Skill is charging up and can be interupted
-        CoolingDown,    // Skill is cooling down
-        Active          // Skill will apply it's effect during this tick
+        CooledDown,     // Ability is ready to use
+        Casting,        // Ability is charging up and can be interupted
+        CoolingDown,    // Ability is cooling down
+        Active          // Ability will apply it's effect during this tick
     }
 
 }

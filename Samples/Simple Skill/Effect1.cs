@@ -4,7 +4,7 @@ using Unity.Entities;
 
 using UnityEngine;
 
-namespace WaynGroup.Mgm.Skill.Demo
+namespace WaynGroup.Mgm.Ability.Demo
 {
     public struct Effect1 : IEffect
     {
@@ -12,15 +12,15 @@ namespace WaynGroup.Mgm.Skill.Demo
 
         [field: SerializeField] public EffectAffectType Affects { get; set; }
 
-        public void Convert(Entity entity, EntityManager dstManager, int skillIndex)
+        public void Convert(Entity entity, EntityManager dstManager, int abilityIndex)
         {
-            EffectUtility.AddEffect<Effect1Buffer, Effect1>(entity, dstManager, skillIndex, this);
+            EffectUtility.AddEffect<Effect1Buffer, Effect1>(entity, dstManager, abilityIndex, this);
         }
     }
 
     public struct Effect1Buffer : IEffectBufferElement<Effect1>
     {
-        public int SkillIndex { get; set; }
+        public int AbilityIndex { get; set; }
         public Effect1 Effect { get; set; }
     }
 

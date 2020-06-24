@@ -2,25 +2,25 @@
 using Unity.Entities;
 using Unity.Jobs;
 
-namespace WaynGroup.Mgm.Skill.Demo
+namespace WaynGroup.Mgm.Ability.Demo
 {
     /// <summary>
-    /// System that fake the user input simulating all skill cast every frame.
+    /// System that fake the user input simulating all ability cast every frame.
     /// </summary>
-    [UpdateBefore(typeof(SkillUpdateSystemGroup))]
-    [UpdateInGroup(typeof(SkillSystemsGroup))]
+    [UpdateBefore(typeof(AbilityUpdateSystemGroup))]
+    [UpdateInGroup(typeof(AbilitySystemsGroup))]
     public class UserInputSimulationSystem : SystemBase
     {
         protected override void OnUpdate()
         {
-            Entities.ForEach((ref DynamicBuffer<SkillBuffer> skillBuffer) =>
+            Entities.ForEach((ref DynamicBuffer<AbilityBuffer> abilityBuffer) =>
             {
-                NativeArray<SkillBuffer> sbArray = skillBuffer.AsNativeArray();
+                NativeArray<AbilityBuffer> sbArray = abilityBuffer.AsNativeArray();
                 for (int i = 0; i < sbArray.Length; i++)
                 {
-                    Skill Skill = sbArray[i];
-                    Skill.TryCast();
-                    sbArray[i] = Skill;
+                    Ability Ability = sbArray[i];
+                    Ability.TryCast();
+                    sbArray[i] = Ability;
                 }
 
 

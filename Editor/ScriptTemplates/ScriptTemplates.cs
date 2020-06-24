@@ -1,11 +1,11 @@
 ﻿using UnityEditor;
 
-namespace WaynGroup.Mgm.Skill
+namespace WaynGroup.Mgm.Ability
 {
     internal class ScriptTemplates
     {
 
-        public const string TemplatesRoot = "Packages/wayn-group.mgm.skill/Editor/ScriptTemplates";
+        public const string TemplatesRoot = "Packages/wayn-group.mgm.ability/Editor/ScriptTemplates";
 
         [MenuItem("Assets/Create/MGM/Effect Type")]
         public static void CreateRuntimeComponentType()

@@ -5,33 +5,33 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.PerformanceTesting;
 
-using WaynGroup.Mgm.Skill;
-using WaynGroup.Mgm.Skill.Demo;
-using WaynGroup.Mgm.Skill.Tests;
+using WaynGroup.Mgm.Ability;
+using WaynGroup.Mgm.Ability.Demo;
+using WaynGroup.Mgm.Ability.Tests;
 
 public class EffectSystemTest : DotsTest
 {
     private const bool TEST_PERF_ENABLED = true;
 
 
-    private NativeArray<SkillBuffer> AddSkill(int count, DynamicBuffer<SkillBuffer> buffer)
+    private NativeArray<AbilityBuffer> AddAbility(int count, DynamicBuffer<AbilityBuffer> buffer)
     {
         for (int i = 0; i < count; i++)
         {
-            Skill Skill = new Skill(0, 0, new Range() { Min = float.MinValue, Max = float.MaxValue })
+            Ability Ability = new Ability(0, 0, new Range() { Min = float.MinValue, Max = float.MaxValue })
             {
                 IsInRange = true
             };
-            buffer.Add(new SkillBuffer()
+            buffer.Add(new AbilityBuffer()
             {
-                Skill = Skill
+                Ability = Ability
             });
         }
         return buffer.AsNativeArray();
     }
 
 
-    private void AddEffect2ToSkill(DynamicBuffer<Effect2Buffer> buff, int skillIndex, int count)
+    private void AddEffect2ToAbility(DynamicBuffer<Effect2Buffer> buff, int abilityIndex, int count)
     {
         for (int i = 0; i < count; i++)
         {
@@ -41,12 +41,12 @@ public class EffectSystemTest : DotsTest
                 {
                     Value = 1
                 },
-                SkillIndex = skillIndex
+                AbilityIndex = abilityIndex
             });
         }
     }
 
-    private void AddEffect1ToSkill(DynamicBuffer<Effect1Buffer> buff, int skillIndex, int count)
+    private void AddEffect1ToAbility(DynamicBuffer<Effect1Buffer> buff, int abilityIndex, int count)
     {
         for (int i = 0; i < count; i++)
         {
@@ -56,14 +56,14 @@ public class EffectSystemTest : DotsTest
                 {
                     Value = 1
                 },
-                SkillIndex = skillIndex
+                AbilityIndex = abilityIndex
             });
         }
     }
 
 
     [Test, Performance]
-    public void Test_Skill_System([Values(1, 10, 100, 1000, 10000, 100000)] int EntityCount)
+    public void Test_Ability_System([Values(1, 10, 100, 1000, 10000, 100000)] int EntityCount)
     {
         // Arrange
 
@@ -80,10 +80,10 @@ public class EffectSystemTest : DotsTest
 
         _world
             .WithSystem<UserInputSimulationSystem>()
-            .WithSystem<SkillUpdateTimingsSystem>()
+            .WithSystem<AbilityUpdateTimingsSystem>()
             .WithSystem<Effect1TriggerSystem>()
             .WithSystem<Effect2TriggerSystem>()
-            .WithSystem<SkillDeactivationSystem>()
+            .WithSystem<AbilityDeactivationSystem>()
             .WithSystem<Effect1ConsumerSystem>()
             .WithSystem<Effect2ConsumerSystem>();
 
@@ -92,38 +92,38 @@ public class EffectSystemTest : DotsTest
         _world.GetReference().SetTime(new Unity.Core.TimeData(0, 1));
 
 
-        AssertSkillActivationState(entity, SkillState.CoolingDown);
-        AssertSkillActivationState(entity2, SkillState.CoolingDown);
+        AssertAbilityActivationState(entity, AbilityState.CoolingDown);
+        AssertAbilityActivationState(entity2, AbilityState.CoolingDown);
 
-        _world.UpdateSystem<SkillUpdateTimingsSystem>();
+        _world.UpdateSystem<AbilityUpdateTimingsSystem>();
         _world.CompleteAllJobs();
 
-        AssertSkillActivationState(entity, SkillState.CooledDown);
-        AssertSkillActivationState(entity2, SkillState.CooledDown);
+        AssertAbilityActivationState(entity, AbilityState.CooledDown);
+        AssertAbilityActivationState(entity2, AbilityState.CooledDown);
 
         _world.UpdateSystem<UserInputSimulationSystem>();
         _world.CompleteAllJobs();
 
-        AssertSkillActivationState(entity, SkillState.Casting);
-        AssertSkillActivationState(entity2, SkillState.Casting);
+        AssertAbilityActivationState(entity, AbilityState.Casting);
+        AssertAbilityActivationState(entity2, AbilityState.Casting);
 
-        _world.UpdateSystem<SkillUpdateTimingsSystem>();
+        _world.UpdateSystem<AbilityUpdateTimingsSystem>();
         _world.CompleteAllJobs();
 
         // Assert
-        AssertSkillActivationState(entity, SkillState.Active);
-        AssertSkillActivationState(entity2, SkillState.Active);
+        AssertAbilityActivationState(entity, AbilityState.Active);
+        AssertAbilityActivationState(entity2, AbilityState.Active);
 
         // Act
         _world.UpdateSystem<Effect1TriggerSystem>();
         _world.UpdateSystem<Effect2TriggerSystem>();
-        _world.UpdateSystem<SkillDeactivationSystem>();
+        _world.UpdateSystem<AbilityDeactivationSystem>();
         _world.CompleteAllJobs();
 
         // Assert
 
-        AssertSkillActivationState(entity, SkillState.CoolingDown);
-        AssertSkillActivationState(entity2, SkillState.CoolingDown);
+        AssertAbilityActivationState(entity, AbilityState.CoolingDown);
+        AssertAbilityActivationState(entity2, AbilityState.CoolingDown);
 
         // Act
         _world.UpdateSystem<Effect1ConsumerSystem>();
@@ -162,7 +162,7 @@ public class EffectSystemTest : DotsTest
                 _world.UpdateSystem<UserInputSimulationSystem>();
                 _world.UpdateSystem<Effect1TriggerSystem>();
                 _world.UpdateSystem<Effect2TriggerSystem>();
-                _world.UpdateSystem<SkillDeactivationSystem>();
+                _world.UpdateSystem<AbilityDeactivationSystem>();
                 _world.UpdateSystem<Effect1ConsumerSystem>();
                 _world.UpdateSystem<Effect2ConsumerSystem>();
                 _world.CompleteAllJobs();
@@ -172,31 +172,31 @@ public class EffectSystemTest : DotsTest
 
     }
 
-    private void AssertSkillActivationState(Entity entity, SkillState expectedState)
+    private void AssertAbilityActivationState(Entity entity, AbilityState expectedState)
     {
-        Assert.True(_entityManager.HasComponent<SkillBuffer>(entity));
-        NativeArray<SkillBuffer> sba = _entityManager.GetBuffer<SkillBuffer>(entity).AsNativeArray();
+        Assert.True(_entityManager.HasComponent<AbilityBuffer>(entity));
+        NativeArray<AbilityBuffer> sba = _entityManager.GetBuffer<AbilityBuffer>(entity).AsNativeArray();
         Assert.AreEqual(2, sba.Length);
-        foreach (SkillBuffer sb in sba)
+        foreach (AbilityBuffer sb in sba)
         {
-            Assert.AreEqual(expectedState, sb.Skill.State);
+            Assert.AreEqual(expectedState, sb.Ability.State);
         }
     }
 
     private void PrepareAttacker(Entity target, Entity entity)
     {
-        // 2 skills per attacker
-        NativeArray<SkillBuffer> skillBuffer = AddSkill(2, _entityManager.AddBuffer<SkillBuffer>(entity));
+        // 2 abilitys per attacker
+        NativeArray<AbilityBuffer> abilityBuffer = AddAbility(2, _entityManager.AddBuffer<AbilityBuffer>(entity));
 
         // 2 attacker per target
-        // 2 skills per attacker
-        // 5 effects of each type per skill
+        // 2 abilitys per attacker
+        // 5 effects of each type per ability
         // 2 types of effect each dealing 1 damage
         // 2 x 5 x 2 x 1 = 20 effect per entity per tick.
-        for (int i = 0; i < skillBuffer.Length; i++)
+        for (int i = 0; i < abilityBuffer.Length; i++)
         {
-            AddEffect1ToSkill(_entityManager.AddBuffer<Effect1Buffer>(entity), i, 5);
-            AddEffect2ToSkill(_entityManager.AddBuffer<Effect2Buffer>(entity), i, 5);
+            AddEffect1ToAbility(_entityManager.AddBuffer<Effect1Buffer>(entity), i, 5);
+            AddEffect2ToAbility(_entityManager.AddBuffer<Effect2Buffer>(entity), i, 5);
         }
         _entityManager.AddComponentData(entity, new Target() { Value = target });
         _entityManager.AddComponentData(entity, new AttackPower() { Value = 1 });

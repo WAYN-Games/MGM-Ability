@@ -1,38 +1,38 @@
 ﻿using NUnit.Framework;
 
-using WaynGroup.Mgm.Skill;
+using WaynGroup.Mgm.Ability;
 
-public class SkillBufferTest
+public class AbilityBufferTest
 {
     [Test]
-    public void SkillImplicitCastToBuffer()
+    public void AbilityImplicitCastToBuffer()
     {
         // Arrange
-        Skill skill = new Skill() { Range = new Range() { Max = 10, Min = 5 } };
+        Ability ability = new Ability() { Range = new Range() { Max = 10, Min = 5 } };
 
         //Act
-        SkillBuffer skillBuffer = skill;
+        AbilityBuffer abilityBuffer = ability;
 
         //Assert
-        Assert.AreEqual(skill.Range, skillBuffer.Skill.Range);
+        Assert.AreEqual(ability.Range, abilityBuffer.Ability.Range);
 
     }
 
     [Test]
-    public void BufferImplicitCastToSkill()
+    public void BufferImplicitCastToAbility()
     {
 
         // Arrange
-        SkillBuffer skillBuffer = new SkillBuffer
+        AbilityBuffer abilityBuffer = new AbilityBuffer
         {
-            Skill = new Skill() { Range = new Range() { Max = 10, Min = 5 } }
+            Ability = new Ability() { Range = new Range() { Max = 10, Min = 5 } }
         };
 
         //Act
-        Skill skill = skillBuffer;
+        Ability ability = abilityBuffer;
 
         //Assert
-        Assert.AreEqual(skillBuffer.Skill.Range, skill.Range);
+        Assert.AreEqual(abilityBuffer.Ability.Range, ability.Range);
 
     }
 

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace WaynGroup.Mgm.Skill
+namespace WaynGroup.Mgm.Ability
 {
     /// <summary>
     /// Represents a timeframe.

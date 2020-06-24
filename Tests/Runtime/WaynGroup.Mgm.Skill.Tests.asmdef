@@ -1,5 +1,5 @@
 {
-    "name": "WaynGroup.Mgm.Skill.Tests",
+    "name": "WaynGroup.Mgm.Ability.Tests",
     "references": [
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
@@ -10,8 +10,8 @@
         "Unity.Entities.Tests",
         "Unity.PerformanceTesting",
         "Unity.Burst",
-        "WaynGroup.Mgm.Skill",
-        "SimpleSkill",
+        "WaynGroup.Mgm.Ability",
+        "SimpleAbility",
         "Unity.Transforms",
         "Unity.Mathematics"
     ],

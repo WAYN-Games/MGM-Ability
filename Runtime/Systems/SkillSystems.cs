@@ -2,35 +2,35 @@
 using Unity.Entities;
 using Unity.Jobs;
 
-namespace WaynGroup.Mgm.Skill
+namespace WaynGroup.Mgm.Ability
 {
     /// <summary>
-    /// This system update each skill timmings (cast and cooldown).
-    /// Once a timing is elapsed, the skill state is updated to the proper value.
+    /// This system update each ability timmings (cast and cooldown).
+    /// Once a timing is elapsed, the ability state is updated to the proper value.
     /// </summary>
-    [UpdateInGroup(typeof(SkillUpdateSystemGroup))]
-    public class SkillUpdateTimingsSystem : SystemBase
+    [UpdateInGroup(typeof(AbilityUpdateSystemGroup))]
+    public class AbilityUpdateTimingsSystem : SystemBase
     {
         protected override void OnUpdate()
         {
             float DeltaTime = World.Time.DeltaTime;
-            Dependency = Entities.ForEach((ref DynamicBuffer<SkillBuffer> skillBuffer) =>
+            Dependency = Entities.ForEach((ref DynamicBuffer<AbilityBuffer> abilityBuffer) =>
             {
-                NativeArray<SkillBuffer> sbArray = skillBuffer.AsNativeArray();
+                NativeArray<AbilityBuffer> sbArray = abilityBuffer.AsNativeArray();
                 for (int i = 0; i < sbArray.Length; i++)
                 {
 
-                    Skill Skill = sbArray[i];
-                    if (Skill.State == SkillState.Casting)
+                    Ability Ability = sbArray[i];
+                    if (Ability.State == AbilityState.Casting)
                     {
-                        Skill.UpdateCastTime(DeltaTime);
+                        Ability.UpdateCastTime(DeltaTime);
                     }
-                    if (Skill.State == SkillState.CoolingDown)
+                    if (Ability.State == AbilityState.CoolingDown)
                     {
-                        Skill.UpdateCoolDowns(DeltaTime);
+                        Ability.UpdateCoolDowns(DeltaTime);
                     }
 
-                    sbArray[i] = Skill;
+                    sbArray[i] = Ability;
                 }
             }).WithBurst()
             .ScheduleParallel(Dependency);

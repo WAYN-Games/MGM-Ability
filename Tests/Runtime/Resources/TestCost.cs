@@ -1,22 +1,20 @@
 ﻿using Unity.Entities;
 
-using WaynGroup.Mgm.Skill.Demo;
-
-namespace WaynGroup.Mgm.Skill.Tests
+namespace WaynGroup.Mgm.Ability.Tests
 {
-    public struct TestCost : ISkillCost
+    public struct TestCost : IAbilityCost
     {
         public float Cost;
 
-        public void Convert(Entity entity, EntityManager dstManager, int skillIndex)
+        public void Convert(Entity entity, EntityManager dstManager, int abilityIndex)
         {
-            EffectUtility.AddCost<TestCostBuffer, TestCost>(entity, dstManager, skillIndex, this);
+            EffectUtility.AddCost<TestCostBuffer, TestCost>(entity, dstManager, abilityIndex, this);
         }
     }
 
-    public struct TestCostBuffer : ISkillCostBufferElement<TestCost>
+    public struct TestCostBuffer : IAbilityCostBufferElement<TestCost>
     {
-        public int SkillIndex { get; set; }
+        public int AbilityIndex { get; set; }
         public TestCost Cost { get; set; }
     }
 
@@ -41,7 +39,7 @@ namespace WaynGroup.Mgm.Skill.Tests
         }
     }
 
-    public class TestCostConsumerSystem : SkillCostConsumerSystem<TestCost, TestCostBuffer, TestResource, TestCostConusmer>
+    public class TestCostConsumerSystem : AbilityCostConsumerSystem<TestCost, TestCostBuffer, TestResource, TestCostConusmer>
     {
         protected override TestCostConusmer GetCostConsumer()
         {
@@ -49,7 +47,7 @@ namespace WaynGroup.Mgm.Skill.Tests
         }
     }
 
-    public class TestCostCheckerSystem : SkillCostCheckerSystem<TestCostBuffer, TestCost, TestCostChecker, TestResource>
+    public class TestCostCheckerSystem : AbilityCostCheckerSystem<TestCostBuffer, TestCost, TestCostChecker, TestResource>
     {
         protected override TestCostChecker GetCostChecker()
         {

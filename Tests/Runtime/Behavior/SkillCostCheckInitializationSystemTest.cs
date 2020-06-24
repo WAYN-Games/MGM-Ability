@@ -2,41 +2,41 @@
 
 using Unity.Entities;
 
-using WaynGroup.Mgm.Skill;
-using WaynGroup.Mgm.Skill.Tests;
+using WaynGroup.Mgm.Ability;
+using WaynGroup.Mgm.Ability.Tests;
 
-public class SkillCostCheckInitializationSystemTest : DotsTest
+public class AbilityCostCheckInitializationSystemTest : DotsTest
 {
     [Test]
-    public void ConsumeResourceWhenSkillEnabled()
+    public void ConsumeResourceWhenAbilityEnabled()
     {
         // Arrange
         Entity caster = _entityManager.CreateEntity();
 
-        Skill skill = new Skill(1, 1, new Range())
+        Ability ability = new Ability(1, 1, new Range())
         {
             HasEnougthRessource = false,
-            State = SkillState.Active
+            State = AbilityState.Active
         };
-        DynamicBuffer<SkillBuffer> skillBuffer = _entityManager.AddBuffer<SkillBuffer>(caster);
-        skillBuffer.Add(new SkillBuffer()
+        DynamicBuffer<AbilityBuffer> abilityBuffer = _entityManager.AddBuffer<AbilityBuffer>(caster);
+        abilityBuffer.Add(new AbilityBuffer()
         {
-            Skill = skill
+            Ability = ability
         });
-        skillBuffer.Add(new SkillBuffer()
+        abilityBuffer.Add(new AbilityBuffer()
         {
-            Skill = skill
+            Ability = ability
         });
 
-        _world.WithSystem<SkillCostCheckInitializationSystem>();
+        _world.WithSystem<AbilityCostCheckInitializationSystem>();
 
         //Act
-        _world.UpdateSystem<SkillCostCheckInitializationSystem>();
+        _world.UpdateSystem<AbilityCostCheckInitializationSystem>();
         _world.CompleteAllJobs();
 
         //Assert
-        Assert.IsTrue(_entityManager.GetBuffer<SkillBuffer>(caster)[0].Skill.HasEnougthRessource);
-        Assert.IsTrue(_entityManager.GetBuffer<SkillBuffer>(caster)[1].Skill.HasEnougthRessource);
+        Assert.IsTrue(_entityManager.GetBuffer<AbilityBuffer>(caster)[0].Ability.HasEnougthRessource);
+        Assert.IsTrue(_entityManager.GetBuffer<AbilityBuffer>(caster)[1].Ability.HasEnougthRessource);
 
     }
 }

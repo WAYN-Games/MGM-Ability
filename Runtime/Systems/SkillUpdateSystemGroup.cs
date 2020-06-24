@@ -1,10 +1,10 @@
 ﻿using Unity.Entities;
 
-namespace WaynGroup.Mgm.Skill
+namespace WaynGroup.Mgm.Ability
 {
 
-    [UpdateInGroup(typeof(SkillSystemsGroup))]
-    public class SkillUpdateSystemGroup : ComponentSystemGroup
+    [UpdateInGroup(typeof(AbilitySystemsGroup))]
+    public class AbilityUpdateSystemGroup : ComponentSystemGroup
     {
 
     }

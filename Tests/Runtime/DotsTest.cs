@@ -2,7 +2,7 @@
 
 using Unity.Entities;
 
-namespace WaynGroup.Mgm.Skill.Tests
+namespace WaynGroup.Mgm.Ability.Tests
 {
     public abstract class DotsTest
     {

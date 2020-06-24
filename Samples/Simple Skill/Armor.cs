@@ -1,6 +1,6 @@
 ﻿using Unity.Entities;
 
-namespace WaynGroup.Mgm.Skill.Demo
+namespace WaynGroup.Mgm.Ability.Demo
 {
     [GenerateAuthoringComponent]
     public struct Armor : IComponentData

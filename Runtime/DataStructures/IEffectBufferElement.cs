@@ -1,6 +1,6 @@
 ﻿using Unity.Entities;
 
-namespace WaynGroup.Mgm.Skill
+namespace WaynGroup.Mgm.Ability
 {
     /// <summary>
     /// Interface to declare a new effect buffer to add to a runtime entity.
@@ -9,9 +9,9 @@ namespace WaynGroup.Mgm.Skill
     public interface IEffectBufferElement<EFFECT> : IBufferElementData where EFFECT : struct, IEffect
     {
         /// <summary>
-        /// The index of the skill this effect is attached to.
+        /// The index of the ability this effect is attached to.
         /// </summary>
-        int SkillIndex { get; set; }
+        int AbilityIndex { get; set; }
         /// <summary>
         /// The effect.
         /// </summary>
@@ -22,12 +22,12 @@ namespace WaynGroup.Mgm.Skill
     /// Interface to declare a new effect buffer to add to a runtime entity.
     /// </summary>
     /// <typeparam name="COST"></typeparam>
-    public interface ISkillCostBufferElement<COST> : IBufferElementData where COST : struct, ISkillCost
+    public interface IAbilityCostBufferElement<COST> : IBufferElementData where COST : struct, IAbilityCost
     {
         /// <summary>
-        /// The index of the skill this effect is attached to.
+        /// The index of the ability this effect is attached to.
         /// </summary>
-        int SkillIndex { get; set; }
+        int AbilityIndex { get; set; }
         /// <summary>
         /// The effect.
         /// </summary>
