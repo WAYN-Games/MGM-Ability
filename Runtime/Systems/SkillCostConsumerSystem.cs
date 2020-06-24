@@ -2,7 +2,7 @@
 using Unity.Collections;
 using Unity.Entities;
 
-namespace WaynGroup.Mgm.Skill.Demo
+namespace WaynGroup.Mgm.Skill
 {
 
     public interface ICostConsumer<COST, RESOURCE> where RESOURCE : struct, IComponentData
@@ -64,6 +64,8 @@ namespace WaynGroup.Mgm.Skill.Demo
                     for (int skillIndex = 0; skillIndex < SkillBufferArray.Length; ++skillIndex)
                     {
                         Skill Skill = SkillBufferArray[skillIndex];
+
+
                         if (Skill.State != SkillState.Active) continue;
                         for (int costIndex = 0; costIndex < costBufferArray.Length; costIndex++)
                         {

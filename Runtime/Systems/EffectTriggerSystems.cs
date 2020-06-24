@@ -7,6 +7,7 @@ using Unity.Entities;
 namespace WaynGroup.Mgm.Skill
 {
     [UpdateAfter(typeof(SkillUpdateSystemGroup))]
+    [UpdateInGroup(typeof(SkillSystemsGroup))]
     public class SkillTriggerSystemGroup : ComponentSystemGroup
     {
 

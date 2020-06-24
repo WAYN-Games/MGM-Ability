@@ -8,7 +8,7 @@ namespace WaynGroup.Mgm.Skill
     [Serializable]
     public struct Skill
     {
-        public SkillState State { get; private set; }
+        public SkillState State { get; set; }
         private Timing CoolDown;
         private Timing CastTime;
         public Range Range;

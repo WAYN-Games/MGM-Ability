@@ -5,36 +5,33 @@ using Unity.Jobs;
 namespace WaynGroup.Mgm.Skill
 {
     /// <summary>
-    /// This system update each skill timmings (cast and cooldown).
-    /// Once a timing is elapsed, the skill state is updated to the proper value.
+    /// This system put the skill in cooldown if it's effect were triggered.
+    /// It's run after all effect have been trigered.
     /// </summary>
-    [UpdateInGroup(typeof(SkillUpdateSystemGroup))]
-    public class SkillUpdateTimingsSystem : SystemBase
+    //[UpdateInGroup(typeof(SkillTriggerSystemGroup), OrderLast = true)] // --> Does not actually work, the system is ordered first...
+    [UpdateAfter(typeof(SkillTriggerSystemGroup))]
+    [UpdateInGroup(typeof(SkillSystemsGroup))]
+    public class SkillDeactivationSystem : SystemBase
     {
+
         protected override void OnUpdate()
         {
-            float DeltaTime = World.Time.DeltaTime;
             Dependency = Entities.ForEach((ref DynamicBuffer<SkillBuffer> skillBuffer) =>
             {
                 NativeArray<SkillBuffer> sbArray = skillBuffer.AsNativeArray();
                 for (int i = 0; i < sbArray.Length; i++)
                 {
-
                     Skill Skill = sbArray[i];
-                    if (Skill.State == SkillState.Casting)
+
+                    if (Skill.State == SkillState.Active)
                     {
-                        Skill.UpdateCastTime(DeltaTime);
-                    }
-                    if (Skill.State == SkillState.CoolingDown)
-                    {
-                        Skill.UpdateCoolDowns(DeltaTime);
+                        Skill.StartCooloingDown();
                     }
 
                     sbArray[i] = Skill;
                 }
             }).WithBurst()
             .ScheduleParallel(Dependency);
-
         }
     }
 }

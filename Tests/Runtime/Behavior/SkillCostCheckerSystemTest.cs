@@ -21,7 +21,7 @@ public class SkillCostCheckerSystemTest : DotsTest
         DynamicBuffer<SkillBuffer> skillBuffer = _entityManager.AddBuffer<SkillBuffer>(caster);
         skillBuffer.Add(new SkillBuffer()
         {
-            Skill = new Skill(1, 1, new Range())
+            Skill = skill
         });
 
         DynamicBuffer<TestCostBuffer> testCostBuffer = _entityManager.AddBuffer<TestCostBuffer>(caster);
@@ -64,13 +64,13 @@ public class SkillCostCheckerSystemTest : DotsTest
 
         Skill skill = new Skill(1, 1, new Range())
         {
-            HasEnougthRessource = false
+            HasEnougthRessource = true
         };
 
         DynamicBuffer<SkillBuffer> skillBuffer = _entityManager.AddBuffer<SkillBuffer>(caster);
         skillBuffer.Add(new SkillBuffer()
         {
-            Skill = new Skill(1, 1, new Range())
+            Skill = skill
         });
 
         DynamicBuffer<TestCostBuffer> testCostBuffer = _entityManager.AddBuffer<TestCostBuffer>(caster);
@@ -91,7 +91,6 @@ public class SkillCostCheckerSystemTest : DotsTest
 
         _entityManager.AddComponentData(caster, new TestResource() { Value = 100 });
         _entityManager.AddComponentData(caster, new TestResource1() { Value = 100 });
-
 
         _world.WithSystem<TestCostCheckerSystem>();
         _world.WithSystem<TestCost1CheckerSystem>();
@@ -119,7 +118,7 @@ public class SkillCostCheckerSystemTest : DotsTest
         DynamicBuffer<SkillBuffer> skillBuffer = _entityManager.AddBuffer<SkillBuffer>(caster);
         skillBuffer.Add(new SkillBuffer()
         {
-            Skill = new Skill(1, 1, new Range())
+            Skill = skill
         });
 
         DynamicBuffer<TestCostBuffer> testCostBuffer = _entityManager.AddBuffer<TestCostBuffer>(caster);

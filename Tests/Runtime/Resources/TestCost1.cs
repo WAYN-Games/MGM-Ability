@@ -29,6 +29,7 @@ namespace WaynGroup.Mgm.Skill.Tests
     {
         public bool HasEnougthResourceLeft(TestCost1 cost, in TestResource1 resource)
         {
+
             return resource.Value >= cost.Cost;
         }
     }

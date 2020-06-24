@@ -7,7 +7,13 @@ using Unity.Jobs;
 namespace WaynGroup.Mgm.Skill
 {
 
+    public class SkillSystemsGroup : ComponentSystemGroup
+    {
+
+    }
+
     [UpdateAfter(typeof(SkillTriggerSystemGroup))]
+    [UpdateInGroup(typeof(SkillSystemsGroup))]
     public class SkillConsumerSystemGroup : ComponentSystemGroup
     {
 

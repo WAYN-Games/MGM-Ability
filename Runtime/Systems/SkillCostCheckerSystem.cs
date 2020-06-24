@@ -3,8 +3,9 @@ using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 
-namespace WaynGroup.Mgm.Skill.Demo
+namespace WaynGroup.Mgm.Skill
 {
+
     [UpdateInGroup(typeof(SkillUpdateSystemGroup))]
     public abstract class SkillCostCheckerSystem<COST_BUFFER, COST, COST_CHECKER, RESOURCE> : SystemBase
         where COST : struct, ISkillCost
@@ -23,6 +24,7 @@ namespace WaynGroup.Mgm.Skill.Demo
             {
                 All = new ComponentType[]
                 {
+                        ComponentType.ReadOnly<SkillBuffer>(),
                         ComponentType.ReadOnly<COST_BUFFER>(),
                         ComponentType.ReadOnly<RESOURCE>()
                 }
