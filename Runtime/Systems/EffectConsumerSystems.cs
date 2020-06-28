@@ -7,17 +7,7 @@ using Unity.Jobs;
 namespace WaynGroup.Mgm.Ability
 {
 
-    public class AbilitySystemsGroup : ComponentSystemGroup
-    {
 
-    }
-
-    [UpdateAfter(typeof(AbilityTriggerSystemGroup))]
-    [UpdateInGroup(typeof(AbilitySystemsGroup))]
-    public class AbilityConsumerSystemGroup : ComponentSystemGroup
-    {
-
-    }
 
     public interface IEffectContext<EFFECT> where EFFECT : struct, IEffect
     {
@@ -70,7 +60,7 @@ namespace WaynGroup.Mgm.Ability
         /// </summary>
         /// <param name="foreachCount">The number of chunk of thread that writes to the NativeStream</param>
         /// <returns></returns>
-        public NativeStream.Writer GetConsumerWriter(int foreachCount)
+        public NativeStream.Writer CreateConsumerWriter(int foreachCount)
         {
             _effectStream = new NativeStream(foreachCount, Allocator.TempJob);
             _forEachCount = foreachCount;
@@ -148,8 +138,7 @@ namespace WaynGroup.Mgm.Ability
             // In that case we don't need to do anything.
             // Not doing this checks actually result in a non authrorized access to the memory and crashes Unity.
             if (!_effectStream.IsCreated) return;
-
-            NativeStream.Reader effectReader = _effectStream.AsReader();
+            NativeStream.Reader effectReader = GetEffectReader();
             SetupEffectMap AllocateJob = new SetupEffectMap()
             {
                 EffectReader = effectReader,
@@ -172,6 +161,9 @@ namespace WaynGroup.Mgm.Ability
             Dependency = _effectStream.Dispose(Dependency);
         }
 
-
+        public NativeStream.Reader GetEffectReader()
+        {
+            return _effectStream.AsReader();
+        }
     }
 }

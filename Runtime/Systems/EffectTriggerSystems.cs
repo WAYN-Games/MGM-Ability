@@ -6,12 +6,7 @@ using Unity.Entities;
 
 namespace WaynGroup.Mgm.Ability
 {
-    [UpdateAfter(typeof(AbilityUpdateSystemGroup))]
-    [UpdateInGroup(typeof(AbilitySystemsGroup))]
-    public class AbilityTriggerSystemGroup : ComponentSystemGroup
-    {
 
-    }
 
     /// <summary>
     /// Base system to trigger effects. It provides the shared functionality of checking which ability is active and which target(s) are affected.
@@ -132,6 +127,8 @@ namespace WaynGroup.Mgm.Ability
 
         protected override void OnUpdate()
         {
+            // If the consumer won't run, there is no point in tirgerring the effects...
+            // This also avoid the creation of a stream that would never be disposed of.
             if (!_conusmerSystem.ShouldRunSystem()) return;
 
             Dependency = new TriggerJob()
@@ -140,9 +137,11 @@ namespace WaynGroup.Mgm.Ability
                 AbilityBufferChunk = GetArchetypeChunkBufferType<AbilityBuffer>(true),
                 TargetChunk = GetArchetypeChunkComponentType<Target>(true),
                 EntityChunk = GetArchetypeChunkEntityType(),
-                ConsumerWriter = _conusmerSystem.GetConsumerWriter(_query.CalculateChunkCount()),
+                ConsumerWriter = _conusmerSystem.CreateConsumerWriter(_query.CalculateChunkCount()),
                 EffectContextWriter = GetContextWriter()
             }.ScheduleParallel(_query, Dependency);
+
+            // Tell the consumer to wait for ths trigger job to finish before starting to consume the effects.
             _conusmerSystem.RegisterTriggerDependency(Dependency);
         }
     }

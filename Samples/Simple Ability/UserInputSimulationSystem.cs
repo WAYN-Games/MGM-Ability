@@ -8,7 +8,7 @@ namespace WaynGroup.Mgm.Ability.Demo
     /// System that fake the user input simulating all ability cast every frame.
     /// </summary>
     [UpdateBefore(typeof(AbilityUpdateSystemGroup))]
-    [UpdateInGroup(typeof(AbilitySystemsGroup))]
+    [UpdateInGroup(typeof(AbilitySystemGroup))]
     public class UserInputSimulationSystem : SystemBase
     {
         protected override void OnUpdate()

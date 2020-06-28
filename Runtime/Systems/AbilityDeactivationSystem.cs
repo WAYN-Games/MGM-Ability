@@ -10,7 +10,7 @@ namespace WaynGroup.Mgm.Ability
     /// </summary>
     //[UpdateInGroup(typeof(AbilityTriggerSystemGroup), OrderLast = true)] // --> Does not actually work, the system is ordered first...
     [UpdateAfter(typeof(AbilityTriggerSystemGroup))]
-    [UpdateInGroup(typeof(AbilitySystemsGroup))]
+    [UpdateInGroup(typeof(AbilitySystemGroup))]
     public class AbilityDeactivationSystem : SystemBase
     {
 
