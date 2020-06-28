@@ -132,6 +132,8 @@ namespace WaynGroup.Mgm.Ability
 
         protected override void OnUpdate()
         {
+            if (!_conusmerSystem.ShouldRunSystem()) return;
+
             Dependency = new TriggerJob()
             {
                 EffectBufferChunk = GetArchetypeChunkBufferType<EFFECT_BUFFER>(true),
