@@ -19,8 +19,8 @@ public class AbilityUpdateRangeSystemTest : DotsTest
         Entity attacker = _entityManager.CreateEntity();
         _entityManager.AddComponentData(attacker, new Target() { Value = target });
         _entityManager.AddComponentData(attacker, new Translation() { Value = new float3(0, 0, 0) });
-        DynamicBuffer<AbilityBuffer> abilitys = _entityManager.AddBuffer<AbilityBuffer>(attacker);
-        abilitys.Add(new Ability() { Range = new Range() { Min = 0.5f, Max = 10f }, IsInRange = true });
+        DynamicBuffer<AbilityBuffer> abilities = _entityManager.AddBuffer<AbilityBuffer>(attacker);
+        abilities.Add(new Ability() { Range = new Range() { Min = 0.5f, Max = 10f }, IsInRange = true });
 
 
         _world.WithSystem<AbilityUpdateRangeSystem>();
@@ -43,8 +43,8 @@ public class AbilityUpdateRangeSystemTest : DotsTest
         Entity attacker = _entityManager.CreateEntity();
         _entityManager.AddComponentData(attacker, new Target() { Value = target });
         _entityManager.AddComponentData(attacker, new Translation() { Value = new float3(0, 0, 0) });
-        DynamicBuffer<AbilityBuffer> abilitys = _entityManager.AddBuffer<AbilityBuffer>(attacker);
-        abilitys.Add(new Ability() { Range = new Range() { Min = 0.5f, Max = 10f }, IsInRange = false });
+        DynamicBuffer<AbilityBuffer> abilities = _entityManager.AddBuffer<AbilityBuffer>(attacker);
+        abilities.Add(new Ability() { Range = new Range() { Min = 0.5f, Max = 10f }, IsInRange = false });
 
 
         _world.WithSystem<AbilityUpdateRangeSystem>();
@@ -67,8 +67,8 @@ public class AbilityUpdateRangeSystemTest : DotsTest
         Entity attacker = _entityManager.CreateEntity();
         _entityManager.AddComponentData(attacker, new Target() { Value = target });
         _entityManager.AddComponentData(attacker, new Translation() { Value = new float3(0) });
-        DynamicBuffer<AbilityBuffer> abilitys = _entityManager.AddBuffer<AbilityBuffer>(attacker);
-        abilitys.Add(new Ability() { Range = new Range() { Min = 0.5f, Max = 10f }, IsInRange = false });
+        DynamicBuffer<AbilityBuffer> abilities = _entityManager.AddBuffer<AbilityBuffer>(attacker);
+        abilities.Add(new Ability() { Range = new Range() { Min = 0.5f, Max = 10f }, IsInRange = false });
 
 
         _world.WithSystem<AbilityUpdateRangeSystem>();
@@ -90,8 +90,8 @@ public class AbilityUpdateRangeSystemTest : DotsTest
         Entity attacker = _entityManager.CreateEntity();
         _entityManager.AddComponentData(attacker, new Target() { Value = target });
         _entityManager.AddComponentData(attacker, new Translation() { Value = new float3(0) });
-        DynamicBuffer<AbilityBuffer> abilitys = _entityManager.AddBuffer<AbilityBuffer>(attacker);
-        abilitys.Add(new Ability() { Range = new Range() { Min = 0.5f, Max = 10f }, IsInRange = false });
+        DynamicBuffer<AbilityBuffer> abilities = _entityManager.AddBuffer<AbilityBuffer>(attacker);
+        abilities.Add(new Ability() { Range = new Range() { Min = 0.5f, Max = 10f }, IsInRange = false });
 
 
         _world.WithSystem<AbilityUpdateRangeSystem>();
@@ -113,8 +113,8 @@ public class AbilityUpdateRangeSystemTest : DotsTest
         Entity attacker = _entityManager.CreateEntity();
         _entityManager.AddComponentData(attacker, new Target() { Value = target });
         _entityManager.AddComponentData(attacker, new Translation() { Value = new float3(0) });
-        DynamicBuffer<AbilityBuffer> abilitys = _entityManager.AddBuffer<AbilityBuffer>(attacker);
-        abilitys.Add(new Ability() { Range = new Range() { Min = 0.5f, Max = 10f }, IsInRange = true });
+        DynamicBuffer<AbilityBuffer> abilities = _entityManager.AddBuffer<AbilityBuffer>(attacker);
+        abilities.Add(new Ability() { Range = new Range() { Min = 0.5f, Max = 10f }, IsInRange = true });
 
 
         _world.WithSystem<AbilityUpdateRangeSystem>();

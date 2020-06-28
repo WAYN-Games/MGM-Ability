@@ -2,7 +2,8 @@
 
 namespace WaynGroup.Mgm.Ability
 {
-    [UpdateInGroup(typeof(AbilityUpdateSystemGroup), OrderFirst = true)]
+    [UpdateBefore(typeof(AbilityUpdateSystemGroup))]
+    [UpdateInGroup(typeof(AbilitySystemsGroup))]
     public class AbilityCostCheckInitializationSystem : SystemBase
     {
         protected override void OnUpdate()

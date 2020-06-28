@@ -1,15 +1,15 @@
 {
-  "name": "wayn-group.mgm.skill",
-  "displayName": "MGM Skill",
-  "version": "0.1.2-preview",
+  "name": "wayn-group.mgm.ability",
+  "displayName": "MGM Ability",
+  "version": "0.3.0-preview",
   "unity": "2019.3",
-  "description": "This package contain performant and disigner friendly skill system.\nIt allow the definition of custom effects that can be composed to form any kind of skill.\nEffectact can range from the simple direct effect (damage,pushback,..) to the AOE and/or over time effects.",
+  "description": "This package contain performant and disigner friendly ability system.\nIt allow the definition of custom effects that can be composed to form any kind of ability.\nEffectact can range from the simple direct effect (damage,pushback,..) to the AOE and/or over time effects.",
   "type": "library",
   "samples": [
     {
-      "displayName": "Simple Skill",
-      "description": "This sample demonstrate how to implement a simple direct damage effect and using it in a skill.",
-      "path": "Samples/Simple Skill"
+      "displayName": "Simple Ability",
+      "description": "This sample demonstrate how to implement a simple direct damage effect and using it in an ability.",
+      "path": "Samples/Simple Ability"
     }
   ],
   "dependencies": {

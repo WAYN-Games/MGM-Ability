@@ -11,9 +11,9 @@
         "Unity.PerformanceTesting",
         "Unity.Burst",
         "WaynGroup.Mgm.Ability",
-        "SimpleAbility",
         "Unity.Transforms",
-        "Unity.Mathematics"
+        "Unity.Mathematics",
+        "SimpleAbility"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

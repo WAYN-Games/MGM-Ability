@@ -185,11 +185,11 @@ public class EffectSystemTest : DotsTest
 
     private void PrepareAttacker(Entity target, Entity entity)
     {
-        // 2 abilitys per attacker
+        // 2 abilities per attacker
         NativeArray<AbilityBuffer> abilityBuffer = AddAbility(2, _entityManager.AddBuffer<AbilityBuffer>(entity));
 
         // 2 attacker per target
-        // 2 abilitys per attacker
+        // 2 abilities per attacker
         // 5 effects of each type per ability
         // 2 types of effect each dealing 1 damage
         // 2 x 5 x 2 x 1 = 20 effect per entity per tick.

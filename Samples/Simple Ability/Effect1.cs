@@ -6,6 +6,10 @@ using UnityEngine;
 
 namespace WaynGroup.Mgm.Ability.Demo
 {
+
+
+
+
     public struct Effect1 : IEffect
     {
         public int Value;

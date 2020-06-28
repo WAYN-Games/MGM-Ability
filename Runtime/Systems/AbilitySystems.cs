@@ -2,6 +2,8 @@
 using Unity.Entities;
 using Unity.Jobs;
 
+
+
 namespace WaynGroup.Mgm.Ability
 {
     /// <summary>

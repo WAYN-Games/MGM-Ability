@@ -9,15 +9,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3abeeaddb43d6e84ab58defe54deac9d, type: 3}
+  m_Script: {fileID: 11500000, guid: b49966bb9ea414943a50ddba966b498e, type: 3}
   m_Name: AutoAttack
   m_EditorClassIdentifier: 
-  Name: AutoAttack
+  Name: Auto Attack
   Range:
     Min: 0.5
-    Max: 10
-  CoolDown: 0.3
-  CastTime: 0.2
+    Max: 5
+  CoolDown: 0.4
+  CastTime: 0.1
   Costs:
   - id: 0
   Effects:
@@ -26,16 +26,16 @@ MonoBehaviour:
   references:
     version: 1
     00000000:
-      type: {class: ManaCost, ns: WaynGroup.Mgm.Skill.Demo, asm: SimpleSkill}
+      type: {class: ManaCost, ns: WaynGroup.Mgm.Ability.Demo, asm: SimpleAbility}
       data:
         Cost: 1
     00000001:
-      type: {class: Effect1, ns: WaynGroup.Mgm.Skill.Demo, asm: SimpleSkill}
+      type: {class: Effect1, ns: WaynGroup.Mgm.Ability.Demo, asm: SimpleAbility}
       data:
         Value: 3
         <Affects>k__BackingField: 0
     00000002:
-      type: {class: Effect2, ns: WaynGroup.Mgm.Skill.Demo, asm: SimpleSkill}
+      type: {class: Effect2, ns: WaynGroup.Mgm.Ability.Demo, asm: SimpleAbility}
       data:
         Value: 5
         <Affects>k__BackingField: 0

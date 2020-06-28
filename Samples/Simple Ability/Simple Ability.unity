@@ -263,9 +263,9 @@ GameObject:
   m_Component:
   - component: {fileID: 1959231614}
   - component: {fileID: 1959231617}
-  - component: {fileID: 1959231616}
   - component: {fileID: 1959231615}
   - component: {fileID: 1959231618}
+  - component: {fileID: 1959231616}
   m_Layer: 0
   m_Name: Attaker
   m_TagString: Untagged
@@ -312,7 +312,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2b57754c26436134496339728b43cb2b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Skills:
+  Abilities:
   - {fileID: 11400000, guid: c5affa7859da918499a66a765756c387, type: 2}
 --- !u!114 &1959231617
 MonoBehaviour:
@@ -398,7 +398,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2b57754c26436134496339728b43cb2b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Skills:
+  Abilities:
   - {fileID: 11400000, guid: c5affa7859da918499a66a765756c387, type: 2}
 --- !u!114 &2131659657
 MonoBehaviour:
