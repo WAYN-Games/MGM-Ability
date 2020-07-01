@@ -2,60 +2,56 @@
 using Unity.Collections;
 using Unity.Entities;
 
-using WaynGroup.Mgm.Ability.Tests;
-
-namespace WaynGroup.Mgm.Ability
+namespace WaynGroup.Mgm.Ability.Tests
 {
-    public struct TestEffect : IEffect
+    public struct TestEmptyEffect : IEffect
     {
         public EffectAffectType Affects { get; set; }
 
         // YOUR CODE : delcare all necesasry data inherant to the effect consumption, could be a the effect power, damage type,...
 
-        public int Value;
+
 
         // Mandatory for Authoring, do not edit
         public void Convert(Entity entity, EntityManager dstManager, int abilityIndex)
         {
-            EffectUtility.AddEffect<TestEffectBuffer, TestEffect>(entity, dstManager, abilityIndex, this);
+            EffectUtility.AddEffect<TestEmptyEffectBuffer, TestEmptyEffect>(entity, dstManager, abilityIndex, this);
         }
     }
 
     // Mandatory for Authoring, do not edit
-    public struct TestEffectBuffer : IEffectBufferElement<TestEffect>
+    public struct TestEmptyEffectBuffer : IEffectBufferElement<TestEmptyEffect>
     {
         public int AbilityIndex { get; set; }
-        public TestEffect Effect { get; set; }
+        public TestEmptyEffect Effect { get; set; }
     }
 
-    public struct TestEffectContext : IEffectContext<TestEffect>
+    public struct TestEmptyEffectContext : IEffectContext<TestEmptyEffect>
     {
         // YOUR CODE : delcare all necesasry contextual data for the effect consumption, could be a position, attack power,...
-        public float testResourceValue;
+
 
 
         // Mandatory for Authoring, do not edit
         public Entity Target { get; set; }
-        public TestEffect Effect { get; set; }
+        public TestEmptyEffect Effect { get; set; }
     }
 
-    [UpdateBefore(typeof(TestEffectConsumerSystem))]
-    public class TestEffectTriggerSystem : AbilityEffectTriggerSystem<TestEffectBuffer, TestEffect, TestEffectConsumerSystem, TestEffectTriggerSystem.TargetEffectWriter, TestEffectContext>
+    [UpdateBefore(typeof(TestEmptyEffectConsumerSystem))]
+    public class TestEmptyEffectTriggerSystem : AbilityEffectTriggerSystem<TestEmptyEffectBuffer, TestEmptyEffect, TestEmptyEffectConsumerSystem, TestEmptyEffectTriggerSystem.TargetEffectWriter, TestEmptyEffectContext>
     {
 
         [BurstCompile]
-        public struct TargetEffectWriter : IEffectContextWriter<TestEffect>
+        public struct TargetEffectWriter : IEffectContextWriter<TestEmptyEffect>
         {
             // YOUR CODE : declare the public [ReadOnly] component data chunk accessor and the private [ReadOnly] native array to cache the component data
-            [ReadOnly] public ArchetypeChunkComponentType<TestResource> TestResourceChunk;
-            [ReadOnly] private NativeArray<TestResource> _testResources;
+
             /// <summary>
             /// Cache the component data array needed to write the effect context.
             /// </summary>
             /// <param name="chunk"></param>
             public void PrepareChunk(ArchetypeChunk chunk)
             {
-                _testResources = chunk.GetNativeArray(TestResourceChunk);
                 // YOUR CODE : cache the component data array in a private [ReadOnly] field on the struct
             }
 
@@ -65,13 +61,12 @@ namespace WaynGroup.Mgm.Ability
             /// <param name="entityIndex">The casting entity.</param>
             /// <param name="consumerWriter">The corresponding effect consumer stream.</param>
             /// <param name="effect">The effect to contextualize.</param>
-            public void WriteContextualizedEffect(int entityIndex, ref NativeStream.Writer consumerWriter, TestEffect effect, Entity target)
+            public void WriteContextualizedEffect(int entityIndex, ref NativeStream.Writer consumerWriter, TestEmptyEffect effect, Entity target)
             {
-                consumerWriter.Write(new TestEffectContext()
+                consumerWriter.Write(new TestEmptyEffectContext()
                 {
                     Target = target,
-                    Effect = effect,
-                    testResourceValue = _testResources[entityIndex].Value
+                    Effect = effect
                     // YOUR CODE : populate the effect context with additonal contextual data.
                 });
             }
@@ -82,32 +77,33 @@ namespace WaynGroup.Mgm.Ability
         {
             return new TargetEffectWriter()
             {
-                TestResourceChunk = GetArchetypeChunkComponentType<TestResource>(true)
+                // YOUR CODE : populate the component data chunk accessor
             };
         }
 
+        /* Optional
         protected override EntityQueryDesc GetEffectContextEntityQueryDesc()
         {
             return new EntityQueryDesc()
             {
                 All = new ComponentType[]
                 {
-                     ComponentType.ReadOnly<TestResource>()
+                     // YOUR CODE : declare all required component type for populating the context of the effect.
                 }
             };
         }
-
+        */
     }
 
-    [UpdateAfter(typeof(TestEffectTriggerSystem))]
-    public class TestEffectConsumerSystem : AbilityEffectConsumerSystem<TestEffect, TestEffectContext>
+    [UpdateAfter(typeof(TestEmptyEffectTriggerSystem))]
+    public class TestEmptyEffectConsumerSystem : AbilityEffectConsumerSystem<TestEmptyEffect, TestEmptyEffectContext>
     {
         protected override void Consume()
         {
-            NativeMultiHashMap<Entity, TestEffectContext> effects = _effects;
+            NativeMultiHashMap<Entity, TestEmptyEffectContext> effects = _effects;
             Entities.WithReadOnly(effects).ForEach((ref Entity targetEntity/* YOUR CODE : component on the target that are nedded to apply the effect*/) =>
             {
-                NativeMultiHashMap<Entity, TestEffectContext>.Enumerator effectEnumerator = effects.GetValuesForKey(targetEntity);
+                NativeMultiHashMap<Entity, TestEmptyEffectContext>.Enumerator effectEnumerator = effects.GetValuesForKey(targetEntity);
 
 
                 while (effectEnumerator.MoveNext())
