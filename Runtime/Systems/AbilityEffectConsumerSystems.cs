@@ -4,11 +4,9 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs;
 
+
 namespace WaynGroup.Mgm.Ability
 {
-
-
-
     public interface IEffectContext<EFFECT> where EFFECT : struct, IEffect
     {
         Entity Target { get; set; }
@@ -16,7 +14,7 @@ namespace WaynGroup.Mgm.Ability
     }
 
     [UpdateInGroup(typeof(AbilityConsumerSystemGroup))]
-    public abstract class EffectConsumerSystem<EFFECT, EFFECT_CTX> : SystemBase where EFFECT : struct, IEffect
+    public abstract class AbilityEffectConsumerSystem<EFFECT, EFFECT_CTX> : SystemBase where EFFECT : struct, IEffect
         where EFFECT_CTX : struct, IEffectContext<EFFECT>
     {
 
@@ -131,7 +129,6 @@ namespace WaynGroup.Mgm.Ability
 
         protected sealed override void OnUpdate()
         {
-
             Dependency = JobHandle.CombineDependencies(Dependency, TriggerJobHandle);
 
             // If the producer did not actually write anything to the stream, the native stream will not be flaged as created.

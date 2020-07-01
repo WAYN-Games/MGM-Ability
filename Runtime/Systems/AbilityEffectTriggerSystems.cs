@@ -17,9 +17,9 @@ namespace WaynGroup.Mgm.Ability
     /// <typeparam name="CTX_WRITER">The writer struct in charge of populating the context surroinding the triggered effect like informations about the caster (position, strength,...).</typeparam>
     /// <typeparam name="EFFECT_CTX">The struct containing the effect and it's context like informations about the caster (position, strength,...)</typeparam>
     [UpdateInGroup(typeof(AbilityTriggerSystemGroup))]
-    public abstract class EffectTriggerSystem<EFFECT_BUFFER, EFFECT, CONSUMER, CTX_WRITER, EFFECT_CTX> : SystemBase
+    public abstract class AbilityEffectTriggerSystem<EFFECT_BUFFER, EFFECT, CONSUMER, CTX_WRITER, EFFECT_CTX> : SystemBase
         where EFFECT : struct, IEffect
-        where CONSUMER : EffectConsumerSystem<EFFECT, EFFECT_CTX>
+        where CONSUMER : AbilityEffectConsumerSystem<EFFECT, EFFECT_CTX>
         where EFFECT_BUFFER : struct, IEffectBufferElement<EFFECT>
         where CTX_WRITER : struct, IEffectContextWriter<EFFECT>
         where EFFECT_CTX : struct, IEffectContext<EFFECT>
@@ -27,7 +27,7 @@ namespace WaynGroup.Mgm.Ability
         /// <summary>
         /// The system in charge of consuming the effects once triggered.
         /// </summary>
-        private EffectConsumerSystem<EFFECT, EFFECT_CTX> _conusmerSystem;
+        private AbilityEffectConsumerSystem<EFFECT, EFFECT_CTX> _conusmerSystem;
 
         /// <summary>
         /// The base query to select entity that are eligible to this system.

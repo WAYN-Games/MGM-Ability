@@ -2,35 +2,31 @@
 using Unity.Collections;
 using Unity.Entities;
 
-using UnityEngine;
-
-using WaynGroup.Mgm.Ability;
-
-namespace NAMESAPCE
+namespace WaynGroup.Mgm.Ability
 {
-    public struct NewEffect : IEffect
+    public struct TestEffect : IEffect
     {
-        [field: SerializeField] public EffectAffectType Affects { get; set; }
+        public EffectAffectType Affects { get; set; }
 
         // YOUR CODE : delcare all necesasry data inherant to the effect consumption, could be a the effect power, damage type,...
 
-
+        public int Value;
 
         // Mandatory for Authoring, do not edit
         public void Convert(Entity entity, EntityManager dstManager, int abilityIndex)
         {
-            EffectUtility.AddEffect<NewEffectBuffer, NewEffect>(entity, dstManager, abilityIndex, this);
+            EffectUtility.AddEffect<TestEffectBuffer, TestEffect>(entity, dstManager, abilityIndex, this);
         }
     }
 
     // Mandatory for Authoring, do not edit
-    public struct NewEffectBuffer : IEffectBufferElement<NewEffect>
+    public struct TestEffectBuffer : IEffectBufferElement<TestEffect>
     {
         public int AbilityIndex { get; set; }
-        public NewEffect Effect { get; set; }
+        public TestEffect Effect { get; set; }
     }
 
-    public struct NewEffectContext : IEffectContext<NewEffect>
+    public struct TestEffectContext : IEffectContext<TestEffect>
     {
         // YOUR CODE : delcare all necesasry contextual data for the effect consumption, could be a position, attack power,...
 
@@ -38,14 +34,15 @@ namespace NAMESAPCE
 
         // Mandatory for Authoring, do not edit
         public Entity Target { get; set; }
-        public NewEffect Effect { get; set; }
+        public TestEffect Effect { get; set; }
     }
 
-    public class NewEffectTriggerSystem : AbilityEffectTriggerSystem<NewEffectBuffer, NewEffect, NewEffectConsumerSystem, NewEffectTriggerSystem.TargetEffectWriter, NewEffectContext>
+    [UpdateBefore(typeof(TestEffectConsumerSystem))]
+    public class TestEffectTriggerSystem : AbilityEffectTriggerSystem<TestEffectBuffer, TestEffect, TestEffectConsumerSystem, TestEffectTriggerSystem.TargetEffectWriter, TestEffectContext>
     {
 
         [BurstCompile]
-        public struct TargetEffectWriter : IEffectContextWriter<NewEffect>
+        public struct TargetEffectWriter : IEffectContextWriter<TestEffect>
         {
             // YOUR CODE : declare the public [ReadOnly] component data chunk accessor and the private [ReadOnly] native array to cache the component data
 
@@ -64,9 +61,9 @@ namespace NAMESAPCE
             /// <param name="entityIndex">The casting entity.</param>
             /// <param name="consumerWriter">The corresponding effect consumer stream.</param>
             /// <param name="effect">The effect to contextualize.</param>
-            public void WriteContextualizedEffect(int entityIndex, ref NativeStream.Writer consumerWriter, NewEffect effect, Entity target)
+            public void WriteContextualizedEffect(int entityIndex, ref NativeStream.Writer consumerWriter, TestEffect effect, Entity target)
             {
-                consumerWriter.Write(new NewEffectContext()
+                consumerWriter.Write(new TestEffectContext()
                 {
                     Target = target,
                     Effect = effect
@@ -98,14 +95,15 @@ namespace NAMESAPCE
         */
     }
 
-    public class NewEffectConsumerSystem : AbilityEffectConsumerSystem<NewEffect, NewEffectContext>
+    [UpdateAfter(typeof(TestEffectTriggerSystem))]
+    public class TestEffectConsumerSystem : AbilityEffectConsumerSystem<TestEffect, TestEffectContext>
     {
         protected override void Consume()
         {
-            NativeMultiHashMap<Entity, NewEffectContext> effects = _effects;
+            NativeMultiHashMap<Entity, TestEffectContext> effects = _effects;
             Entities.WithReadOnly(effects).ForEach((ref Entity targetEntity/* YOUR CODE : component on the target that are nedded to apply the effect*/) =>
             {
-                NativeMultiHashMap<Entity, NewEffectContext>.Enumerator effectEnumerator = effects.GetValuesForKey(targetEntity);
+                NativeMultiHashMap<Entity, TestEffectContext>.Enumerator effectEnumerator = effects.GetValuesForKey(targetEntity);
 
 
                 while (effectEnumerator.MoveNext())

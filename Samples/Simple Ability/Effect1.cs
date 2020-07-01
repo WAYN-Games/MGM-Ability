@@ -34,7 +34,7 @@ namespace WaynGroup.Mgm.Ability.Demo
         public Effect1 Effect { get; set; }
     }
 
-    public class Effect1TriggerSystem : EffectTriggerSystem<Effect1Buffer, Effect1, Effect1ConsumerSystem, Effect1TriggerSystem.EffectWriter, Effect1Context>
+    public class Effect1TriggerSystem : AbilityEffectTriggerSystem<Effect1Buffer, Effect1, Effect1ConsumerSystem, Effect1TriggerSystem.EffectWriter, Effect1Context>
     {
 
         [BurstCompile]
@@ -61,7 +61,7 @@ namespace WaynGroup.Mgm.Ability.Demo
         }
     }
 
-    public class Effect1ConsumerSystem : EffectConsumerSystem<Effect1, Effect1Context>
+    public class Effect1ConsumerSystem : AbilityEffectConsumerSystem<Effect1, Effect1Context>
     {
         protected override void Consume()
         {

@@ -8,6 +8,8 @@ namespace NAMESAPCE
 {
     public struct #SCRIPTNAME# : IEffect
     {
+	    public EffectAffectType Affects { get; set; }
+
         // YOUR CODE : delcare all necesasry data inherant to the effect consumption, could be a the effect power, damage type,...
 
 		#NOTRIM#
@@ -38,7 +40,7 @@ namespace NAMESAPCE
     }
 
     [UpdateBefore(typeof(#SCRIPTNAME#ConsumerSystem))]
-    public class #SCRIPTNAME#TriggerSystem : EffectTriggerSystem<#SCRIPTNAME#Buffer, #SCRIPTNAME#, #SCRIPTNAME#ConsumerSystem, #SCRIPTNAME#TriggerSystem.TargetEffectWriter, #SCRIPTNAME#Context>
+    public class #SCRIPTNAME#TriggerSystem : AbilityEffectTriggerSystem<#SCRIPTNAME#Buffer, #SCRIPTNAME#, #SCRIPTNAME#ConsumerSystem, #SCRIPTNAME#TriggerSystem.TargetEffectWriter, #SCRIPTNAME#Context>
     {
 
         [BurstCompile]
@@ -95,7 +97,7 @@ namespace NAMESAPCE
     }
 
     [UpdateAfter(typeof(#SCRIPTNAME#TriggerSystem))]
-    public class #SCRIPTNAME#ConsumerSystem : EffectConsumerSystem<#SCRIPTNAME#, #SCRIPTNAME#Context>
+    public class #SCRIPTNAME#ConsumerSystem : AbilityEffectConsumerSystem<#SCRIPTNAME#, #SCRIPTNAME#Context>
     {
         protected override void Consume()
         {

@@ -38,7 +38,7 @@ namespace WaynGroup.Mgm.Ability.Demo
         public Effect2 Effect { get; set; }
     }
 
-    public class Effect2TriggerSystem : EffectTriggerSystem<Effect2Buffer, Effect2, Effect2ConsumerSystem, Effect2TriggerSystem.TargetEffectWriter, Effect2Context>
+    public class Effect2TriggerSystem : AbilityEffectTriggerSystem<Effect2Buffer, Effect2, Effect2ConsumerSystem, Effect2TriggerSystem.TargetEffectWriter, Effect2Context>
     {
 
         [BurstCompile]
@@ -103,7 +103,7 @@ namespace WaynGroup.Mgm.Ability.Demo
         }
     }
 
-    public class Effect2ConsumerSystem : EffectConsumerSystem<Effect2, Effect2Context>
+    public class Effect2ConsumerSystem : AbilityEffectConsumerSystem<Effect2, Effect2Context>
     {
         protected override void Consume()
         {
