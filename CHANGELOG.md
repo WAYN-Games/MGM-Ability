@@ -10,13 +10,18 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - Support for cost constraint and consumtion on skill
 - Support for simple target selection from skill (self or target)
-- System groups to organize systems
+- System groups to organize systems update order
 
 ### Changed 
 
-- 
+- /!\ BREAKING CHANGE /!\ Rename all occurences of "Skill" to "Ability" and "Skills" to "Abilities".
+- Trigger system won't do anything if it's consumer counter part won't run. This avoid creating the native stream, which in turn avoid any risk a memory leak so there is no need for the consumer to always update to do the clean up.
 
 ### Code Test Coverage
+
+- Started monitoring the code coverage of the package and switched to system behavior test strategy instead of a world test strategy.
+- Line coverage:	65.2% (199 of 305).
+- CRAP score is currenlty wrong, it show 3 false positive CRAP method.
 
 ## [0.2.0] - 09/06/2020
 
