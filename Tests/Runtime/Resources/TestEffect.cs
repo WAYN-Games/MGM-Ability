@@ -105,14 +105,13 @@ namespace WaynGroup.Mgm.Ability
         protected override void Consume()
         {
             NativeMultiHashMap<Entity, TestEffectContext> effects = _effects;
-            Entities.WithReadOnly(effects).ForEach((ref Entity targetEntity/* YOUR CODE : component on the target that are nedded to apply the effect*/) =>
+            Entities.WithReadOnly(effects).ForEach((ref Entity targetEntity, ref TestResource resource) =>
             {
                 NativeMultiHashMap<Entity, TestEffectContext>.Enumerator effectEnumerator = effects.GetValuesForKey(targetEntity);
 
-
                 while (effectEnumerator.MoveNext())
                 {
-                    // YOUR CODE : Consume the effect
+                    resource.Value -= effectEnumerator.Current.Effect.Value;
                 }
 
             }).WithBurst()
