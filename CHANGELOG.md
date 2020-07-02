@@ -14,7 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Changed 
 
-- /!\ BREAKING CHANGE /!\ Rename all occurences of "Skill" to "Ability" and "Skills" to "Abilities".
+- <span style="color:red">/!\ BREAKING CHANGE /!\ Rename all occurences of "Skill" to "Ability" and "Skills" to "Abilities".</span>
 - Trigger system won't do anything if it's consumer counter part won't run. This avoid creating the native stream, which in turn avoid any risk a memory leak so there is no need for the consumer to always update to do the clean up.
 
 ### Code Test Coverage
