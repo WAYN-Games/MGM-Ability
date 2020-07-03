@@ -15,7 +15,7 @@ namespace WaynGroup.Mgm.Ability
         /// <summary>
         /// The current remaining time on the timing.
         /// </summary>
-        private float CurrentValue;
+        public float CurrentValue;
 
 
 

@@ -20,8 +20,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Code Test Coverage
 
 - Started monitoring the code coverage of the package and switched to system behavior test strategy instead of a world test strategy.
-- Line coverage:	65.2% (199 of 305).
-- CRAP score is currenlty wrong, it show 3 false positive CRAP method.
+
+| Name                         | Covered | Uncovered | Coverable | Total | Line coverage |
+|------------------------------|---------|-----------|-----------|-------|---------------|
+| WaynGroup.Mgm.Ability        | 233     | 72        | 305       | 951   | 76.3%         |
+| WaynGroup.Mgm.Ability.Editor | 0       | 137       | 137       | 546   | 0%            |
+
+
+- CRAP score is currenlty wrong, it show 2 false positive CRAP method.
 
 ## [0.2.0] - 09/06/2020
 

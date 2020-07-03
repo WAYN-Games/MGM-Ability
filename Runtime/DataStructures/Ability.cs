@@ -9,8 +9,8 @@ namespace WaynGroup.Mgm.Ability
     public struct Ability
     {
         public AbilityState State { get; set; }
-        private Timing CoolDown;
-        private Timing CastTime;
+        public Timing CoolDown;
+        public Timing CastTime;
         public Range Range;
         public bool IsInRange;
         public bool HasEnougthRessource;
