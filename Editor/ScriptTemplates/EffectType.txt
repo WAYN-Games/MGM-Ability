@@ -39,7 +39,6 @@ namespace NAMESAPCE
         public #SCRIPTNAME# Effect { get; set; }
     }
 
-    [UpdateBefore(typeof(#SCRIPTNAME#ConsumerSystem))]
     public class #SCRIPTNAME#TriggerSystem : AbilityEffectTriggerSystem<#SCRIPTNAME#Buffer, #SCRIPTNAME#, #SCRIPTNAME#ConsumerSystem, #SCRIPTNAME#TriggerSystem.TargetEffectWriter, #SCRIPTNAME#Context>
     {
 
@@ -96,7 +95,6 @@ namespace NAMESAPCE
 		*/
     }
 
-    [UpdateAfter(typeof(#SCRIPTNAME#TriggerSystem))]
     public class #SCRIPTNAME#ConsumerSystem : AbilityEffectConsumerSystem<#SCRIPTNAME#, #SCRIPTNAME#Context>
     {
         protected override void Consume()
