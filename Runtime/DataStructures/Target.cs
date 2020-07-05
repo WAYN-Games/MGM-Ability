@@ -1,6 +1,6 @@
 ﻿using Unity.Entities;
 
-namespace WaynGroup.Mgm.Skill
+namespace WaynGroup.Mgm.Ability
 {
     [GenerateAuthoringComponent]
     public struct Target : IComponentData

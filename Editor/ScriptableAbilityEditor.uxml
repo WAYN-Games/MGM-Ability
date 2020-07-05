@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<engine:UXML
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:engine="UnityEngine.UIElements"
+    xmlns:editor="UnityEditor.UIElements"
+    xsi:noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd"
+>
+  <engine:VisualElement name="scripatable-ability-container" class="container">
+    <editor:PropertyField name="name-property" binding-path="Name" />
+    <editor:PropertyField name="range-property" binding-path="Range" />
+    <editor:PropertyField name="cool-down-property" binding-path="CoolDown" />
+    <editor:PropertyField name="cast-time-property" binding-path="CastTime" />
+
+    <engine:Foldout text="Costs" class="header">
+      <engine:VisualElement name="cost-picker-container" class="container" />
+      <engine:VisualElement name="costs-container" class="container" />
+    </engine:Foldout>
+    <engine:Foldout text="Effects" class="header">
+      <engine:VisualElement name="effect-picker-container" class="container" />
+      <engine:VisualElement name="effects-container" class="container" />
+    </engine:Foldout>
+
+  </engine:VisualElement>
+</engine:UXML>

@@ -1,0 +1,54 @@
+using Unity.Entities;
+using WaynGroup.Mgm.Ability;
+
+namespace #NAMESPACE#
+{
+    public struct #SCRIPTNAME# : IAbilityCost
+    {
+        public float Cost;
+
+        public void Convert(Entity entity, EntityManager dstManager, int abilityIndex)
+        {
+            EffectUtility.AddCost<#SCRIPTNAME#Buffer, #SCRIPTNAME#>(entity, dstManager, abilityIndex, this);
+        }
+    }
+
+    public struct #SCRIPTNAME#Buffer : IAbilityCostBufferElement<#SCRIPTNAME#>
+    {
+        public int AbilityIndex { get; set; }
+        public #SCRIPTNAME# Cost { get; set; }
+    }
+
+    public struct #SCRIPTNAME#Checker : ICostChecker<#RESOURCE#, #SCRIPTNAME#>
+    {
+        public bool HasEnougthResourceLeft(#SCRIPTNAME# cost, in #RESOURCE# resource)
+        {
+            return resource.Value >= cost.Cost;
+        }
+    }
+
+    public struct #SCRIPTNAME#Conusmer : ICostConsumer<#SCRIPTNAME#, #RESOURCE#>
+    {
+        public void ConsumeCost(#SCRIPTNAME# cost, ref #RESOURCE# resource)
+        {
+            resource.Value -= cost.Cost;
+        }
+    }
+
+    public class #SCRIPTNAME#ConsumerSystem : AbilityCostConsumerSystem<#SCRIPTNAME#, #SCRIPTNAME#Buffer, #RESOURCE#, #SCRIPTNAME#Conusmer>
+    {
+        protected override #SCRIPTNAME#Conusmer GetCostConsumer()
+        {
+            return new #SCRIPTNAME#Conusmer();
+        }
+    }
+
+    public class #SCRIPTNAME#CheckerSystem : AbilityCostCheckerSystem<#SCRIPTNAME#Buffer, #SCRIPTNAME#, #SCRIPTNAME#Checker, #RESOURCE#>
+    {
+        protected override #SCRIPTNAME#Checker GetCostChecker()
+        {
+            return new #SCRIPTNAME#Checker();
+        }
+    }
+
+}

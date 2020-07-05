@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace WaynGroup.Mgm.Skill
+namespace WaynGroup.Mgm.Ability
 {
     /// <summary>
     /// Represents a timeframe.
@@ -15,7 +15,7 @@ namespace WaynGroup.Mgm.Skill
         /// <summary>
         /// The current remaining time on the timing.
         /// </summary>
-        private float CurrentValue;
+        public float CurrentValue;
 
 
 

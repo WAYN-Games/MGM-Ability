@@ -2,27 +2,29 @@ using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 
-using WaynGroup.Mgm.Skill;
+using WaynGroup.Mgm.Ability;
 
 namespace NAMESAPCE
 {
     public struct #SCRIPTNAME# : IEffect
     {
+	    public EffectAffectType Affects { get; set; }
+
         // YOUR CODE : delcare all necesasry data inherant to the effect consumption, could be a the effect power, damage type,...
 
 		#NOTRIM#
 
         // Mandatory for Authoring, do not edit
-        public void Convert(Entity entity, EntityManager dstManager, int skillIndex)
+        public void Convert(Entity entity, EntityManager dstManager, int abilityIndex)
         {
-            EffectUtility.AddEffect<#SCRIPTNAME#Buffer, #SCRIPTNAME#>(entity, dstManager, skillIndex, this);
+            EffectUtility.AddEffect<#SCRIPTNAME#Buffer, #SCRIPTNAME#>(entity, dstManager, abilityIndex, this);
         }
     }
 
     // Mandatory for Authoring, do not edit
     public struct #SCRIPTNAME#Buffer : IEffectBufferElement<#SCRIPTNAME#>
     {
-        public int SkillIndex { get; set; }
+        public int AbilityIndex { get; set; }
         public #SCRIPTNAME# Effect { get; set; }
     }
 
@@ -37,8 +39,7 @@ namespace NAMESAPCE
         public #SCRIPTNAME# Effect { get; set; }
     }
 
-    [UpdateBefore(typeof(#SCRIPTNAME#ConsumerSystem))]
-    public class #SCRIPTNAME#TriggerSystem : EffectTriggerSystem<#SCRIPTNAME#Buffer, #SCRIPTNAME#, #SCRIPTNAME#ConsumerSystem, #SCRIPTNAME#TriggerSystem.TargetEffectWriter, #SCRIPTNAME#Context>
+    public class #SCRIPTNAME#TriggerSystem : AbilityEffectTriggerSystem<#SCRIPTNAME#Buffer, #SCRIPTNAME#, #SCRIPTNAME#ConsumerSystem, #SCRIPTNAME#TriggerSystem.TargetEffectWriter, #SCRIPTNAME#Context>
     {
 
         [BurstCompile]
@@ -94,12 +95,11 @@ namespace NAMESAPCE
 		*/
     }
 
-    [UpdateAfter(typeof(#SCRIPTNAME#TriggerSystem))]
-    public class #SCRIPTNAME#ConsumerSystem : EffectConsumerSystem<#SCRIPTNAME#, #SCRIPTNAME#Context>
+    public class #SCRIPTNAME#ConsumerSystem : AbilityEffectConsumerSystem<#SCRIPTNAME#, #SCRIPTNAME#Context>
     {
         protected override void Consume()
         {
-            NativeMultiHashMap<Entity, #SCRIPTNAME#Context> effects = Effects;
+            NativeMultiHashMap<Entity, #SCRIPTNAME#Context> effects = _effects;
             Entities.WithReadOnly(effects).ForEach((ref Entity targetEntity/* YOUR CODE : component on the target that are nedded to apply the effect*/) =>
             {
                 NativeMultiHashMap<Entity, #SCRIPTNAME#Context>.Enumerator effectEnumerator = effects.GetValuesForKey(targetEntity);
