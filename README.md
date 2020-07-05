@@ -15,6 +15,6 @@ It allows the definition of custom effects that can be composed to form any kind
  - More samples (hopefully with VFX and sounds at some point)
  
 ## Documentation
-[Seting up a new Skill](https://github.com/WAYNGROUP/MGM-Skill/blob/master/Documentation~/Seting%20up%20a%20new%20Skill.md)
+[Seting up a new Ability](https://github.com/WAYNGROUP/MGM-Ability/blob/master/Documentation~/Seting%20up%20a%20new%20Skill.md)
 
-[Declaring a new Effect Type](https://github.com/WAYNGROUP/MGM-Skill/blob/master/Documentation~/Declaring%20a%20new%20Effect%20Type.md)
+[Declaring a new Effect Type](https://github.com/WAYNGROUP/MGM-Ability/blob/master/Documentation~/Declaring%20a%20new%20Effect%20Type.md)
