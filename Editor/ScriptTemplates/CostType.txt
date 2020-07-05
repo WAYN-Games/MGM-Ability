@@ -1,4 +1,5 @@
 using Unity.Entities;
+using WaynGroup.Mgm.Ability;
 
 namespace #NAMESPACE#
 {
@@ -8,7 +9,7 @@ namespace #NAMESPACE#
 
         public void Convert(Entity entity, EntityManager dstManager, int abilityIndex)
         {
-            EffectUtility.AddCost<#SCRIPTNAME#CostBuffer, #SCRIPTNAME#>(entity, dstManager, abilityIndex, this);
+            EffectUtility.AddCost<#SCRIPTNAME#Buffer, #SCRIPTNAME#>(entity, dstManager, abilityIndex, this);
         }
     }
 
