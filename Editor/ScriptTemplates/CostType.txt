@@ -2,51 +2,51 @@ using Unity.Entities;
 
 namespace #NAMESPACE#
 {
-    public struct #SCRIPT_NAME# : IAbilityCost
+    public struct #SCRIPTNAME# : IAbilityCost
     {
         public float Cost;
 
         public void Convert(Entity entity, EntityManager dstManager, int abilityIndex)
         {
-            EffectUtility.AddCost<#SCRIPT_NAME#CostBuffer, #SCRIPT_NAME#>(entity, dstManager, abilityIndex, this);
+            EffectUtility.AddCost<#SCRIPTNAME#CostBuffer, #SCRIPTNAME#>(entity, dstManager, abilityIndex, this);
         }
     }
 
-    public struct #SCRIPT_NAME#Buffer : IAbilityCostBufferElement<#SCRIPT_NAME#>
+    public struct #SCRIPTNAME#Buffer : IAbilityCostBufferElement<#SCRIPTNAME#>
     {
         public int AbilityIndex { get; set; }
-        public #SCRIPT_NAME# Cost { get; set; }
+        public #SCRIPTNAME# Cost { get; set; }
     }
 
-    public struct #SCRIPT_NAME#Checker : ICostChecker<#RESOURCE#, #SCRIPT_NAME#>
+    public struct #SCRIPTNAME#Checker : ICostChecker<#RESOURCE#, #SCRIPTNAME#>
     {
-        public bool HasEnougthResourceLeft(#SCRIPT_NAME# cost, in #RESOURCE# resource)
+        public bool HasEnougthResourceLeft(#SCRIPTNAME# cost, in #RESOURCE# resource)
         {
             return resource.Value >= cost.Cost;
         }
     }
 
-    public struct #SCRIPT_NAME#Conusmer : ICostConsumer<#SCRIPT_NAME#, #RESOURCE#>
+    public struct #SCRIPTNAME#Conusmer : ICostConsumer<#SCRIPTNAME#, #RESOURCE#>
     {
-        public void ConsumeCost(#SCRIPT_NAME# cost, ref #RESOURCE# resource)
+        public void ConsumeCost(#SCRIPTNAME# cost, ref #RESOURCE# resource)
         {
             resource.Value -= cost.Cost;
         }
     }
 
-    public class #SCRIPT_NAME#ConsumerSystem : AbilityCostConsumerSystem<#SCRIPT_NAME#, #SCRIPT_NAME#Buffer, #RESOURCE#, #SCRIPT_NAME#Conusmer>
+    public class #SCRIPTNAME#ConsumerSystem : AbilityCostConsumerSystem<#SCRIPTNAME#, #SCRIPTNAME#Buffer, #RESOURCE#, #SCRIPTNAME#Conusmer>
     {
-        protected override #SCRIPT_NAME#Conusmer GetCostConsumer()
+        protected override #SCRIPTNAME#Conusmer GetCostConsumer()
         {
-            return new #SCRIPT_NAME#Conusmer();
+            return new #SCRIPTNAME#Conusmer();
         }
     }
 
-    public class #SCRIPT_NAME#CheckerSystem : AbilityCostCheckerSystem<#SCRIPT_NAME#Buffer, #SCRIPT_NAME#, #SCRIPT_NAME#Checker, #RESOURCE#>
+    public class #SCRIPTNAME#CheckerSystem : AbilityCostCheckerSystem<#SCRIPTNAME#Buffer, #SCRIPTNAME#, #SCRIPTNAME#Checker, #RESOURCE#>
     {
-        protected override #SCRIPT_NAME#Checker GetCostChecker()
+        protected override #SCRIPTNAME#Checker GetCostChecker()
         {
-            return new #SCRIPT_NAME#Checker();
+            return new #SCRIPTNAME#Checker();
         }
     }
 
