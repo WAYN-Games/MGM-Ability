@@ -18,6 +18,11 @@ public class ScriptableAbility : ScriptableObject
     public string Name;
 
     /// <summary>
+    /// The skill Icon.
+    /// </summary>
+    public Texture2D Icon;
+
+    /// <summary>
     /// The distance constraints that need to be met in order to cast the ability.
     /// </summary>
     public Range Range;

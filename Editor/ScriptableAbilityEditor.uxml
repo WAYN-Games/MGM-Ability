@@ -7,6 +7,7 @@
 >
   <engine:VisualElement name="scripatable-ability-container" class="container">
     <editor:PropertyField name="name-property" binding-path="Name" />
+    <editor:PropertyField name="icon-property" binding-path="Icon" />
     <editor:PropertyField name="range-property" binding-path="Range" />
     <editor:PropertyField name="cool-down-property" binding-path="CoolDown" />
     <editor:PropertyField name="cast-time-property" binding-path="CastTime" />

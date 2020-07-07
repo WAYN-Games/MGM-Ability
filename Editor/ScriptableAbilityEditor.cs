@@ -35,6 +35,8 @@ public class ScriptableAbilityEditor : Editor
     private readonly string[] _effectStirngParams = new string[] { "effects-container", "Undefined ability effect type on {0} effect.", "Undefined effect type to remove" };
 
 
+
+
     public void OnEnable()
     {
         CreateInspectorGUI();
@@ -42,8 +44,9 @@ public class ScriptableAbilityEditor : Editor
 
     public override VisualElement CreateInspectorGUI()
     {
-        Cache();
+        DefaultAbilityName();
 
+        Cache();
 
         LoadBaseLayout();
         MakeCostTypePicker();
@@ -54,6 +57,12 @@ public class ScriptableAbilityEditor : Editor
         Display(CostsProperty, CostTypes, _costStirngParams);
 
         return root;
+    }
+
+    private void DefaultAbilityName()
+    {
+        ScriptableAbility ability = (ScriptableAbility)target;
+        if (string.IsNullOrEmpty(ability.Name)) ability.Name = ability.name;
     }
 
     private void Cache()
@@ -230,6 +239,21 @@ public class ScriptableAbilityEditor : Editor
         AssetDatabase.Refresh();
     }
 
+    // This method allow to dynamicaly override the preview icon bath in hte inspector window and the project view to the ability ingame icon.
+    // In the porject window, if the view is to small it will default to the unity scriptable object icon.
+    // If the ability in game icon is not set, it will default to the unity scriptable object icon. 
+    public override Texture2D RenderStaticPreview(string assetPath, UnityEngine.Object[] subAssets, int width, int height)
+    {
+        ScriptableAbility ability = (ScriptableAbility)target;
+
+        if (ability == null || ability.Icon == null)
+            return null;
+
+        Texture2D tex = new Texture2D(width, height);
+        EditorUtility.CopySerialized(ability.Icon, tex);
+
+        return tex;
+    }
 }
 
 

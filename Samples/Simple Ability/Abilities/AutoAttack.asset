@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: AutoAttack
   m_EditorClassIdentifier: 
   Name: Auto Attack
+  Icon: {fileID: 2800000, guid: 10d3737bce7f66b41b6d7331aac16851, type: 3}
   Range:
     Min: 0.5
     Max: 5
