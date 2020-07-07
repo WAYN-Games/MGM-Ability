@@ -1,6 +1,5 @@
 ﻿using Unity.Entities;
 using Unity.Mathematics;
-using Unity.UIElements.Runtime;
 
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -34,7 +33,7 @@ public class AbilitySlot : MonoBehaviour
 
     private void Start()
     {
-        VisualElement root = GetComponent<PanelRenderer>().visualTree;
+        VisualElement root = GetComponent<UIDocument>().rootVisualElement;
         _abilitySlot = root.Q(name: AbilitiesUiConstants.ABILITY_SLOT_ROOT_UI_NAME);
         _cooldownBackgroundUI = root.Q(name: AbilitiesUiConstants.ABILITY_SLOT_COOLDOWN_BACKGROUND_UI_NAME);
         _cooldownTextUI = root.Q<Label>(name: AbilitiesUiConstants.ABILITY_SLOT_COOLDOWN_TEXT_UI_NAME);

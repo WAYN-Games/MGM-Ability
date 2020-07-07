@@ -102,7 +102,7 @@ public class ScriptableAbilityEditor : Editor
         VisualElement effectPickerContainer = root.Query<VisualElement>("effect-picker-container").First();
         if (EffectTypes.Count == 0)
         {
-            effectPickerContainer.Add(CustomVisalElements.HelpBox("Your project does not define any effect types."));
+            effectPickerContainer.Add(new HelpBox("Your project does not define any effect types.", HelpBoxMessageType.Warning));
             return;
         }
         effectDropDown = new PopupField<Type>("Effect Type", EffectTypes, 0, (Type t) => t.Name, (Type t) => t.Name);
@@ -121,7 +121,7 @@ public class ScriptableAbilityEditor : Editor
         VisualElement costPickerContainer = root.Query<VisualElement>("cost-picker-container").First();
         if (CostTypes.Count == 0)
         {
-            costPickerContainer.Add(CustomVisalElements.HelpBox("Your project does not define any cost types."));
+            costPickerContainer.Add(new HelpBox("Your project does not define any cost types.", HelpBoxMessageType.Warning));
             return;
         }
 
@@ -253,36 +253,5 @@ public class ScriptableAbilityEditor : Editor
         EditorUtility.CopySerialized(ability.Icon, tex);
 
         return tex;
-    }
-}
-
-
-public static class CustomVisalElements
-{
-    const float margin = 2;
-    const float padding = 1;
-    public static VisualElement HelpBox(string message, MessageType level = MessageType.Warning)
-    {
-        VisualElement helpBox = new VisualElement()
-        {
-            style =
-            {
-                flexDirection = FlexDirection.Row,
-                alignItems = Align.Center,
-                marginBottom = margin,
-                marginRight = margin,
-                marginLeft = margin,
-                marginTop = margin,
-                paddingTop = padding,
-                paddingBottom = padding,
-                paddingRight = padding,
-                paddingLeft = padding
-            }
-        };
-
-        helpBox.AddToClassList("unity-box");
-        helpBox.Add(new Image() { image = EditorGUIUtility.FindTexture("d_console.warnicon"), scaleMode = ScaleMode.ScaleToFit });
-        helpBox.Add(new Label(message));
-        return helpBox;
     }
 }
