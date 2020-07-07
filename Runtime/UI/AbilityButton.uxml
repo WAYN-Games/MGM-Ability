@@ -1,0 +1,11 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <ui:VisualElement name="Shape" class="abolitySlotShape">
+        <Style src="AbilityButton.uss" />
+        <ui:VisualElement name="Icon" class="abilityIcon" style="position: absolute;" />
+        <ui:VisualElement name="coolDown" style="width: 100%; height: 100%;">
+            <ui:VisualElement name="filler" style="background-color: rgba(0, 0, 0, 0); flex-grow: 1;" />
+            <ui:VisualElement name="coolDownBackground" style="height: 50px; background-color: rgba(255, 0, 0, 0.6);" />
+        </ui:VisualElement>
+        <ui:Label text="0.5" name="coolDownTime" class="coolDownTimeText" style="position: absolute; color: rgb(0, 255, 255);" />
+    </ui:VisualElement>
+</ui:UXML>

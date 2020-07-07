@@ -13,6 +13,8 @@ public class AbilityAuthoring : MonoBehaviour, IConvertGameObjectToEntity
 {
     public List<ScriptableAbility> Abilities;
 
+    public AbilitySlot AbilitySlot;
+
     public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
     {
         // Add a buffer to the entity and populate it with all the ability the entity can use.
@@ -46,5 +48,6 @@ public class AbilityAuthoring : MonoBehaviour, IConvertGameObjectToEntity
                 cost.Convert(entity, dstManager, i);
             }
         }
+        AbilitySlot.AssignAbility(entity, 0);
     }
 }

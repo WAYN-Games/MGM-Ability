@@ -39,7 +39,7 @@ namespace WaynGroup.Mgm.Ability
         public TestEffect Effect { get; set; }
     }
 
-    [UpdateBefore(typeof(TestEffectConsumerSystem))]
+    [DisableAutoCreation]
     public class TestEffectTriggerSystem : AbilityEffectTriggerSystem<TestEffectBuffer, TestEffect, TestEffectConsumerSystem, TestEffectTriggerSystem.TargetEffectWriter, TestEffectContext>
     {
 
@@ -99,7 +99,7 @@ namespace WaynGroup.Mgm.Ability
 
     }
 
-    [UpdateAfter(typeof(TestEffectTriggerSystem))]
+    [DisableAutoCreation]
     public class TestEffectConsumerSystem : AbilityEffectConsumerSystem<TestEffect, TestEffectContext>
     {
         protected override void Consume()

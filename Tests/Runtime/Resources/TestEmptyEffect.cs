@@ -37,7 +37,7 @@ namespace WaynGroup.Mgm.Ability.Tests
         public TestEmptyEffect Effect { get; set; }
     }
 
-    [UpdateBefore(typeof(TestEmptyEffectConsumerSystem))]
+    [DisableAutoCreation]
     public class TestEmptyEffectTriggerSystem : AbilityEffectTriggerSystem<TestEmptyEffectBuffer, TestEmptyEffect, TestEmptyEffectConsumerSystem, TestEmptyEffectTriggerSystem.TargetEffectWriter, TestEmptyEffectContext>
     {
 
@@ -95,7 +95,7 @@ namespace WaynGroup.Mgm.Ability.Tests
         */
     }
 
-    [UpdateAfter(typeof(TestEmptyEffectTriggerSystem))]
+    [DisableAutoCreation]
     public class TestEmptyEffectConsumerSystem : AbilityEffectConsumerSystem<TestEmptyEffect, TestEmptyEffectContext>
     {
         protected override void Consume()

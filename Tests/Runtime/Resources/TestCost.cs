@@ -39,6 +39,7 @@ namespace WaynGroup.Mgm.Ability.Tests
         }
     }
 
+    [DisableAutoCreation]
     public class TestCostConsumerSystem : AbilityCostConsumerSystem<TestCost, TestCostBuffer, TestResource, TestCostConusmer>
     {
         protected override TestCostConusmer GetCostConsumer()
@@ -47,6 +48,7 @@ namespace WaynGroup.Mgm.Ability.Tests
         }
     }
 
+    [DisableAutoCreation]
     public class TestCostCheckerSystem : AbilityCostCheckerSystem<TestCostBuffer, TestCost, TestCostChecker, TestResource>
     {
         protected override TestCostChecker GetCostChecker()

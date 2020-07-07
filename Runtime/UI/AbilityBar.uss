@@ -1,0 +1,9 @@
+.abilityBar {
+    height: 64px;
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: center;
+    flex-grow: 1;
+    flex-shrink: 1;
+}
+
