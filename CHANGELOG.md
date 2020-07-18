@@ -8,15 +8,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Requirements
 
-- This version requires UNITY 2020.1.0b12 or higher
+- This version requires UNITY 2020.2.0a15 or higher, for the UI to work (in editor)
 
 ### Added
 
-- Simple ability UI support (this feature is highly experimental and uses the unity runtime package for UI Elements (UI Toolkit))
-
-### Changed 
-
-
+- Simple ability UI support (this feature is highly experimental and uses the unity runtime package for UI Elements (UI Toolkit)) it does not work in builds yet.
 
 ## [0.3.0] - 05/07/2020
 
