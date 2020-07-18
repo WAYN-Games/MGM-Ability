@@ -134,6 +134,7 @@ GameObject:
   - component: {fileID: 1064429140}
   - component: {fileID: 1064429139}
   - component: {fileID: 1064429138}
+  - component: {fileID: 1064429141}
   m_Layer: 0
   m_Name: Camera
   m_TagString: Untagged
@@ -200,12 +201,43 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1064429137}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: -4.65}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1064429141
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1064429137}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a79441f348de89743a2939f4d699eac1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_RenderShadows: 1
+  m_RequiresDepthTextureOption: 2
+  m_RequiresOpaqueTextureOption: 2
+  m_CameraType: 0
+  m_Cameras: []
+  m_RendererIndex: -1
+  m_VolumeLayerMask:
+    serializedVersion: 2
+    m_Bits: 1
+  m_VolumeTrigger: {fileID: 0}
+  m_RenderPostProcessing: 0
+  m_Antialiasing: 0
+  m_AntialiasingQuality: 2
+  m_StopNaN: 0
+  m_Dithering: 0
+  m_ClearDepth: 1
+  m_RequiresDepthTexture: 0
+  m_RequiresColorTexture: 0
+  m_Version: 2
 --- !u!1 &1550281776
 GameObject:
   m_ObjectHideFlags: 0
@@ -218,7 +250,7 @@ GameObject:
   - component: {fileID: 1550281777}
   - component: {fileID: 1550281778}
   m_Layer: 0
-  m_Name: AbilitySlot
+  m_Name: AbilityUI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -238,7 +270,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_PanelSettings: {fileID: 11400000, guid: 1ba3e0ab81466114bb2c1444f8f98b0c, type: 2}
   m_ParentUI: {fileID: 0}
-  sourceAsset: {fileID: 9197481963319205126, guid: 5e747bb7785f0b342ae890c2f4973632,
+  sourceAsset: {fileID: 9197481963319205126, guid: 9e1424beee7e187488f89cdd48d57658,
     type: 3}
 --- !u!114 &1550281778
 MonoBehaviour:
@@ -264,7 +296,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1656319557
 GameObject:
@@ -294,10 +326,9 @@ Transform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children:
-  - {fileID: 2131659654}
+  m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1656319559
 MonoBehaviour:
@@ -337,6 +368,7 @@ GameObject:
   - component: {fileID: 2131659655}
   - component: {fileID: 2131659656}
   - component: {fileID: 2131659657}
+  - component: {fileID: 2131659658}
   m_Layer: 0
   m_Name: Attaker
   m_TagString: Untagged
@@ -355,7 +387,7 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: -1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
-  m_Father: {fileID: 1656319558}
+  m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &2131659655
@@ -383,9 +415,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2b57754c26436134496339728b43cb2b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Abilities:
-  - {fileID: 11400000, guid: c5affa7859da918499a66a765756c387, type: 2}
-  AbilitySlot: {fileID: 1550281778}
+  AbilityAssignements:
+  - Ability: {fileID: 11400000, guid: c5affa7859da918499a66a765756c387, type: 2}
+    Bar: 2
+    Slot: 2
+  AbilityUI: {fileID: 1550281778}
 --- !u!114 &2131659657
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -399,3 +433,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Value: 5
+--- !u!114 &2131659658
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2131659653}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea7d7495833204790ba1d3a8755397f8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ConversionMode: 0
