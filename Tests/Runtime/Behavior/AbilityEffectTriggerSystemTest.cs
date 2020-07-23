@@ -65,7 +65,7 @@ public class AbilityEffectTriggerSystemTest
             //Assert
             TestEmptyEffectConsumerSystem conusmerSystem = _world.GetReference().GetExistingSystem<TestEmptyEffectConsumerSystem>();
             NativeStream.Reader reader = conusmerSystem.GetEffectReader();
-            Assert.AreEqual(1, conusmerSystem.GetEffectReader().ComputeItemCount());
+            Assert.AreEqual(1, conusmerSystem.GetEffectReader().Count());
             reader.BeginForEachIndex(0);
             TestEmptyEffectContext ctx = reader.Read<TestEmptyEffectContext>();
             Assert.AreEqual(Entity.Null, ctx.Target);
@@ -134,7 +134,7 @@ public class AbilityEffectTriggerSystemTest
             //Assert
             TestEffectConsumerSystem conusmerSystem = _world.GetReference().GetExistingSystem<TestEffectConsumerSystem>();
             NativeStream.Reader reader = conusmerSystem.GetEffectReader();
-            Assert.AreEqual(1, conusmerSystem.GetEffectReader().ComputeItemCount());
+            Assert.AreEqual(1, conusmerSystem.GetEffectReader().Count());
             reader.BeginForEachIndex(0);
             TestEffectContext ctx = reader.Read<TestEffectContext>();
             Assert.AreEqual(Entity.Null, ctx.Target);

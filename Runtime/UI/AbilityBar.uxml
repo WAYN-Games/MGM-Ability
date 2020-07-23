@@ -1,14 +1,0 @@
-<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
-    <ui:VisualElement name="Bar1" class="abilityBar1 abilityBar" style="margin-left: 2px; margin-right: 2px; margin-top: 2px; margin-bottom: 2px;">
-        <Style src="AbilityBar.uss" />
-        <AbilityUIElement name="Slot1" class="abilitySlot" />
-        <AbilityUIElement name="Slot2" class="abilitySlot" />
-        <AbilityUIElement name="Slot3" class="abilitySlot" />
-    </ui:VisualElement>
-    <ui:VisualElement name="Bar2" class="abilityBar1 abilityBar" style="margin-left: 2px; margin-right: 2px; margin-top: 2px; margin-bottom: 2px;">
-        <Style src="AbilityBar.uss" />
-        <AbilityUIElement name="Slot1" class="abilitySlot" />
-        <AbilityUIElement name="Slot2" class="abilitySlot" />
-        <AbilityUIElement name="Slot3" class="abilitySlot" />
-    </ui:VisualElement>
-</ui:UXML>

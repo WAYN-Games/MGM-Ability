@@ -47,9 +47,9 @@ namespace WaynGroup.Mgm.Ability
         private struct CostConsumerJob : IJobChunk
         {
             public COST_CONSUMER CostConsumer;
-            [ReadOnly] public ArchetypeChunkBufferType<AbilityBuffer> AbilityBufferChunk;
-            [ReadOnly] public ArchetypeChunkBufferType<COST_BUFFER> CostBufferChunk;
-            public ArchetypeChunkComponentType<RESOURCE> ResourceComponent;
+            [ReadOnly] public BufferTypeHandle<AbilityBuffer> AbilityBufferChunk;
+            [ReadOnly] public BufferTypeHandle<COST_BUFFER> CostBufferChunk;
+            public ComponentTypeHandle<RESOURCE> ResourceComponent;
 
             public void Execute(ArchetypeChunk chunk, int chunkIndex, int firstEntityIndex)
             {
@@ -85,9 +85,9 @@ namespace WaynGroup.Mgm.Ability
         {
             Dependency = new CostConsumerJob()
             {
-                CostBufferChunk = GetArchetypeChunkBufferType<COST_BUFFER>(true),
-                AbilityBufferChunk = GetArchetypeChunkBufferType<AbilityBuffer>(true),
-                ResourceComponent = GetArchetypeChunkComponentType<RESOURCE>(false),
+                CostBufferChunk = GetBufferTypeHandle<COST_BUFFER>(true),
+                AbilityBufferChunk = GetBufferTypeHandle<AbilityBuffer>(true),
+                ResourceComponent = GetComponentTypeHandle<RESOURCE>(false),
                 CostConsumer = GetCostConsumer()
 
             }.ScheduleParallel(_query, Dependency);

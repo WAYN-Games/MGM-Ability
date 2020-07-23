@@ -1,0 +1,3 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" mgm-ability="WaynGroup.Mgm.Ability.UI" editor-extension-mode="False">
+    <WaynGroup.Mgm.Ability.UI.TestUI />
+</ui:UXML>

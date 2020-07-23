@@ -3,6 +3,8 @@
 using UnityEngine;
 using UnityEngine.UIElements;
 
+using WaynGroup.Mgm.Ability.UI;
+
 [RequireComponent(typeof(UIDocument))]
 public class AbilityUI : MonoBehaviour
 {

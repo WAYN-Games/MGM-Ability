@@ -47,7 +47,7 @@ namespace WaynGroup.Mgm.Ability
         public struct TargetEffectWriter : IEffectContextWriter<TestEffect>
         {
             // YOUR CODE : declare the public [ReadOnly] component data chunk accessor and the private [ReadOnly] native array to cache the component data
-            [ReadOnly] public ArchetypeChunkComponentType<TestResource> TestResourceChunk;
+            [ReadOnly] public ComponentTypeHandle<TestResource> TestResourceChunk;
             [ReadOnly] private NativeArray<TestResource> _testResources;
             /// <summary>
             /// Cache the component data array needed to write the effect context.
@@ -82,7 +82,7 @@ namespace WaynGroup.Mgm.Ability
         {
             return new TargetEffectWriter()
             {
-                TestResourceChunk = GetArchetypeChunkComponentType<TestResource>(true)
+                TestResourceChunk = GetComponentTypeHandle<TestResource>(true)
             };
         }
 

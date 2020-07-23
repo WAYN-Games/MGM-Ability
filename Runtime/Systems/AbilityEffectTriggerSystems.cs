@@ -80,10 +80,10 @@ namespace WaynGroup.Mgm.Ability
         private struct TriggerJob : IJobChunk
         {
             public CTX_WRITER EffectContextWriter;
-            [ReadOnly] public ArchetypeChunkBufferType<AbilityBuffer> AbilityBufferChunk;
-            [ReadOnly] public ArchetypeChunkBufferType<EFFECT_BUFFER> EffectBufferChunk;
-            [ReadOnly] public ArchetypeChunkComponentType<Target> TargetChunk;
-            [ReadOnly] public ArchetypeChunkEntityType EntityChunk;
+            [ReadOnly] public BufferTypeHandle<AbilityBuffer> AbilityBufferChunk;
+            [ReadOnly] public BufferTypeHandle<EFFECT_BUFFER> EffectBufferChunk;
+            [ReadOnly] public ComponentTypeHandle<Target> TargetChunk;
+            [ReadOnly] public EntityTypeHandle EntityChunk;
             public NativeStream.Writer ConsumerWriter;
 
             public void Execute(ArchetypeChunk chunk, int chunkIndex, int firstEntityIndex)
@@ -133,10 +133,10 @@ namespace WaynGroup.Mgm.Ability
 
             Dependency = new TriggerJob()
             {
-                EffectBufferChunk = GetArchetypeChunkBufferType<EFFECT_BUFFER>(true),
-                AbilityBufferChunk = GetArchetypeChunkBufferType<AbilityBuffer>(true),
-                TargetChunk = GetArchetypeChunkComponentType<Target>(true),
-                EntityChunk = GetArchetypeChunkEntityType(),
+                EffectBufferChunk = GetBufferTypeHandle<EFFECT_BUFFER>(true),
+                AbilityBufferChunk = GetBufferTypeHandle<AbilityBuffer>(true),
+                TargetChunk = GetComponentTypeHandle<Target>(true),
+                EntityChunk = GetEntityTypeHandle(),
                 ConsumerWriter = _conusmerSystem.CreateConsumerWriter(_query.CalculateChunkCount()),
                 EffectContextWriter = GetContextWriter()
             }.ScheduleParallel(_query, Dependency);

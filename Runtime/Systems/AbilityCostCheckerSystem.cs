@@ -35,9 +35,9 @@ namespace WaynGroup.Mgm.Ability
         [BurstCompile]
         private struct CostCheckerJob : IJobChunk
         {
-            public ArchetypeChunkBufferType<AbilityBuffer> AbilityBufferChunk;
-            [ReadOnly] public ArchetypeChunkBufferType<COST_BUFFER> CostBufferChunk;
-            [ReadOnly] public ArchetypeChunkComponentType<RESOURCE> ResourceChunk;
+            public BufferTypeHandle<AbilityBuffer> AbilityBufferChunk;
+            [ReadOnly] public BufferTypeHandle<COST_BUFFER> CostBufferChunk;
+            [ReadOnly] public ComponentTypeHandle<RESOURCE> ResourceChunk;
             [ReadOnly] public COST_CHECKER CostChecker;
 
 
@@ -76,9 +76,9 @@ namespace WaynGroup.Mgm.Ability
         {
             Dependency = new CostCheckerJob()
             {
-                AbilityBufferChunk = GetArchetypeChunkBufferType<AbilityBuffer>(false),
-                CostBufferChunk = GetArchetypeChunkBufferType<COST_BUFFER>(true),
-                ResourceChunk = GetArchetypeChunkComponentType<RESOURCE>(true),
+                AbilityBufferChunk = GetBufferTypeHandle<AbilityBuffer>(false),
+                CostBufferChunk = GetBufferTypeHandle<COST_BUFFER>(true),
+                ResourceChunk = GetComponentTypeHandle<RESOURCE>(true),
                 CostChecker = GetCostChecker()
             }.ScheduleParallel(_query, Dependency);
         }

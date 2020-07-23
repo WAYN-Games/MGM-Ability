@@ -11,3 +11,8 @@
 .abilityBar .abilitySlot {
     margin-left: 10px;
 }
+
+.testLabel {
+    -unity-font-style: bold;
+    font-size: 20px;
+}

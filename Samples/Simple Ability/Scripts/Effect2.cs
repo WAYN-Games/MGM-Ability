@@ -44,7 +44,7 @@ namespace WaynGroup.Mgm.Ability.Demo
         [BurstCompile]
         public struct TargetEffectWriter : IEffectContextWriter<Effect2>
         {
-            [ReadOnly] public ArchetypeChunkComponentType<AttackPower> chunkAttackPowers;
+            [ReadOnly] public ComponentTypeHandle<AttackPower> chunkAttackPowers;
 
             // The array should be declared private as it's only use is within this structure and [ReadOnly] beacause we only write to the stream.
             // [ReadOnly] is not the c# 'readonly' modifer, the AttackPowers can be assigned but array it point ot can not be written to.
@@ -87,7 +87,7 @@ namespace WaynGroup.Mgm.Ability.Demo
         {
             return new TargetEffectWriter()
             {
-                chunkAttackPowers = GetArchetypeChunkComponentType<AttackPower>(true)
+                chunkAttackPowers = GetComponentTypeHandle<AttackPower>(true)
             };
         }
 

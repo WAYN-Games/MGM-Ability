@@ -120,9 +120,9 @@ namespace WaynGroup.Mgm.Ability
             public void Execute()
             {
                 Effects.Clear();
-                if (Effects.Capacity < EffectReader.ComputeItemCount())
+                if (Effects.Capacity < EffectReader.Count())
                 {
-                    Effects.Capacity = EffectReader.ComputeItemCount();
+                    Effects.Capacity = EffectReader.Count();
                 }
             }
         }
