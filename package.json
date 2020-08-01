@@ -2,7 +2,7 @@
   "name": "wayn-group.mgm.ability",
   "displayName": "MGM Ability",
   "version": "0.4.0-preview",
-  "unity": "2020.2",
+  "unity": "2020.1",
   "description": "This package contain performant and disigner friendly ability system.\nIt allow the definition of custom effects that can be composed to form any kind of ability.\nEffectact can range from the simple direct effect (damage,pushback,..) to the AOE and/or over time effects.",
   "type": "library",
   "samples": [
