@@ -10,17 +10,6 @@ using UnityEngine.UIElements;
 namespace WaynGroup.Mgm.Ability.UI
 {
     [Preserve]
-    class TestUI : VisualElement
-    {
-        [Preserve]
-        public new class UxmlFactory : UxmlFactory<TestUI, UxmlTraits> { }
-
-        [Preserve]
-        public new class UxmlTraits : VisualElement.UxmlTraits { }
-
-    }
-
-    [Preserve]
     class AbilityUIElement : VisualElement
     {
         [Preserve]
