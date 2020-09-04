@@ -15,14 +15,6 @@ namespace WaynGroup.Mgm.Ability.UI
         [Preserve]
         public new class UxmlFactory : UxmlFactory<AbilityUIElement, UxmlTraits>
         {
-            public override VisualElement Create(IUxmlAttributes bag, CreationContext cc)
-            {
-                VisualTreeAsset visualTree = Resources.Load<VisualTreeAsset>("AbilityUIElement");
-                VisualElement root = base.Create(bag, cc);
-                visualTree.CloneTree(root);
-                root.Q<AbilityUIElement>().Init();
-                return root;
-            }
         }
 
         [Preserve]
@@ -44,6 +36,13 @@ namespace WaynGroup.Mgm.Ability.UI
         private int _index;
         [Preserve]
         private EntityManager _entityManager;
+
+        public AbilityUIElement()
+        {
+            VisualTreeAsset visualTree = Resources.Load<VisualTreeAsset>("AbilityUIElement");
+            visualTree.CloneTree(this);
+            this.Q<AbilityUIElement>().Init();
+        }
 
         [Preserve]
         public void AssignAbility(Entity owner, int index, ScriptableAbility ability, EntityManager entityManager)
