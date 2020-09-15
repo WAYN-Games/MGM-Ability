@@ -178,12 +178,18 @@ public class ScriptableAbilityEditor : Editor
             }
             else
             {
+                VisualElement ve = new VisualElement();
                 VisualElement foldout = BuildGenericElement(type, sp);
-                foldout.Add(new Button(() => { Remove(index, listPorperty, types, paramStrings); })
+                ve.style.flexDirection = FlexDirection.Row;
+                foldout.style.flexGrow = 1;
+                ve.Add(foldout);
+                Button b = new Button(() => { Remove(index, listPorperty, types, paramStrings); })
                 {
-                    text = "Remove"
-                });
-                container.Add(foldout);
+                    text = "-"
+                };
+                b.style.height = 12;
+                ve.Add(b);
+                container.Add(ve);
             }
         }
     }

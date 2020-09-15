@@ -1,50 +1,44 @@
-﻿
-using Unity.Entities;
+﻿using Unity.Entities;
 using Unity.Mathematics;
 
 using UnityEngine;
-using UnityEngine.Scripting;
 using UnityEngine.UIElements;
 
 
 namespace WaynGroup.Mgm.Ability.UI
 {
-    [Preserve]
     class AbilityUIElement : VisualElement
     {
-        [Preserve]
         public new class UxmlFactory : UxmlFactory<AbilityUIElement, UxmlTraits>
         {
         }
 
-        [Preserve]
         public new class UxmlTraits : VisualElement.UxmlTraits { }
 
-        [Preserve]
-        public void Init()
-        {
-            UnassignAbility();
-            SetTime(0);
-            SetBackGroundFill(0);
-        }
-
-        [Preserve]
         private ScriptableAbility _ability;
-        [Preserve]
         private Entity _owner;
-        [Preserve]
         private int _index;
-        [Preserve]
         private EntityManager _entityManager;
 
         public AbilityUIElement()
         {
             VisualTreeAsset visualTree = Resources.Load<VisualTreeAsset>("AbilityUIElement");
             visualTree.CloneTree(this);
-            this.Q<AbilityUIElement>().Init();
+            UnassignAbility();
+            SetTime(0);
+            SetBackGroundFill(0);
         }
 
-        [Preserve]
+        public void Execute()
+        {
+            Debug.Log($"Executing ability {_index}");
+            if (Entity.Null.Equals(_owner) || _ability == null) return;
+            DynamicBuffer<AbilityBuffer> abbilities = _entityManager.GetBuffer<AbilityBuffer>(_owner);
+            Ability ability = abbilities[_index];
+            ability.TryCast();
+            abbilities[_index] = ability;
+        }
+
         public void AssignAbility(Entity owner, int index, ScriptableAbility ability, EntityManager entityManager)
         {
             _owner = owner;
@@ -52,20 +46,19 @@ namespace WaynGroup.Mgm.Ability.UI
             _ability = ability;
             _entityManager = entityManager;
             this.Q(name: "Icon").style.backgroundImage = new StyleBackground(_ability.Icon);
+            this.Q<Button>(name: "abilityButton").clicked += Execute;
         }
 
-        [Preserve]
         public void UnassignAbility()
         {
             _owner = Entity.Null;
             _ability = null;
             this.Q(name: "Icon").style.backgroundImage = null;
+            this.Q<Button>(name: "abilityButton").clicked -= Execute;
         }
 
-        [Preserve]
         public bool IsAssigned => Entity.Null != _owner && _ability != null;
 
-        [Preserve]
         public void UpdateCoolDown()
         {
             if (!IsAssigned) return;
@@ -74,7 +67,6 @@ namespace WaynGroup.Mgm.Ability.UI
             SetBackGroundFill(remainingTime.Item2);
         }
 
-        [Preserve]
         private void SetBackGroundFill(float fill)
         {
             VisualElement bg = this.Q(name: "coolDownBackground");
@@ -89,7 +81,6 @@ namespace WaynGroup.Mgm.Ability.UI
             bg.style.height = bg.parent.worldBound.height * math.clamp(fill, 0, 1);
         }
 
-        [Preserve]
         private void SetTime(float seconds)
         {
             Label label = this.Q<Label>(name: "coolDownTime");
@@ -104,7 +95,6 @@ namespace WaynGroup.Mgm.Ability.UI
             label.text = $"{seconds}s";
         }
 
-        [Preserve]
         private void SetIcon(Texture2D icon)
         {
             this.Q(name = "Icon").style.backgroundImage = new StyleBackground(icon);
