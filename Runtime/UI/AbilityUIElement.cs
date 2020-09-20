@@ -7,6 +7,28 @@ using UnityEngine.UIElements;
 
 namespace WaynGroup.Mgm.Ability.UI
 {
+    public interface ICommand
+    {
+        void Execute();
+    }
+
+    public struct AbilityUICommand : ICommand
+    {
+        public Entity _owner;
+        public int _index;
+        public EntityManager _entityManager;
+
+        public void Execute()
+        {
+            if (Entity.Null.Equals(_owner)) return;
+            DynamicBuffer<AbilityBuffer> abbilities = _entityManager.GetBuffer<AbilityBuffer>(_owner);
+            if (_index < 0 || _index > abbilities.Length) return;
+            Ability ability = abbilities[_index];
+            ability.TryCast();
+            abbilities[_index] = ability;
+        }
+    }
+
     class AbilityUIElement : VisualElement
     {
         public new class UxmlFactory : UxmlFactory<AbilityUIElement, UxmlTraits>
@@ -16,9 +38,11 @@ namespace WaynGroup.Mgm.Ability.UI
         public new class UxmlTraits : VisualElement.UxmlTraits { }
 
         private ScriptableAbility _ability;
-        private Entity _owner;
-        private int _index;
-        private EntityManager _entityManager;
+        private AbilityUICommand _command;
+
+        public Entity _owner;
+        public int _index;
+        public EntityManager _entityManager;
 
         public AbilityUIElement()
         {
@@ -27,42 +51,34 @@ namespace WaynGroup.Mgm.Ability.UI
             UnassignAbility();
             SetTime(0);
             SetBackGroundFill(0);
+            _command = default;
         }
 
-        public void Execute()
-        {
-            Debug.Log($"Executing ability {_index}");
-            if (Entity.Null.Equals(_owner) || _ability == null) return;
-            DynamicBuffer<AbilityBuffer> abbilities = _entityManager.GetBuffer<AbilityBuffer>(_owner);
-            Ability ability = abbilities[_index];
-            ability.TryCast();
-            abbilities[_index] = ability;
-        }
 
         public void AssignAbility(Entity owner, int index, ScriptableAbility ability, EntityManager entityManager)
         {
-            _owner = owner;
-            _index = index;
+            _command._owner = owner;
+            _command._index = index;
+            _command._entityManager = entityManager;
             _ability = ability;
-            _entityManager = entityManager;
             this.Q(name: "Icon").style.backgroundImage = new StyleBackground(_ability.Icon);
-            this.Q<Button>(name: "abilityButton").clicked += Execute;
+            this.Q<Button>(name: "abilityButton").clicked += _command.Execute;
         }
 
         public void UnassignAbility()
         {
-            _owner = Entity.Null;
+            _command = new AbilityUICommand();
             _ability = null;
             this.Q(name: "Icon").style.backgroundImage = null;
-            this.Q<Button>(name: "abilityButton").clicked -= Execute;
+            this.Q<Button>(name: "abilityButton").clicked -= _command.Execute;
         }
 
-        public bool IsAssigned => Entity.Null != _owner && _ability != null;
+        public bool IsAssigned => !_command.Equals(default) && _ability != null;
 
         public void UpdateCoolDown()
         {
             if (!IsAssigned) return;
-            (float, float) remainingTime = _entityManager.GetBuffer<AbilityBuffer>(_owner)[_index].Ability.CoolDown.ComputeRemainingTime();
+            (float, float) remainingTime = _command._entityManager.GetBuffer<AbilityBuffer>(_command._owner)[_command._index].Ability.CoolDown.ComputeRemainingTime();
             SetTime(remainingTime.Item1);
             SetBackGroundFill(remainingTime.Item2);
         }
