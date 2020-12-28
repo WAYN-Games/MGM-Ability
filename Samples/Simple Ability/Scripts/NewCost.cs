@@ -1,7 +1,12 @@
-﻿using Unity.Entities;
+﻿using Namespace;
+
+using Unity.Entities;
 
 using WaynGroup.Mgm.Ability;
 using WaynGroup.Mgm.Ability.Demo;
+
+[assembly: RegisterGenericJobType(typeof(AbilityCostCheckerSystem<NewCostBuffer, NewCost, NewCostChecker, Mana>))]
+[assembly: RegisterGenericJobType(typeof(AbilityCostConsumerSystem<NewCost, NewCostBuffer, Mana, NewCostConusmer>))]
 
 namespace Namespace
 {

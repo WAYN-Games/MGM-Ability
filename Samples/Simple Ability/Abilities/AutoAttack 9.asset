@@ -1,0 +1,71 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b49966bb9ea414943a50ddba966b498e, type: 3}
+  m_Name: AutoAttack 9
+  m_EditorClassIdentifier: 
+  Id: 7eaa8f8b-733c-2a84-9962-b3edd797d3b4
+  Name: AutoAttack
+  Icon: {fileID: 2800000, guid: 10d3737bce7f66b41b6d7331aac16851, type: 3}
+  Range:
+    Min: 0.5
+    Max: 5
+  CoolDown: 5
+  CastTime: 2
+  Costs:
+  - id: 0
+  Effects:
+  - id: 1
+  - id: 2
+  - id: 3
+  - id: 4
+  - id: 5
+  - id: 6
+  Spawnables:
+  - PrefabRef:
+      m_AssetGUID: f6d17b6bf750de84cae08b3f917cb61e
+      m_SubObjectName: 
+    PrefabGO: {fileID: 0}
+    count: 2
+  references:
+    version: 1
+    00000000:
+      type: {class: ManaCost, ns: WaynGroup.Mgm.Ability.Demo, asm: SimpleAbility}
+      data:
+        Cost: 1
+    00000001:
+      type: {class: Effect2, ns: WaynGroup.Mgm.Ability.Demo, asm: SimpleAbility}
+      data:
+        Value: 5
+        <Affects>k__BackingField: 1
+    00000002:
+      type: {class: Effect1, ns: WaynGroup.Mgm.Ability.Demo, asm: SimpleAbility}
+      data:
+        Value: 2
+        <Affects>k__BackingField: 0
+    00000003:
+      type: {class: NewEffect, ns: NAMESAPCE, asm: SimpleAbility}
+      data:
+        <Affects>k__BackingField: 0
+    00000004:
+      type: {class: Effect1, ns: WaynGroup.Mgm.Ability.Demo, asm: SimpleAbility}
+      data:
+        Value: 0
+        <Affects>k__BackingField: 0
+    00000005:
+      type: {class: Effect2, ns: WaynGroup.Mgm.Ability.Demo, asm: SimpleAbility}
+      data:
+        Value: 0
+        <Affects>k__BackingField: 0
+    00000006:
+      type: {class: SpawningEffect, ns: NAMESAPCE, asm: SimpleAbility}
+      data:
+        prefabEntity: 0

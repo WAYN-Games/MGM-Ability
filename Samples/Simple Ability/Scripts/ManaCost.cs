@@ -1,5 +1,11 @@
 ﻿using Unity.Entities;
 
+using WaynGroup.Mgm.Ability;
+using WaynGroup.Mgm.Ability.Demo;
+
+[assembly: RegisterGenericJobType(typeof(AbilityCostCheckerSystem<ManaCostBuffer, ManaCost, ManaCostChecker, Mana>))]
+[assembly: RegisterGenericJobType(typeof(AbilityCostConsumerSystem<ManaCost, ManaCostBuffer, Mana, ManaCostConusmer>))]
+
 namespace WaynGroup.Mgm.Ability.Demo
 {
     public struct ManaCost : IAbilityCost

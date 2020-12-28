@@ -4,6 +4,8 @@ using System.Linq;
 using System.Reflection;
 
 using UnityEditor;
+using UnityEditor.AddressableAssets;
+using UnityEditor.AddressableAssets.Settings;
 using UnityEditor.UIElements;
 
 using UnityEngine;
@@ -30,6 +32,7 @@ public class ScriptableAbilityEditor : Editor
     SerializedProperty EffectsProperty;
 
     SerializedProperty CostsProperty;
+    SerializedProperty SpawnablesProperty;
 
     private readonly string[] _costStirngParams = new string[] { "costs-container", "Undefined ability cost type on {0} cost.", "Undefined ability cost type to remove" };
     private readonly string[] _effectStirngParams = new string[] { "effects-container", "Undefined ability effect type on {0} effect.", "Undefined effect type to remove" };
@@ -39,12 +42,28 @@ public class ScriptableAbilityEditor : Editor
 
     public void OnEnable()
     {
+        Undo.RecordObject(target, "Ability Change");
         CreateInspectorGUI();
+        Undo.undoRedoPerformed += RefreshInspector;
     }
 
+    private void CheckForDuplication()
+    {
+        Debug.Log(Event.current);
+    }
+
+    private void RefreshInspector()
+    {
+        CreateInspectorGUI();
+        Repaint();
+    }
+    public void OnDisable()
+    {
+        Undo.undoRedoPerformed -= RefreshInspector;
+    }
     public override VisualElement CreateInspectorGUI()
     {
-        DefaultAbilityName();
+        Initialization();
 
         Cache();
 
@@ -56,17 +75,71 @@ public class ScriptableAbilityEditor : Editor
         Display(EffectsProperty, EffectTypes, _effectStirngParams);
         Display(CostsProperty, CostTypes, _costStirngParams);
 
+        MakeSpawnablesList();
         return root;
     }
 
-    private void DefaultAbilityName()
+    private void MakeSpawnablesList()
+    {
+        VisualElement spawnablesContainer = root.Query<VisualElement>("spawnables-container").First();
+        PropertyField propertyField = new PropertyField(SpawnablesProperty);
+        propertyField.Bind(serializedObject);
+        spawnablesContainer.Add(propertyField);
+    }
+
+    private void Initialization()
     {
         ScriptableAbility ability = (ScriptableAbility)target;
+        AssignDefaultName(ability);
+        RegisterAsAddressable(ability);
+
+    }
+    public void RegisterAsAddressable(ScriptableAbility ability)
+    {
+        string guid = AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(target));
+
+        if (string.IsNullOrEmpty(guid)) return;
+
+        AddressableAssetSettings settings = AddressableAssetSettingsDefaultObject.Settings;
+
+        AddressableAssetEntry entry = settings.FindAssetEntry(guid);
+        if (entry != null)
+        {
+            if (entry.guid != ability.Id)
+            {
+                ability.Id = entry.guid;
+                AssetDatabase.SaveAssets();
+            }
+            return;
+
+        }
+
+
+        AddressableAssetGroup grp = settings.FindGroup("MGM-Abilities");
+        if (grp == null)
+        {
+            grp = settings.CreateGroup("MGM-Abilities", false, false, false, new List<AddressableAssetGroupSchema> { settings.DefaultGroup.Schemas[0] });
+        }
+
+        entry = settings.CreateOrMoveEntry(guid, grp);
+        if (entry != null)
+        {
+            entry.labels.Add("Ability");
+            entry.address = ability.Name;
+            ability.Id = new Guid(guid).ToString();
+            //You'll need these to run to save the changes!
+            settings.SetDirty(AddressableAssetSettings.ModificationEvent.EntryMoved, entry, true);
+        }
+        AssetDatabase.SaveAssets();
+    }
+    private static void AssignDefaultName(ScriptableAbility ability)
+    {
         if (string.IsNullOrEmpty(ability.Name)) ability.Name = ability.name;
     }
 
     private void Cache()
     {
+
         EffectsProperty = serializedObject.FindProperty("Effects");
 
         EffectTypes = AppDomain.CurrentDomain.GetAssemblies()
@@ -75,9 +148,24 @@ public class ScriptableAbilityEditor : Editor
 
         CostsProperty = serializedObject.FindProperty("Costs");
 
+        SpawnablesProperty = serializedObject.FindProperty("Spawnables");
+
         CostTypes = AppDomain.CurrentDomain.GetAssemblies()
             .SelectMany(s => s.GetTypes())
             .Where(p => typeof(IAbilityCost).IsAssignableFrom(p) && p.IsValueType).ToList();
+    }
+
+    private void DetectAbilityCopy(string guid, Rect selectionRect)
+    {
+        //implement frame selection
+        Event e = Event.current;
+        if (e.type == EventType.ExecuteCommand ||
+            e.type == EventType.ValidateCommand)
+        {
+            if (Event.current.commandName == "Copy")
+                Debug.Log("Copying");
+
+        }
     }
 
     private void LoadBaseLayout()
@@ -156,6 +244,11 @@ public class ScriptableAbilityEditor : Editor
         serializedObject.ApplyModifiedProperties();
         SaveData();
         Display(listProperty, types, stringParams);
+    }
+
+    private void MakeSpawnableList()
+    {
+
     }
 
     private void Display(SerializedProperty listPorperty, List<Type> types, string[] paramStrings)
@@ -240,9 +333,7 @@ public class ScriptableAbilityEditor : Editor
 
     void SaveData()
     {
-        EditorUtility.SetDirty(target);
-        AssetDatabase.SaveAssets();
-        AssetDatabase.Refresh();
+        Undo.RecordObject(target, "Ability Change");
     }
 
     // This method allow to dynamicaly override the preview icon bath in hte inspector window and the project view to the ability ingame icon.

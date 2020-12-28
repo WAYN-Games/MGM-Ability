@@ -486,6 +486,7 @@ GameObject:
   - component: {fileID: 1656319560}
   - component: {fileID: 1656319562}
   - component: {fileID: 1656319561}
+  - component: {fileID: 1656319563}
   m_Layer: 0
   m_Name: Target
   m_TagString: Untagged
@@ -582,6 +583,19 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1656319557}
   m_Mesh: {fileID: 10206, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &1656319563
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1656319557}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6ee369ffb56d4f341bf305b16b14c225, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Value: 1
 --- !u!1 &2131659653
 GameObject:
   m_ObjectHideFlags: 0
@@ -597,6 +611,7 @@ GameObject:
   - component: {fileID: 2131659658}
   - component: {fileID: 2131659660}
   - component: {fileID: 2131659659}
+  - component: {fileID: 2131659661}
   m_Layer: 0
   m_Name: Attaker
   m_TagString: Untagged
@@ -643,11 +658,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2b57754c26436134496339728b43cb2b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  AbilityAssignements:
-  - Ability: {fileID: 11400000, guid: c5affa7859da918499a66a765756c387, type: 2}
-    Bar: 2
-    Slot: 2
-  AbilityUI: {fileID: 1550281780}
+  Abilities:
+  - m_AssetGUID: c5affa7859da918499a66a765756c387
+    m_SubObjectName: 
 --- !u!114 &2131659657
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -723,6 +736,19 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2131659653}
   m_Mesh: {fileID: 10208, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &2131659661
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2131659653}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b4eee86e18d8bab4798f3736a4adde67, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Value: 2
 --- !u!1001 &345999085244441103
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -735,6 +761,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: SpellCasting
       objectReference: {fileID: 0}
+    - target: {fileID: 3023588387263525699, guid: f6d17b6bf750de84cae08b3f917cb61e,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3023588387263525700, guid: f6d17b6bf750de84cae08b3f917cb61e,
         type: 3}
       propertyPath: m_Materials.Array.data[0]
@@ -744,6 +775,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Materials.Array.data[1]
       value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 3023588387263525700, guid: f6d17b6bf750de84cae08b3f917cb61e,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3023588387263525702, guid: f6d17b6bf750de84cae08b3f917cb61e,
         type: 3}

@@ -4,3 +4,8 @@
 .container {
  -unity-font-style:normal
 }
+#id-property{
+	-unity-text-align: middle-right;
+	font-size: 10px; 
+	color: rgba(143, 143, 143, 255);
+}

@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 3258580605324740345}
   - component: {fileID: 3258580605324740344}
   - component: {fileID: 6706240600975937687}
+  - component: {fileID: -8412565286505745463}
   m_Layer: 0
   m_Name: AbilityVFX
   m_TagString: Untagged
@@ -122,5 +123,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0b560dfaf509df04e86a0d998e59efa0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &-8412565286505745463
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3258580605324740351}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 36049e38bad887e4c8a6980f46c54ed3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 

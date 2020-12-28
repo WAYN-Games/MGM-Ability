@@ -4,7 +4,7 @@
   "version": "0.4.0-preview",
   "unity": "2020.1",
   "description": "This package contain performant and disigner friendly ability system.\nIt allow the definition of custom effects that can be composed to form any kind of ability.\nEffectact can range from the simple direct effect (damage,pushback,..) to the AOE and/or over time effects.",
-  "type": "library",
+  "type": "module",
   "samples": [
     {
       "displayName": "Simple Ability",
@@ -13,7 +13,8 @@
     }
   ],
   "dependencies": {
-    "com.unity.entities": "0.14.0-preview.19",
-    "com.unity.ui": "1.0.0-preview.3"
+    "com.unity.entities": "0.16.0-preview.21",
+    "com.unity.ui": "1.0.0-preview.6",
+    "com.unity.burst": "1.4.3"
   }
 }

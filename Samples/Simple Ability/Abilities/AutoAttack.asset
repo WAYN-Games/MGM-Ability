@@ -12,25 +12,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b49966bb9ea414943a50ddba966b498e, type: 3}
   m_Name: AutoAttack
   m_EditorClassIdentifier: 
-  Name: Auto Attack
+  Id: c5affa7859da918499a66a765756c387
+  Name: AutoAttack
   Icon: {fileID: 2800000, guid: 10d3737bce7f66b41b6d7331aac16851, type: 3}
   Range:
     Min: 0.5
     Max: 5
   CoolDown: 5
   CastTime: 2
-  Costs:
-  - id: 0
+  Costs: []
   Effects:
+  - id: 0
   - id: 1
+  Spawnables: []
   references:
     version: 1
     00000000:
-      type: {class: ManaCost, ns: WaynGroup.Mgm.Ability.Demo, asm: SimpleAbility}
-      data:
-        Cost: 1
-    00000001:
       type: {class: Effect2, ns: WaynGroup.Mgm.Ability.Demo, asm: SimpleAbility}
       data:
         Value: 5
+        <Affects>k__BackingField: 0
+    00000001:
+      type: {class: Effect1, ns: WaynGroup.Mgm.Ability.Demo, asm: SimpleAbility}
+      data:
+        Value: 2
         <Affects>k__BackingField: 0

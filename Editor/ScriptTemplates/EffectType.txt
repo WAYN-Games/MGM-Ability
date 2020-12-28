@@ -11,21 +11,7 @@ namespace NAMESAPCE
 	    public EffectAffectType Affects { get; set; }
 
         // YOUR CODE : delcare all necesasry data inherant to the effect consumption, could be a the effect power, damage type,...
-
 		#NOTRIM#
-
-        // Mandatory for Authoring, do not edit
-        public void Convert(Entity entity, EntityManager dstManager, int abilityIndex)
-        {
-            EffectUtility.AddEffect<#SCRIPTNAME#Buffer, #SCRIPTNAME#>(entity, dstManager, abilityIndex, this);
-        }
-    }
-
-    // Mandatory for Authoring, do not edit
-    public struct #SCRIPTNAME#Buffer : IEffectBufferElement<#SCRIPTNAME#>
-    {
-        public int AbilityIndex { get; set; }
-        public #SCRIPTNAME# Effect { get; set; }
     }
 
     public struct #SCRIPTNAME#Context : IEffectContext<#SCRIPTNAME#>
@@ -35,15 +21,14 @@ namespace NAMESAPCE
 		#NOTRIM#
 
         // Mandatory for Authoring, do not edit
-        public Entity Target { get; set; }
         public #SCRIPTNAME# Effect { get; set; }
     }
 
-    public class #SCRIPTNAME#TriggerSystem : AbilityEffectTriggerSystem<#SCRIPTNAME#Buffer, #SCRIPTNAME#, #SCRIPTNAME#ConsumerSystem, #SCRIPTNAME#TriggerSystem.TargetEffectWriter, #SCRIPTNAME#Context>
+    public class #SCRIPTNAME#TriggerSystem : AbilityEffectTriggerSystem<#SCRIPTNAME#, #SCRIPTNAME#ConsumerSystem, #SCRIPTNAME#TriggerSystem.EffectWriter, #SCRIPTNAME#Context>
     {
 
         [BurstCompile]
-        public struct TargetEffectWriter : IEffectContextWriter<#SCRIPTNAME#>
+        public struct EffectWriter : IEffectContextWriter<#SCRIPTNAME#>
         {
 			// YOUR CODE : declare the public [ReadOnly] component data chunk accessor and the private [ReadOnly] native array to cache the component data
 
@@ -64,9 +49,8 @@ namespace NAMESAPCE
             /// <param name="effect">The effect to contextualize.</param>
             public void WriteContextualizedEffect(int entityIndex, ref NativeStream.Writer consumerWriter, #SCRIPTNAME# effect, Entity target)
             {
-				                consumerWriter.Write(new #SCRIPTNAME#Context() {
-                    Target = target,
-                    Effect = effect
+				   consumerWriter.Write(new #SCRIPTNAME#Context() {
+                     Effect = effect
                     // YOUR CODE : populate the effect context with additonal contextual data.
                 });
 			}

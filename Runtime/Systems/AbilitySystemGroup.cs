@@ -2,6 +2,8 @@
 
 namespace WaynGroup.Mgm.Ability
 {
+
+    [UpdateInGroup(typeof(FixedStepSimulationSystemGroup))]
     public class AbilitySystemGroup : ComponentSystemGroup
     {
 

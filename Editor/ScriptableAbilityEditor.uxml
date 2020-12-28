@@ -6,6 +6,7 @@
     xsi:noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd"
 >
   <engine:VisualElement name="scripatable-ability-container" class="container">
+    <engine:Label name="id-property" binding-path="Id" />
     <editor:PropertyField name="name-property" binding-path="Name" />
     <editor:PropertyField name="icon-property" binding-path="Icon" />
     <editor:PropertyField name="range-property" binding-path="Range" />
@@ -20,6 +21,8 @@
       <engine:VisualElement name="effect-picker-container" class="container" />
       <engine:VisualElement name="effects-container" class="container" />
     </engine:Foldout>
-
+    <engine:Foldout text="Spawnables" class="header">
+      <engine:VisualElement name="spawnables-container" class="container" />
+    </engine:Foldout>
   </engine:VisualElement>
 </engine:UXML>

@@ -2,18 +2,20 @@
 
 namespace WaynGroup.Mgm.Ability
 {
-    public enum EffectAffectType
+    public enum TargetingMode
     {
+
         Target,
         Self
+
     }
 
     /// <summary>
     /// Interface for declaring new effect struct.
     /// </summary>
-    public interface IEffect : ISelfConvertingAbilityComponentData
+    public interface IEffect
     {
-        EffectAffectType Affects { get; set; }
+        TargetingMode Affects { get; set; }
     }
 
     public interface ISelfConvertingAbilityComponentData : IComponentData
@@ -25,6 +27,8 @@ namespace WaynGroup.Mgm.Ability
         /// <param name="dstManager">Destination world entoty manager.</param>
         /// <param name="abilityIndex">The index of the ability that the effect is linkde to.</param>
         void Convert(Entity entity, EntityManager dstManager, int abilityIndex);
+
+
     }
 
     /// <summary>

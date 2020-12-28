@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 using WaynGroup.Mgm.Ability;
 
@@ -11,7 +12,7 @@ public class ScriptableAbility : ScriptableObject
     /// <summary>
     /// A unique Id generated when creating the ability in the editor.
     /// </summary>
-    public Guid Id = new Guid();
+    public string Id;
     /// <summary>
     /// The name of the ability.
     /// </summary>
@@ -45,7 +46,25 @@ public class ScriptableAbility : ScriptableObject
     /// </summary>
     [SerializeReference]
     public List<IEffect> Effects;
+    /// <summary>
+    /// The list of spawnable gameobjects.
+    /// These games object are converted to entities to be spanwed at runtime so any non convertible component will be ignored.
+    /// </summary>
 
+    public List<SpawnableData> Spawnables;
+
+
+
+}
+
+
+[Serializable]
+public struct SpawnableData
+{
+    public AssetReferenceGameObject PrefabRef;
+    [HideInInspector]
+    public GameObject PrefabGO;
+    public int count;
 }
 
 [Serializable]
