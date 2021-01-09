@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 
 using Unity.Entities;
 
-using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 
@@ -42,8 +41,6 @@ namespace WaynGroup.Mgm.Ability
         private void LoadAbilityCatalogueAsync()
         {
 
-            Debug.Log("Start catalogue synch");
-
             AsyncOperationHandle<IList<ScriptableAbility>> handle = Addressables.LoadAssetsAsync<ScriptableAbility>(new AssetLabelReference() { labelString = "Ability" }, null, false);
 
             SendAbilityCatalogueUpdateOnComplete(handle);
@@ -64,8 +61,6 @@ namespace WaynGroup.Mgm.Ability
 
         private void BuildEffectCatalogueAsync(List<ScriptableAbility> _abilities)
         {
-
-            Debug.Log("Update effect");
             Task task = new Task(
               () =>
               {
@@ -90,15 +85,12 @@ namespace WaynGroup.Mgm.Ability
 
         private void BuildCostCatalogueAsync(List<ScriptableAbility> _abilities)
         {
-
-            Debug.Log("Update cost");
             Task task = new Task(
               () =>
               {
                   MultiMap<Type, CostData> _costMap = new MultiMap<Type, CostData>();
                   for (int i = 0; i < _abilities.Count; ++i)
                   {
-                      Debug.Log($"Updating cost for {_abilities[i].Name}");
                       foreach (IAbilityCost cost in _abilities[i].Costs)
                       {
 
@@ -108,9 +100,7 @@ namespace WaynGroup.Mgm.Ability
                               cost = cost
                           });
                       }
-                      Debug.Log($"Updated cost for {_abilities[i].Name}");
                   }
-                  Debug.Log($"Invoke OnCostUpdate");
                   OnCostUpdate.Invoke(_costMap);
               });
             task.Start();

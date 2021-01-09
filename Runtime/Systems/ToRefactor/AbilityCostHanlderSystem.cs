@@ -40,11 +40,9 @@ namespace WaynGroup.Mgm.Ability
 
         private void UpdateCostCache(MultiMap<Type, CostData> costMap)
         {
-            UnityEngine.Debug.Log("CostCache building");
             NativeMultiHashMap<Guid, COST> map = BuildEffectMapCache(costMap);
             RefreshEffectMapChache(map);
             Enabled = true;
-            UnityEngine.Debug.Log("CostCache built");
         }
 
         private void RefreshEffectMapChache(NativeMultiHashMap<Guid, COST> map)
@@ -107,7 +105,6 @@ namespace WaynGroup.Mgm.Ability
 
 
                         if (ability.AbilityState != AbilityState.Active || !ability.HasEnougthRessource) continue;
-                        UnityEngine.Debug.Log($"Ability {ability.Guid} is active. And HasEnougthRessource {ability.HasEnougthRessource}");
 
                         enumerator.Reset();
                         while (enumerator.MoveNext())

@@ -5,8 +5,6 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs;
 
-using UnityEngine;
-
 namespace WaynGroup.Mgm.Ability
 {
     /// <summary>
@@ -173,7 +171,6 @@ namespace WaynGroup.Mgm.Ability
         private void UpdpateCatalog(List<ScriptableAbility> abilityCatalog)
         {
 
-            Debug.Log("Caching timings");
             NativeHashMap<Guid, AbilityTimings> tmpMap = BuildTimingMap(abilityCatalog);
             _jm.UpdateCachedMap(tmpMap);
 
