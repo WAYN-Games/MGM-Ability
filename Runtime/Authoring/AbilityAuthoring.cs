@@ -10,7 +10,6 @@ using WaynGroup.Mgm.Ability;
 
 
 [DisallowMultipleComponent]
-[RequiresEntityConversion]
 public class AbilityAuthoring : MonoBehaviour, IConvertGameObjectToEntity
 {
     [Tooltip("Intial time needed for all abilities to be ready. This allow the system to initialise before an ability can be activated.")]

@@ -21,10 +21,7 @@
 
     public class ManaCostConsumerSystem : AbilityCostHanlderSystem<ManaCost, Mana, ManaCostHandler>
     {
-        protected override ManaCostHandler GetCostConsumer()
-        {
-            return new ManaCostHandler();
-        }
+
     }
 
 }

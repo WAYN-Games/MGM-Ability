@@ -127,13 +127,16 @@ namespace WaynGroup.Mgm.Ability
                 AbilityBufferChunk = GetBufferTypeHandle<AbilityBufferElement>(false),
                 ResourceComponent = GetComponentTypeHandle<RESOURCE>(false),
                 CostMap = _costMap,
-                CostHandler = GetCostConsumer()
+                CostHandler = GetCostHandler()
 
             }.ScheduleParallel(_query, Dependency);
 
         }
 
-        protected abstract COST_HANDLER GetCostConsumer();
+        protected virtual COST_HANDLER GetCostHandler()
+        {
+            return default;
+        }
 
         protected override void OnDestroy()
         {
