@@ -168,8 +168,6 @@ namespace WaynGroup.Mgm.Ability
             {
                 map.Add(effectData.guid, (EFFECT)effectData.effect);
             }
-
-            UnityEngine.Debug.Log("EffectCache built");
             return map;
         }
 
