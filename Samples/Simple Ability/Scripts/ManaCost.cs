@@ -1,58 +1,29 @@
-﻿using Unity.Entities;
-
-using WaynGroup.Mgm.Ability;
-using WaynGroup.Mgm.Ability.Demo;
-
-[assembly: RegisterGenericJobType(typeof(AbilityCostCheckerSystem<ManaCostBuffer, ManaCost, ManaCostChecker, Mana>))]
-[assembly: RegisterGenericJobType(typeof(AbilityCostConsumerSystem<ManaCost, ManaCostBuffer, Mana, ManaCostConusmer>))]
-
-namespace WaynGroup.Mgm.Ability.Demo
+﻿namespace WaynGroup.Mgm.Ability.Demo
 {
     public struct ManaCost : IAbilityCost
     {
         public float Cost;
 
-        public void Convert(Entity entity, EntityManager dstManager, int abilityIndex)
+    }
+
+    public struct ManaCostHandler : ICostHandler<ManaCost, Mana>
+    {
+        public void ConsumeCost(ManaCost cost, ref Mana resource)
         {
-            EffectUtility.AddCost<ManaCostBuffer, ManaCost>(entity, dstManager, abilityIndex, this);
+            resource.Value -= cost.Cost;
         }
-    }
 
-    public struct ManaCostBuffer : IAbilityCostBufferElement<ManaCost>
-    {
-        public int AbilityIndex { get; set; }
-        public ManaCost Cost { get; set; }
-    }
-
-    public struct ManaCostChecker : ICostChecker<Mana, ManaCost>
-    {
         public bool HasEnougthResourceLeft(ManaCost cost, in Mana resource)
         {
             return resource.Value >= cost.Cost;
         }
     }
 
-    public struct ManaCostConusmer : ICostConsumer<ManaCost, Mana>
+    public class ManaCostConsumerSystem : AbilityCostHanlderSystem<ManaCost, Mana, ManaCostHandler>
     {
-        public void ConsumeCost(ManaCost cost, ref Mana resource)
+        protected override ManaCostHandler GetCostConsumer()
         {
-            resource.Value -= cost.Cost;
-        }
-    }
-
-    public class ManaCostConsumerSystem : AbilityCostConsumerSystem<ManaCost, ManaCostBuffer, Mana, ManaCostConusmer>
-    {
-        protected override ManaCostConusmer GetCostConsumer()
-        {
-            return new ManaCostConusmer();
-        }
-    }
-
-    public class ManaCostCheckerSystem : AbilityCostCheckerSystem<ManaCostBuffer, ManaCost, ManaCostChecker, Mana>
-    {
-        protected override ManaCostChecker GetCostChecker()
-        {
-            return new ManaCostChecker();
+            return new ManaCostHandler();
         }
     }
 

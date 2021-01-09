@@ -18,21 +18,26 @@ MonoBehaviour:
   Range:
     Min: 0.5
     Max: 5
-  CoolDown: 5
-  CastTime: 2
-  Costs: []
-  Effects:
+  CoolDown: 0.5
+  CastTime: 0.2
+  Costs:
   - id: 0
+  Effects:
   - id: 1
+  - id: 2
   Spawnables: []
   references:
     version: 1
     00000000:
+      type: {class: ManaCost, ns: WaynGroup.Mgm.Ability.Demo, asm: SimpleAbility}
+      data:
+        Cost: 1
+    00000001:
       type: {class: Effect2, ns: WaynGroup.Mgm.Ability.Demo, asm: SimpleAbility}
       data:
         Value: 5
         <Affects>k__BackingField: 0
-    00000001:
+    00000002:
       type: {class: Effect1, ns: WaynGroup.Mgm.Ability.Demo, asm: SimpleAbility}
       data:
         Value: 2

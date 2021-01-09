@@ -5,7 +5,7 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs;
 
-
+using UnityEngine;
 
 namespace WaynGroup.Mgm.Ability
 {
@@ -74,36 +74,36 @@ namespace WaynGroup.Mgm.Ability
                 return Ability;
             }
 
-            public AbilityBufferElement UpdateState(AbilityBufferElement Ability)
+            public AbilityBufferElement UpdateState(AbilityBufferElement ability)
             {
-                if (Ability.AbilityState == AbilityState.CooledDown)
+                if (ability.AbilityState == AbilityState.CooledDown && ability.HasEnougthRessource)
                 {
-                    Ability = StartCasting(Ability);
-                    return Ability;
+                    ability = StartCasting(ability);
+                    return ability;
                 }
 
-                bool IsCooldownComplete = Ability.AbilityState == AbilityState.CoolingDown && Ability.CurrentTimming < 0;
+                bool IsCooldownComplete = ability.AbilityState == AbilityState.CoolingDown && ability.CurrentTimming < 0;
                 if (IsCooldownComplete)
                 {
-                    Ability = WaitForActivation(Ability);
-                    return Ability;
+                    ability = WaitForActivation(ability);
+                    return ability;
                 }
 
-                if (Ability.AbilityState == AbilityState.Active)
+                if (ability.AbilityState == AbilityState.Active)
                 {
-                    Ability = StartCoolDown(Ability);
-                    return Ability;
+                    ability = StartCoolDown(ability);
+                    return ability;
                 }
 
-                bool IsCastComplete = Ability.AbilityState == AbilityState.Casting && Ability.CurrentTimming < 0;
+                bool IsCastComplete = ability.AbilityState == AbilityState.Casting && ability.CurrentTimming < 0;
 
                 if (IsCastComplete)
                 {
-                    Ability = Activate(Ability);
-                    return Ability;
+                    ability = Activate(ability);
+                    return ability;
                 }
 
-                return Ability;
+                return ability;
             }
 
             public AbilityBufferElement WaitForActivation(AbilityBufferElement Ability)
@@ -172,6 +172,8 @@ namespace WaynGroup.Mgm.Ability
 
         private void UpdpateCatalog(List<ScriptableAbility> abilityCatalog)
         {
+
+            Debug.Log("Caching timings");
             NativeHashMap<Guid, AbilityTimings> tmpMap = BuildTimingMap(abilityCatalog);
             _jm.UpdateCachedMap(tmpMap);
 

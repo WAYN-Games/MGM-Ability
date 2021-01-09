@@ -22,6 +22,13 @@ namespace WaynGroup.Mgm.Ability
 
     }
 
+    [UpdateAfter(typeof(AbilityUpdateSystemGroup))]
+    [UpdateInGroup(typeof(AbilitySystemGroup))]
+    public class AbilityCostsSystemGroup : ComponentSystemGroup
+    {
+
+    }
+
     [UpdateAfter(typeof(AbilityTriggerSystemGroup))]
     [UpdateInGroup(typeof(AbilitySystemGroup))]
     public class AbilityConsumerSystemGroup : ComponentSystemGroup

@@ -18,29 +18,17 @@ namespace WaynGroup.Mgm.Ability
         TargetingMode Affects { get; set; }
     }
 
-    public interface ISelfConvertingAbilityComponentData : IComponentData
-    {
-        /// <summary>
-        /// This method convert the effect and effect buffer entity and adds them to the entity.
-        /// </summary>
-        /// <param name="entity">Entity that can use the ability linked to this effect.</param>
-        /// <param name="dstManager">Destination world entoty manager.</param>
-        /// <param name="abilityIndex">The index of the ability that the effect is linkde to.</param>
-        void Convert(Entity entity, EntityManager dstManager, int abilityIndex);
-
-
-    }
-
     /// <summary>
     /// Interface for declaring new ability cost struct.
     /// </summary>
-    public interface IAbilityCost : ISelfConvertingAbilityComponentData
+    public interface IAbilityCost : IComponentData
     {
     }
 
-    public interface ICostChecker<RESOURCE, COST> where RESOURCE : struct, IComponentData
-        where COST : struct, IAbilityCost
+
+    public interface ICostHandler<COST, RESOURCE> where RESOURCE : struct, IComponentData
     {
+        void ConsumeCost(COST cost, ref RESOURCE resource);
         bool HasEnougthResourceLeft(COST cost, in RESOURCE resource);
     }
 

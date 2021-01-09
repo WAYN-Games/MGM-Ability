@@ -29,7 +29,7 @@ public class AbilityAuthoring : MonoBehaviour, IConvertGameObjectToEntity
         DynamicBuffer<AbilityBufferElement> abilityBuffer = dstManager.AddBuffer<AbilityBufferElement>(entity);
         for (int i = 0; i < Abilities.Count; i++)
         {
-
+            Debug.Log(Abilities[i].AssetGUID);
             abilityBuffer.Add(new AbilityBufferElement()
             {
                 Guid = new Guid(Abilities[i].AssetGUID),

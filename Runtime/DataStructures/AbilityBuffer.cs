@@ -21,6 +21,8 @@ namespace WaynGroup.Mgm.Ability
         /// Current state of the ability.
         /// </summary>
         public AbilityState AbilityState;
+
+        public bool HasEnougthRessource;
     }
 
 }

@@ -15,6 +15,7 @@ namespace WaynGroup.Mgm.Ability.Demo
     {
     }
 
+
     public class Effect1TriggerSystem : AbilityEffectTriggerSystem<Effect1, Effect1ConsumerSystem, Effect1TriggerSystem.EffectWriter, Effect1Context>
     {
         public struct EffectWriter : IEffectContextWriter<Effect1Context>
@@ -31,6 +32,7 @@ namespace WaynGroup.Mgm.Ability.Demo
         }
 
     }
+
 
     public class Effect1ConsumerSystem : AbilityEffectConsumerSystem<Effect1, Effect1Context>
     {

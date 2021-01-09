@@ -44,6 +44,7 @@ namespace WaynGroup.Mgm.Ability
             Enabled = false;
         }
 
+
         protected override void OnUpdate()
         {
             // If the consumer won't run, there is no point in tirgerring the effects...
@@ -167,6 +168,8 @@ namespace WaynGroup.Mgm.Ability
             {
                 map.Add(effectData.guid, (EFFECT)effectData.effect);
             }
+
+            UnityEngine.Debug.Log("EffectCache built");
             return map;
         }
 
@@ -212,6 +215,12 @@ namespace WaynGroup.Mgm.Ability
         protected virtual EntityQueryDesc GetEffectContextEntityQueryDesc()
         {
             return new EntityQueryDesc();
+        }
+
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+            _effectMap.Dispose();
         }
         #endregion
     }
