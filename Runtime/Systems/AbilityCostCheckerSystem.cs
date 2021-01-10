@@ -1,5 +1,6 @@
 ﻿using System;
 
+using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 
@@ -30,7 +31,7 @@ namespace WaynGroup.Mgm.Ability
                 All = new ComponentType[]
                 {
                         ComponentType.ReadOnly<AbilityBufferElement>(),
-                        ComponentType.ReadWrite<RESOURCE>()
+                        ComponentType.ReadOnly<RESOURCE>()
                 }
             });
             World.GetOrCreateSystem<AddressableAbilityCatalogSystem>().OnCostUpdate += UpdateCostCache;
@@ -60,6 +61,7 @@ namespace WaynGroup.Mgm.Ability
         /// Job in charge of the shared logic (targetting, ability activity,..).
         /// This job will call the WriteContextualizedEffect method of the CTX_WRITER when the efect has to be triggered.
         /// </summary>
+        [BurstCompile]
         private struct CostHandlerJob : IJobChunk
         {
             public COST_HANDLER CostHandler;
@@ -79,10 +81,6 @@ namespace WaynGroup.Mgm.Ability
                     for (int abilityIndex = 0; abilityIndex < AbilityBufferArray.Length; ++abilityIndex)
                     {
                         AbilityBufferElement ability = AbilityBufferArray[abilityIndex];
-
-
-
-
                         bool temp = true;
                         NativeMultiHashMap<Guid, COST>.Enumerator enumerator = CostMap.GetValuesForKey(AbilityBufferArray[abilityIndex].Guid);
                         while (enumerator.MoveNext())

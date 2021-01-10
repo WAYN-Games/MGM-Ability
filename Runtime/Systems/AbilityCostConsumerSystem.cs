@@ -1,5 +1,6 @@
 ﻿using System;
 
+using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 
@@ -62,6 +63,7 @@ namespace WaynGroup.Mgm.Ability
         /// Job in charge of the shared logic (targetting, ability activity,..).
         /// This job will call the WriteContextualizedEffect method of the CTX_WRITER when the efect has to be triggered.
         /// </summary>
+        [BurstCompile]
         private struct CostHandlerJob : IJobChunk
         {
             public COST_HANDLER CostHandler;

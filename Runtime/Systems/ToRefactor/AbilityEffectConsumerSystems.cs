@@ -1,4 +1,5 @@
-﻿using Unity.Collections;
+﻿using Unity.Burst;
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs;
 
@@ -92,6 +93,7 @@ namespace WaynGroup.Mgm.Ability
         /// This job reads all the effects to apply and dsipatche them into a map by targeted entity.
         /// This ensures better performance overall in consuming the effect.
         /// </summary>
+        [BurstCompile]
         struct RemapEffects : IJobParallelFor
         {
             [ReadOnly] public NativeStream.Reader EffectReader;
@@ -116,6 +118,7 @@ namespace WaynGroup.Mgm.Ability
         /// <summary>
         /// Clear the effect map and allocate additional capacity if needed.
         /// </summary>
+        [BurstCompile]
         struct SetupEffectMap : IJob
         {
             [ReadOnly] public NativeStream.Reader EffectReader;

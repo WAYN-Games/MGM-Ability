@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-
+using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 
@@ -59,7 +59,7 @@ namespace WaynGroup.Mgm.Ability
                 ConsumerWriter = _conusmerSystem.CreateConsumerWriter(_query.CalculateChunkCount()),
                 EffectContextBuilder = GetContextWriter(),
                 EffectMap = _effectMap
-            }.ScheduleParallel(_query, Dependency);
+            }.Schedule(_query, Dependency);
 
             // Tell the consumer to wait for ths trigger job to finish before starting to consume the effects.
             _conusmerSystem.RegisterTriggerDependency(Dependency);
@@ -69,6 +69,7 @@ namespace WaynGroup.Mgm.Ability
         /// Job in charge of the shared logic (targetting, ability activity,..).
         /// This job will call the WriteContextualizedEffect method of the CTX_WRITER when the efect has to be triggered.
         /// </summary>
+        [BurstCompile]
         private struct TriggerJob : IJobChunk
         {
             public CTX_BUILDER EffectContextBuilder;
@@ -84,6 +85,9 @@ namespace WaynGroup.Mgm.Ability
                 NativeArray<Target> targets = chunk.GetNativeArray(TargetChunk);
                 NativeArray<Entity> entities = chunk.GetNativeArray(EntityChunk);
                 EffectContextBuilder.PrepareChunk(chunk);
+
+                // removing this result in exception for more than 2 chunks whatever the index passed to BeginForEachIndex
+                ConsumerWriter.PatchMinMaxRange(chunkIndex);
 
 
                 ConsumerWriter.BeginForEachIndex(chunkIndex);
