@@ -151,17 +151,12 @@ namespace WaynGroup.Mgm.Ability
             NativeHashMap<Guid, AbilityTimings> tmpMap = new NativeHashMap<Guid, AbilityTimings>(abilityCatalog.Count, Allocator.Persistent);
             foreach (ScriptableAbility scriptableAbility in abilityCatalog)
             {
-                tmpMap.Add(new Guid(scriptableAbility.Id), new AbilityTimings() { Cast = scriptableAbility.CastTime, CoolDown = scriptableAbility.CoolDown });
+                tmpMap.Add(new Guid(scriptableAbility.Id), scriptableAbility.Timings);
             }
 
             return tmpMap;
         }
 
-        private struct AbilityTimings
-        {
-            public float Cast;
-            public float CoolDown;
-        }
         private void ListenForAbilityCatalogUpdate()
         {
             Enabled = false; // Avoid system update with not ready catalog.

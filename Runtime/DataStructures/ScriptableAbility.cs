@@ -28,13 +28,9 @@ public class ScriptableAbility : ScriptableObject
     /// </summary>
     public Range Range;
     /// <summary>
-    /// The time necessary for the ability to recahrge before it can be reused.
+    /// The time necessary for the ability to recharge before it can be reused and time needed before it's activation.
     /// </summary>
-    public float CoolDown;
-    /// <summary>
-    /// The time needed by the ability between the user input and the trigerring of the ability effect.
-    /// </summary>
-    public float CastTime;
+    public AbilityTimings Timings;
     /// <summary>
     /// The list of costs that are check to cast the ability.
     /// A corresponding effect is automatically added to the list of effect at runtime to consume the associated ressource.
@@ -65,6 +61,13 @@ public struct SpawnableData
     [HideInInspector]
     public GameObject PrefabGO;
     public int count;
+}
+
+[Serializable]
+public struct AbilityTimings
+{
+    public float Cast;
+    public float CoolDown;
 }
 
 [Serializable]

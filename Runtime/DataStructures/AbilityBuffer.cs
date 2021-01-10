@@ -23,6 +23,8 @@ namespace WaynGroup.Mgm.Ability
         public AbilityState AbilityState;
 
         public bool HasEnougthRessource;
+
+        public bool IsInRange;
     }
 
 }

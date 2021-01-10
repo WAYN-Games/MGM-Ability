@@ -18,8 +18,9 @@ MonoBehaviour:
   Range:
     Min: 0.5
     Max: 5
-  CoolDown: 0.5
-  CastTime: 0.2
+  Timings:
+    Cast: 0
+    CoolDown: 0
   Costs:
   - id: 0
   Effects:

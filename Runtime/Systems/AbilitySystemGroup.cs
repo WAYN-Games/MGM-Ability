@@ -3,7 +3,7 @@
 namespace WaynGroup.Mgm.Ability
 {
 
-    [UpdateInGroup(typeof(FixedStepSimulationSystemGroup))]
+    //[UpdateInGroup(typeof(FixedStepSimulationSystemGroup))]
     public class AbilitySystemGroup : ComponentSystemGroup
     {
 
@@ -25,6 +25,19 @@ namespace WaynGroup.Mgm.Ability
     [UpdateAfter(typeof(AbilityUpdateSystemGroup))]
     [UpdateInGroup(typeof(AbilitySystemGroup))]
     public class AbilityCostsSystemGroup : ComponentSystemGroup
+    {
+
+    }
+
+    [UpdateInGroup(typeof(AbilityCostsSystemGroup))]
+    public class AbilityCostsCheckerSystemGroup : ComponentSystemGroup
+    {
+
+    }
+
+    [UpdateInGroup(typeof(AbilityCostsSystemGroup))]
+    [UpdateAfter(typeof(AbilityCostsCheckerSystemGroup))]
+    public class AbilityCostsConsumerSystemGroup : ComponentSystemGroup
     {
 
     }

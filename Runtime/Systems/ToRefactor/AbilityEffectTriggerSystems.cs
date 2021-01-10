@@ -150,9 +150,18 @@ namespace WaynGroup.Mgm.Ability
 
         private void UpdateEffectCache(MultiMap<Type, EffectData> effectMap)
         {
+            if (!effectMap.ContainsKey(typeof(EFFECT)))
+            {
+#if UNITY_EDITOR
+                UnityEngine.Debug.LogWarning($"{this.GetType()} and {_conusmerSystem.GetType()} will not run because there are no ability using {typeof(EFFECT)}");
+#endif
+                _conusmerSystem.Enabled = false;
+                return;
+            }
             NativeMultiHashMap<Guid, EFFECT> map = BuildEffectMapCache(effectMap);
             RefreshEffectMapChache(map);
             Enabled = true;
+            _conusmerSystem.Enabled = true;
         }
 
         private void RefreshEffectMapChache(NativeMultiHashMap<Guid, EFFECT> map)
@@ -218,7 +227,7 @@ namespace WaynGroup.Mgm.Ability
         protected override void OnDestroy()
         {
             base.OnDestroy();
-            _effectMap.Dispose();
+            if (_effectMap.IsCreated) _effectMap.Dispose();
         }
         #endregion
     }
