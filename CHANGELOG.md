@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Changed 
 
 - Updated package dependency
+- **License** (see [LICENSE.md](./LICENSE.md))
 
 ## [0.3.0] - 05/07/2020
 
