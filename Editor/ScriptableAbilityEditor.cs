@@ -334,6 +334,7 @@ public class ScriptableAbilityEditor : Editor
     void SaveData()
     {
         Undo.RecordObject(target, "Ability Change");
+        AssetDatabase.SaveAssets();
     }
 
     // This method allow to dynamicaly override the preview icon bath in hte inspector window and the project view to the ability ingame icon.

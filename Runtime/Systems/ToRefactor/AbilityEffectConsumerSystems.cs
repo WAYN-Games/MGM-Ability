@@ -3,7 +3,6 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs;
 
-
 namespace WaynGroup.Mgm.Ability
 {
     public interface IEffectContext
@@ -148,6 +147,7 @@ namespace WaynGroup.Mgm.Ability
                 Effects = _effects
             };
             Dependency = AllocateJob.Schedule(Dependency);
+
 
 
             NativeMultiHashMap<Entity, ContextualizedEffect>.ParallelWriter effectsWriter = _effects.AsParallelWriter();
