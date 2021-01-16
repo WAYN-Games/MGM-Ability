@@ -120,7 +120,7 @@ public class ScriptableAbilityEditor : Editor
         AddressableAssetGroup grp = settings.FindGroup("MGM-Abilities");
         if (grp == null)
         {
-            grp = settings.CreateGroup("MGM-Abilities", false, false, false, new List<AddressableAssetGroupSchema> { settings.DefaultGroup.Schemas[0] });
+            grp = settings.CreateGroup("MGM-Abilities", false, false, false, settings.DefaultGroup.Schemas);
         }
 
         entry = settings.CreateOrMoveEntry(Guid, grp);
