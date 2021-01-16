@@ -1,9 +1,9 @@
 {
     "name": "WaynGroup.Mgm.Ability.Editor",
     "references": [
-        "GUID:709f50f6df67d954dacc4b3c142ab558",
-        "GUID:734d92eba21c94caba915361bd5ac177",
-        "GUID:69448af7b92c7f342b298e06a37122aa"
+        "Guid:709f50f6df67d954dacc4b3c142ab558",
+        "Guid:734d92eba21c94caba915361bd5ac177",
+        "Guid:69448af7b92c7f342b298e06a37122aa"
     ],
     "includePlatforms": [
         "Editor"

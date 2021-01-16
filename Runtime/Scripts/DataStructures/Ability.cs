@@ -8,7 +8,7 @@ namespace WaynGroup.Mgm.Ability
     [Serializable]
     public struct Ability
     {
-        public Guid Guid;
+        public uint id;
         public AbilityState State { get; set; }
         public Timing CoolDown;
         public Timing CastTime;

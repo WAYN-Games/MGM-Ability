@@ -7,12 +7,13 @@ using UnityEngine.AddressableAssets;
 using WaynGroup.Mgm.Ability;
 
 [CreateAssetMenu(fileName = "NewAbility", menuName = "MGM/Ability", order = 1)]
+[Serializable]
 public class ScriptableAbility : ScriptableObject
 {
     /// <summary>
     /// A unique Id generated when creating the ability in the editor.
     /// </summary>
-    public string Id;
+    public uint Id;
     /// <summary>
     /// The name of the ability.
     /// </summary>
@@ -62,6 +63,8 @@ public struct SpawnableData
     public GameObject PrefabGO;
     public int count;
 }
+
+
 
 [Serializable]
 public struct AbilityTimings

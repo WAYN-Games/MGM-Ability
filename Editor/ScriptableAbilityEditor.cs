@@ -76,6 +76,7 @@ public class ScriptableAbilityEditor : Editor
         Display(CostsProperty, CostTypes, _costStirngParams);
 
         MakeSpawnablesList();
+        SaveData();
         return root;
     }
 
@@ -90,24 +91,25 @@ public class ScriptableAbilityEditor : Editor
     private void Initialization()
     {
         ScriptableAbility ability = (ScriptableAbility)target;
+        Undo.RecordObject(ability, "Ability Change");
         AssignDefaultName(ability);
         RegisterAsAddressable(ability);
-
     }
     public void RegisterAsAddressable(ScriptableAbility ability)
     {
-        string guid = AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(target));
+        string Guid = AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(target));
 
-        if (string.IsNullOrEmpty(guid)) return;
+        if (string.IsNullOrEmpty(Guid)) return;
 
         AddressableAssetSettings settings = AddressableAssetSettingsDefaultObject.Settings;
+        uint GuidHash = AbilityHelper.ComputeAbilityIdFromGuid(Guid);
+        AddressableAssetEntry entry = settings.FindAssetEntry(Guid);
 
-        AddressableAssetEntry entry = settings.FindAssetEntry(guid);
         if (entry != null)
         {
-            if (entry.guid != ability.Id)
+            if (GuidHash != ability.Id)
             {
-                ability.Id = entry.guid;
+                ability.Id = GuidHash;
                 AssetDatabase.SaveAssets();
             }
             return;
@@ -121,17 +123,21 @@ public class ScriptableAbilityEditor : Editor
             grp = settings.CreateGroup("MGM-Abilities", false, false, false, new List<AddressableAssetGroupSchema> { settings.DefaultGroup.Schemas[0] });
         }
 
-        entry = settings.CreateOrMoveEntry(guid, grp);
+        entry = settings.CreateOrMoveEntry(Guid, grp);
         if (entry != null)
         {
             entry.labels.Add("Ability");
             entry.address = ability.Name;
-            ability.Id = new Guid(guid).ToString();
+            ability.Id = GuidHash;
             //You'll need these to run to save the changes!
             settings.SetDirty(AddressableAssetSettings.ModificationEvent.EntryMoved, entry, true);
         }
         AssetDatabase.SaveAssets();
+
     }
+
+
+
     private static void AssignDefaultName(ScriptableAbility ability)
     {
         if (string.IsNullOrEmpty(ability.Name)) ability.Name = ability.name;
@@ -153,19 +159,6 @@ public class ScriptableAbilityEditor : Editor
         CostTypes = AppDomain.CurrentDomain.GetAssemblies()
             .SelectMany(s => s.GetTypes())
             .Where(p => typeof(IAbilityCost).IsAssignableFrom(p) && p.IsValueType).ToList();
-    }
-
-    private void DetectAbilityCopy(string guid, Rect selectionRect)
-    {
-        //implement frame selection
-        Event e = Event.current;
-        if (e.type == EventType.ExecuteCommand ||
-            e.type == EventType.ValidateCommand)
-        {
-            if (Event.current.commandName == "Copy")
-                Debug.Log("Copying");
-
-        }
     }
 
     private void LoadBaseLayout()
@@ -296,7 +289,6 @@ public class ScriptableAbilityEditor : Editor
         {
             text = type.Name
         };
-
         foreach (PropertyInfo property in type.GetProperties().Where(p => p.DeclaringType.Equals(type)))
         {
             SerializedProperty local_sp = sp.FindPropertyRelative(string.Format("<{0}>k__BackingField", property.Name));

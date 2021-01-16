@@ -33,7 +33,7 @@ namespace WaynGroup.Mgm.Ability
         /// <summary>
         /// A map of all effects' unmutable data for the EFFECT type.
         /// </summary>
-        private NativeMultiHashMap<Guid, EFFECT> _effectMap;
+        private NativeMultiHashMap<uint, EFFECT> _effectMap;
 
         protected override void OnCreate()
         {
@@ -59,7 +59,7 @@ namespace WaynGroup.Mgm.Ability
                 ConsumerWriter = _conusmerSystem.CreateConsumerWriter(_query.CalculateChunkCount()),
                 EffectContextBuilder = GetContextWriter(),
                 EffectMap = _effectMap
-            }.Schedule(_query, Dependency);
+            }.ScheduleParallel(_query, Dependency);
 
             // Tell the consumer to wait for ths trigger job to finish before starting to consume the effects.
             _conusmerSystem.RegisterTriggerDependency(Dependency);
@@ -76,7 +76,7 @@ namespace WaynGroup.Mgm.Ability
             [ReadOnly] public BufferTypeHandle<AbilityBufferElement> AbilityBufferChunk;
             [ReadOnly] public ComponentTypeHandle<Target> TargetChunk;
             [ReadOnly] public EntityTypeHandle EntityChunk;
-            [ReadOnly] public NativeMultiHashMap<Guid, EFFECT> EffectMap;
+            [ReadOnly] public NativeMultiHashMap<uint, EFFECT> EffectMap;
             public NativeStream.Writer ConsumerWriter;
 
             public void Execute(ArchetypeChunk chunk, int chunkIndex, int firstEntityIndex)
@@ -93,18 +93,18 @@ namespace WaynGroup.Mgm.Ability
                 ConsumerWriter.BeginForEachIndex(chunkIndex);
                 for (int entityIndex = 0; entityIndex < chunk.Count; ++entityIndex)
                 {
-                    Guid activeAbilityIndex = FindActiveAbility(abilityBufffers, entityIndex, abilityBufffers[entityIndex].AsNativeArray());
+                    uint activeAbilityIndex = FindActiveAbility(abilityBufffers, entityIndex, abilityBufffers[entityIndex].AsNativeArray());
                     WriteEffectsForActiveAbility(targets, entities, entityIndex, activeAbilityIndex);
                 }
                 ConsumerWriter.EndForEachIndex();
 
             }
 
-            private void WriteEffectsForActiveAbility(NativeArray<Target> targets, NativeArray<Entity> entities, int entityIndex, Guid activeAbilityGuid)
+            private void WriteEffectsForActiveAbility(NativeArray<Target> targets, NativeArray<Entity> entities, int entityIndex, uint activeAbilityGuid)
             {
                 if (activeAbilityGuid.Equals(default)) return;
 
-                NativeMultiHashMap<Guid, EFFECT>.Enumerator effectEnumerator = EffectMap.GetValuesForKey(activeAbilityGuid);
+                NativeMultiHashMap<uint, EFFECT>.Enumerator effectEnumerator = EffectMap.GetValuesForKey(activeAbilityGuid);
                 while (effectEnumerator.MoveNext())
                 {
                     ConsumerWriter.Write(effectEnumerator.Current);
@@ -127,7 +127,7 @@ namespace WaynGroup.Mgm.Ability
                 return targetEntities;
             }
 
-            private static Guid FindActiveAbility(BufferAccessor<AbilityBufferElement> abilityBufffers, int entityIndex, NativeArray<AbilityBufferElement> AbilityBufferArray)
+            private static uint FindActiveAbility(BufferAccessor<AbilityBufferElement> abilityBufffers, int entityIndex, NativeArray<AbilityBufferElement> AbilityBufferArray)
             {
                 for (int abilityIndex = 0; abilityIndex < AbilityBufferArray.Length; ++abilityIndex)
                 {
@@ -162,24 +162,24 @@ namespace WaynGroup.Mgm.Ability
                 _conusmerSystem.Enabled = false;
                 return;
             }
-            NativeMultiHashMap<Guid, EFFECT> map = BuildEffectMapCache(effectMap);
+            NativeMultiHashMap<uint, EFFECT> map = BuildEffectMapCache(effectMap);
             RefreshEffectMapChache(map);
             Enabled = true;
             _conusmerSystem.Enabled = true;
         }
 
-        private void RefreshEffectMapChache(NativeMultiHashMap<Guid, EFFECT> map)
+        private void RefreshEffectMapChache(NativeMultiHashMap<uint, EFFECT> map)
         {
             if (_effectMap.IsCreated) _effectMap.Dispose();
             _effectMap = map;
         }
 
-        private static NativeMultiHashMap<Guid, EFFECT> BuildEffectMapCache(MultiMap<Type, EffectData> effectMap)
+        private static NativeMultiHashMap<uint, EFFECT> BuildEffectMapCache(MultiMap<Type, EffectData> effectMap)
         {
-            NativeMultiHashMap<Guid, EFFECT> map = new NativeMultiHashMap<Guid, EFFECT>(effectMap.Count(typeof(EFFECT)), Allocator.Persistent);
+            NativeMultiHashMap<uint, EFFECT> map = new NativeMultiHashMap<uint, EFFECT>(effectMap.Count(typeof(EFFECT)), Allocator.Persistent);
             foreach (EffectData effectData in effectMap[typeof(EFFECT)])
             {
-                map.Add(effectData.guid, (EFFECT)effectData.effect);
+                map.Add(effectData.Guid, (EFFECT)effectData.effect);
             }
             return map;
         }

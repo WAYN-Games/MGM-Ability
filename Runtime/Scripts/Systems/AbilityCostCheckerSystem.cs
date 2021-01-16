@@ -6,13 +6,11 @@ using Unity.Entities;
 
 namespace WaynGroup.Mgm.Ability
 {
-
-
-    [UpdateInGroup(typeof(AbilityCostsConsumerSystemGroup))]
-    public abstract class AbilityCostConsumerSystem<COST, RESOURCE, COST_HANDLER> : SystemBase
-        where COST : struct, IAbilityCost
-        where RESOURCE : struct, IComponentData
-        where COST_HANDLER : struct, ICostHandler<COST, RESOURCE>
+    [UpdateInGroup(typeof(AbilityCostsCheckerSystemGroup))]
+    public abstract class AbilityCostCheckerSystem<COST, RESOURCE, COST_HANDLER> : SystemBase
+      where COST : struct, IAbilityCost
+      where RESOURCE : struct, IComponentData
+      where COST_HANDLER : struct, ICostHandler<COST, RESOURCE>
     {
 
         /// <summary>
@@ -23,7 +21,7 @@ namespace WaynGroup.Mgm.Ability
         /// <summary>
         /// A map of all effects' unmutable data for the EFFECT type.
         /// </summary>
-        private NativeMultiHashMap<Guid, COST> _costMap;
+        private NativeMultiHashMap<uint, COST> _costMap;
 
         protected override void OnCreate()
         {
@@ -33,7 +31,7 @@ namespace WaynGroup.Mgm.Ability
                 All = new ComponentType[]
                 {
                         ComponentType.ReadOnly<AbilityBufferElement>(),
-                        ComponentType.ReadWrite<RESOURCE>()
+                        ComponentType.ReadOnly<RESOURCE>()
                 }
             });
             World.GetOrCreateSystem<AddressableAbilityCatalogSystem>().OnCostUpdate += UpdateCostCache;
@@ -44,8 +42,8 @@ namespace WaynGroup.Mgm.Ability
         {
             Dependency = new CostHandlerJob()
             {
-                AbilityBufferChunk = GetBufferTypeHandle<AbilityBufferElement>(true),
-                ResourceComponent = GetComponentTypeHandle<RESOURCE>(false),
+                AbilityBufferChunk = GetBufferTypeHandle<AbilityBufferElement>(false),
+                ResourceComponent = GetComponentTypeHandle<RESOURCE>(true),
                 CostMap = _costMap,
                 CostHandler = GetCostHandler()
 
@@ -67,9 +65,9 @@ namespace WaynGroup.Mgm.Ability
         private struct CostHandlerJob : IJobChunk
         {
             public COST_HANDLER CostHandler;
-            [ReadOnly] public BufferTypeHandle<AbilityBufferElement> AbilityBufferChunk;
-            [ReadOnly] public NativeMultiHashMap<Guid, COST> CostMap;
-            public ComponentTypeHandle<RESOURCE> ResourceComponent;
+            public BufferTypeHandle<AbilityBufferElement> AbilityBufferChunk;
+            [ReadOnly] public NativeMultiHashMap<uint, COST> CostMap;
+            [ReadOnly] public ComponentTypeHandle<RESOURCE> ResourceComponent;
 
             public void Execute(ArchetypeChunk chunk, int chunkIndex, int firstEntityIndex)
             {
@@ -83,24 +81,20 @@ namespace WaynGroup.Mgm.Ability
                     for (int abilityIndex = 0; abilityIndex < AbilityBufferArray.Length; ++abilityIndex)
                     {
                         AbilityBufferElement ability = AbilityBufferArray[abilityIndex];
-
-
-                        if (ability.AbilityState != AbilityState.Active || !ability.HasEnougthRessource) continue;
-
-                        NativeMultiHashMap<Guid, COST>.Enumerator enumerator = CostMap.GetValuesForKey(AbilityBufferArray[abilityIndex].Guid);
+                        bool temp = true;
+                        NativeMultiHashMap<uint, COST>.Enumerator enumerator = CostMap.GetValuesForKey(AbilityBufferArray[abilityIndex].Guid);
                         while (enumerator.MoveNext())
                         {
                             COST cost = enumerator.Current;
-                            CostHandler.ConsumeCost(cost, ref resource);
-                            resourceComponent[entityIndex] = resource;
+                            temp &= CostHandler.HasEnougthResourceLeft(cost, in resource);
                         }
+                        ability.HasEnougthRessource &= temp;
+                        AbilityBufferArray[abilityIndex] = ability;
                     }
                 }
 
             }
         }
-
-
 
         protected virtual COST_HANDLER GetCostHandler()
         {
@@ -109,23 +103,23 @@ namespace WaynGroup.Mgm.Ability
 
         private void UpdateCostCache(MultiMap<Type, CostData> costMap)
         {
-            NativeMultiHashMap<Guid, COST> map = BuildEffectMapCache(costMap);
+            NativeMultiHashMap<uint, COST> map = BuildEffectMapCache(costMap);
             RefreshEffectMapChache(map);
             Enabled = true;
         }
 
-        private void RefreshEffectMapChache(NativeMultiHashMap<Guid, COST> map)
+        private void RefreshEffectMapChache(NativeMultiHashMap<uint, COST> map)
         {
             if (_costMap.IsCreated) _costMap.Dispose();
             _costMap = map;
         }
 
-        private static NativeMultiHashMap<Guid, COST> BuildEffectMapCache(MultiMap<Type, CostData> effectMap)
+        private static NativeMultiHashMap<uint, COST> BuildEffectMapCache(MultiMap<Type, CostData> effectMap)
         {
-            NativeMultiHashMap<Guid, COST> map = new NativeMultiHashMap<Guid, COST>(effectMap.Count(typeof(COST)), Allocator.Persistent);
+            NativeMultiHashMap<uint, COST> map = new NativeMultiHashMap<uint, COST>(effectMap.Count(typeof(COST)), Allocator.Persistent);
             foreach (CostData costData in effectMap[typeof(COST)])
             {
-                map.Add(costData.guid, (COST)costData.cost);
+                map.Add(costData.Guid, (COST)costData.cost);
             }
             return map;
         }

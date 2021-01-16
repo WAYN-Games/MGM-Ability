@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 using Unity.Collections;
 using Unity.Entities;
@@ -63,7 +62,7 @@ namespace WaynGroup.Mgm.Ability
             /// <summary>
             /// A cached native hashmap of default timings for each ability.
             /// </summary>
-            [ReadOnly] public NativeHashMap<Guid, AbilityTimings> TimmingMap;
+            [ReadOnly] public NativeHashMap<uint, AbilityTimings> TimmingMap;
 
             public AbilityBufferElement UpdateTiming(float DeltaTime, AbilityBufferElement Ability)
             {
@@ -112,8 +111,11 @@ namespace WaynGroup.Mgm.Ability
 
             public AbilityBufferElement StartCasting(AbilityBufferElement Ability)
             {
-                Ability.AbilityState = AbilityState.Casting;
-                Ability.CurrentTimming = TimmingMap[Ability.Guid].Cast;
+                if (TimmingMap.TryGetValue(Ability.Guid, out AbilityTimings timming))
+                {
+                    Ability.AbilityState = AbilityState.Casting;
+                    Ability.CurrentTimming = timming.Cast;
+                }
                 return Ability;
             }
 
@@ -130,7 +132,7 @@ namespace WaynGroup.Mgm.Ability
                 return Ability;
             }
 
-            public void UpdateCachedMap(NativeHashMap<Guid, AbilityTimings> tmpMap)
+            public void UpdateCachedMap(NativeHashMap<uint, AbilityTimings> tmpMap)
             {
                 DisposeOfPrevioudCacheIfExists();
                 TimmingMap = tmpMap;
@@ -146,12 +148,12 @@ namespace WaynGroup.Mgm.Ability
         }
 
 
-        private NativeHashMap<Guid, AbilityTimings> BuildTimingMap(List<ScriptableAbility> abilityCatalog)
+        private NativeHashMap<uint, AbilityTimings> BuildTimingMap(List<ScriptableAbility> abilityCatalog)
         {
-            NativeHashMap<Guid, AbilityTimings> tmpMap = new NativeHashMap<Guid, AbilityTimings>(abilityCatalog.Count, Allocator.Persistent);
+            NativeHashMap<uint, AbilityTimings> tmpMap = new NativeHashMap<uint, AbilityTimings>(abilityCatalog.Count, Allocator.Persistent);
             foreach (ScriptableAbility scriptableAbility in abilityCatalog)
             {
-                tmpMap.Add(new Guid(scriptableAbility.Id), scriptableAbility.Timings);
+                tmpMap.Add(scriptableAbility.Id, scriptableAbility.Timings);
             }
 
             return tmpMap;
@@ -166,7 +168,7 @@ namespace WaynGroup.Mgm.Ability
         private void UpdpateCatalog(List<ScriptableAbility> abilityCatalog)
         {
 
-            NativeHashMap<Guid, AbilityTimings> tmpMap = BuildTimingMap(abilityCatalog);
+            NativeHashMap<uint, AbilityTimings> tmpMap = BuildTimingMap(abilityCatalog);
             _jm.UpdateCachedMap(tmpMap);
 
             Enabled = true; // Catalog is ready, so sytem can update.

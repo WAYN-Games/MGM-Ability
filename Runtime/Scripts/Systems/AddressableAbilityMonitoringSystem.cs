@@ -73,7 +73,7 @@ namespace WaynGroup.Mgm.Ability
 
                           _effectMap.Add(effect.GetType(), new EffectData()
                           {
-                              guid = new Guid(_abilities[i].Id),
+                              Guid = _abilities[i].Id,
                               effect = effect
                           });
                       }
@@ -96,7 +96,7 @@ namespace WaynGroup.Mgm.Ability
 
                           _costMap.Add(cost.GetType(), new CostData()
                           {
-                              guid = new Guid(_abilities[i].Id),
+                              Guid = _abilities[i].Id,
                               cost = cost
                           });
                       }

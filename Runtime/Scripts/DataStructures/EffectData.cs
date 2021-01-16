@@ -1,16 +1,14 @@
 ﻿
-using System;
-
 using WaynGroup.Mgm.Ability;
 
 public struct EffectData
 {
-    public Guid guid;
+    public uint Guid;
     public IEffect effect;
 }
 
 public struct CostData
 {
-    public Guid guid;
+    public uint Guid;
     public IAbilityCost cost;
 }

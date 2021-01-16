@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 using Unity.Entities;
 
@@ -20,20 +19,14 @@ public class AbilityAuthoring : MonoBehaviour, IConvertGameObjectToEntity
 
     public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
     {
-        AddAbilityReferences(entity, dstManager);
-    }
-
-    private void AddAbilityReferences(Entity entity, EntityManager dstManager)
-    {
         DynamicBuffer<AbilityBufferElement> abilityBuffer = dstManager.AddBuffer<AbilityBufferElement>(entity);
         for (int i = 0; i < Abilities.Count; i++)
         {
-            abilityBuffer.Add(new AbilityBufferElement()
-            {
-                Guid = new Guid(Abilities[i].AssetGUID),
-                CurrentTimming = InitialGlobalCoolDown,
-                AbilityState = AbilityState.CoolingDown
-            });
+            conversionSystem.DeclareAssetDependency(gameObject, Abilities[i].editorAsset);
+            AbilityHelper.AddAbility(Abilities[i].editorAsset, ref abilityBuffer);
         }
     }
+
+
+
 }
