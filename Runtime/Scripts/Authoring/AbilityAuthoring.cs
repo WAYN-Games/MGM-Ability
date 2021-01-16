@@ -7,7 +7,7 @@ using UnityEngine.AddressableAssets;
 
 using WaynGroup.Mgm.Ability;
 
-
+#if UNITY_EDITOR
 [DisallowMultipleComponent]
 public class AbilityAuthoring : MonoBehaviour, IConvertGameObjectToEntity
 {
@@ -30,3 +30,4 @@ public class AbilityAuthoring : MonoBehaviour, IConvertGameObjectToEntity
 
 
 }
+#endif

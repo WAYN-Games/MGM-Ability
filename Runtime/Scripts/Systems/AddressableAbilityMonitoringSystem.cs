@@ -51,7 +51,7 @@ namespace WaynGroup.Mgm.Ability
         {
             handle.Completed += objects =>
             {
-
+                if (objects.Result == null) return;
                 List<ScriptableAbility> _abilities = new List<ScriptableAbility>();
                 _abilities.AddRange(objects.Result);
 
