@@ -34,6 +34,7 @@ public class ScriptableAbilityEditor : Editor
     SerializedProperty CostsProperty;
     SerializedProperty SpawnablesProperty;
 
+
     private readonly string[] _costStirngParams = new string[] { "costs-container", "Undefined ability cost type on {0} cost.", "Undefined ability cost type to remove" };
     private readonly string[] _effectStirngParams = new string[] { "effects-container", "Undefined ability effect type on {0} effect.", "Undefined effect type to remove" };
 
@@ -102,6 +103,12 @@ public class ScriptableAbilityEditor : Editor
         if (string.IsNullOrEmpty(Guid)) return;
 
         AddressableAssetSettings settings = AddressableAssetSettingsDefaultObject.Settings;
+
+        if (!settings.GetLabels().Contains(AbilityHelper.ADDRESSABLE_ABILITY_LABEL))
+        {
+            settings.AddLabel(AbilityHelper.ADDRESSABLE_ABILITY_LABEL);
+        }
+
         uint GuidHash = AbilityHelper.ComputeAbilityIdFromGuid(Guid);
         AddressableAssetEntry entry = settings.FindAssetEntry(Guid);
 
@@ -126,7 +133,7 @@ public class ScriptableAbilityEditor : Editor
         entry = settings.CreateOrMoveEntry(Guid, grp);
         if (entry != null)
         {
-            entry.labels.Add("Ability");
+            entry.labels.Add(AbilityHelper.ADDRESSABLE_ABILITY_LABEL);
             entry.address = ability.Name;
             ability.Id = GuidHash;
             //You'll need these to run to save the changes!

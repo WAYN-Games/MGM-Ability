@@ -41,7 +41,7 @@ namespace WaynGroup.Mgm.Ability
         private void LoadAbilityCatalogueAsync()
         {
 
-            AsyncOperationHandle<IList<ScriptableAbility>> handle = Addressables.LoadAssetsAsync<ScriptableAbility>(new AssetLabelReference() { labelString = "Ability" }, null, false);
+            AsyncOperationHandle<IList<ScriptableAbility>> handle = Addressables.LoadAssetsAsync<ScriptableAbility>(new AssetLabelReference() { labelString = AbilityHelper.ADDRESSABLE_ABILITY_LABEL }, null, false);
 
             SendAbilityCatalogueUpdateOnComplete(handle);
 
