@@ -15,15 +15,18 @@ namespace WaynGroup.Mgm.Ability
 
         public delegate void OnEffectUpdateDelegate(MultiMap<Type, EffectData> effectMap);
         public delegate void OnCostUpdateDelegate(MultiMap<Type, CostData> costMap);
-        public delegate void OnAbilityUpdateDelegate(List<ScriptableAbility> abilityCatalogue);
+        public delegate void OnAbilityUpdateDelegate(Dictionary<uint, ScriptableAbility> abilityCatalogue);
 
         public OnEffectUpdateDelegate OnEffectUpdate;
         public OnCostUpdateDelegate OnCostUpdate;
         public OnAbilityUpdateDelegate OnAbilityUpdate;
 
+        public Dictionary<uint, ScriptableAbility> AbilityCatalog;
+
         protected override void OnCreate()
         {
             base.OnCreate();
+            AbilityCatalog = new Dictionary<uint, ScriptableAbility>();
             OnAbilityUpdate += BuildEffectCatalogueAsync;
             OnAbilityUpdate += BuildCostCatalogueAsync;
             LoadAbilityCatalogueAsync();
@@ -32,7 +35,7 @@ namespace WaynGroup.Mgm.Ability
 
         protected override void OnUpdate()
         {
-
+            // Nothing, it's an initialisation system.
         }
 
         #region Self Documenting Encapsulations
@@ -52,28 +55,30 @@ namespace WaynGroup.Mgm.Ability
             handle.Completed += objects =>
             {
                 if (objects.Result == null) return;
-                List<ScriptableAbility> _abilities = new List<ScriptableAbility>();
-                _abilities.AddRange(objects.Result);
-
-                OnAbilityUpdate.Invoke(_abilities);
+                foreach (ScriptableAbility ability in objects.Result)
+                {
+                    AbilityCatalog.Add(ability.Id, ability);
+                }
+                OnAbilityUpdate.Invoke(AbilityCatalog);
             };
         }
 
-        private void BuildEffectCatalogueAsync(List<ScriptableAbility> _abilities)
+        private void BuildEffectCatalogueAsync(Dictionary<uint, ScriptableAbility> _abilities)
         {
             Task task = new Task(
               () =>
               {
                   MultiMap<Type, EffectData> _effectMap = new MultiMap<Type, EffectData>();
-                  for (int i = 0; i < _abilities.Count; ++i)
-                  {
 
-                      foreach (IEffect effect in _abilities[i].Effects)
+                  foreach (KeyValuePair<uint, ScriptableAbility> keyValuePair in _abilities)
+                  {
+                      ScriptableAbility ability = keyValuePair.Value;
+                      foreach (IEffect effect in ability.Effects)
                       {
 
                           _effectMap.Add(effect.GetType(), new EffectData()
                           {
-                              Guid = _abilities[i].Id,
+                              Guid = ability.Id,
                               effect = effect
                           });
                       }
@@ -83,20 +88,21 @@ namespace WaynGroup.Mgm.Ability
             task.Start();
         }
 
-        private void BuildCostCatalogueAsync(List<ScriptableAbility> _abilities)
+        private void BuildCostCatalogueAsync(Dictionary<uint, ScriptableAbility> _abilities)
         {
             Task task = new Task(
               () =>
               {
                   MultiMap<Type, CostData> _costMap = new MultiMap<Type, CostData>();
-                  for (int i = 0; i < _abilities.Count; ++i)
+                  foreach (KeyValuePair<uint, ScriptableAbility> keyValuePair in _abilities)
                   {
-                      foreach (IAbilityCost cost in _abilities[i].Costs)
+                      ScriptableAbility ability = keyValuePair.Value;
+                      foreach (IAbilityCost cost in ability.Costs)
                       {
 
                           _costMap.Add(cost.GetType(), new CostData()
                           {
-                              Guid = _abilities[i].Id,
+                              Guid = ability.Id,
                               cost = cost
                           });
                       }

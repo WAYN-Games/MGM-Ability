@@ -148,11 +148,12 @@ namespace WaynGroup.Mgm.Ability
         }
 
 
-        private NativeHashMap<uint, AbilityTimings> BuildTimingMap(List<ScriptableAbility> abilityCatalog)
+        private NativeHashMap<uint, AbilityTimings> BuildTimingMap(Dictionary<uint, ScriptableAbility> abilityCatalog)
         {
             NativeHashMap<uint, AbilityTimings> tmpMap = new NativeHashMap<uint, AbilityTimings>(abilityCatalog.Count, Allocator.Persistent);
-            foreach (ScriptableAbility scriptableAbility in abilityCatalog)
+            foreach (KeyValuePair<uint, ScriptableAbility> keyValuePair in abilityCatalog)
             {
+                ScriptableAbility scriptableAbility = keyValuePair.Value;
                 tmpMap.Add(scriptableAbility.Id, scriptableAbility.Timings);
             }
 
@@ -165,7 +166,7 @@ namespace WaynGroup.Mgm.Ability
             World.GetOrCreateSystem<AddressableAbilityCatalogSystem>().OnAbilityUpdate += UpdpateCatalog;
         }
 
-        private void UpdpateCatalog(List<ScriptableAbility> abilityCatalog)
+        private void UpdpateCatalog(Dictionary<uint, ScriptableAbility> abilityCatalog)
         {
 
             NativeHashMap<uint, AbilityTimings> tmpMap = BuildTimingMap(abilityCatalog);
