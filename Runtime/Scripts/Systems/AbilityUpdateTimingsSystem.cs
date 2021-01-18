@@ -4,6 +4,8 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs;
 
+using UnityEngine;
+
 namespace WaynGroup.Mgm.Ability
 {
     /// <summary>
@@ -12,7 +14,7 @@ namespace WaynGroup.Mgm.Ability
     /// (Casting -> Active -> CoolingDown -> CooledDown -> Casting)
     /// </summary>
     [UpdateInGroup(typeof(AbilityUpdateSystemGroup))]
-    public class AbilityUpdateTimingsSystem : SystemBase
+    public class AbilityUpdateStateAndTimingsSystem : SystemBase
     {
         /// <summary>
         /// Struct holding methods encapsulating logic used by the Job in a human readable way.
@@ -32,16 +34,17 @@ namespace WaynGroup.Mgm.Ability
             float DeltaTime = World.Time.DeltaTime;
             JobMethods jm = _jm;
 
-            Entities.ForEach((ref DynamicBuffer<AbilityBufferElement> abilityBuffer) =>
+            Entities.ForEach((ref DynamicBuffer<AbilityBufferElement> abilityBuffer, ref AbilityInput abilityInput) =>
             {
                 NativeArray<AbilityBufferElement> sbArray = abilityBuffer.AsNativeArray();
                 for (int i = 0; i < sbArray.Length; i++)
                 {
                     AbilityBufferElement Ability = sbArray[i];
                     Ability = jm.UpdateTiming(DeltaTime, Ability);
-                    Ability = jm.UpdateState(Ability);
+                    Ability = jm.UpdateState(Ability, abilityInput);
                     sbArray[i] = Ability;
                 }
+                abilityInput.Enabled = false;
             }).WithBurst()
             .ScheduleParallel();
         }
@@ -71,12 +74,31 @@ namespace WaynGroup.Mgm.Ability
                 return Ability;
             }
 
-            public AbilityBufferElement UpdateState(AbilityBufferElement ability)
+            public AbilityBufferElement UpdateState(AbilityBufferElement ability, AbilityInput abilityInput)
             {
-                if (ability.AbilityState == AbilityState.CooledDown && ability.HasEnougthRessource)
+                if (abilityInput.AbilityId == ability.Guid && abilityInput.Enabled)
                 {
-                    ability = StartCasting(ability);
-                    return ability;
+                    bool canCast = true;
+                    if (ability.AbilityState != AbilityState.CooledDown)
+                    {
+                        canCast = false;
+                        Debug.Log($"Ability not ready yet.");
+                    }
+                    /*if (!ability.IsInRange)
+                    {
+                        canCast = false;
+                        Debug.Log($"Target out of range.");
+                    }*/
+                    if (!ability.HasEnougthRessource)
+                    {
+                        canCast = false;
+                        Debug.Log($"Not enougth ressources.");
+                    }
+                    if (canCast)
+                    {
+                        ability = StartCasting(ability);
+                        return ability;
+                    }
                 }
 
                 bool IsCooldownComplete = ability.AbilityState == AbilityState.CoolingDown && ability.CurrentTimming < 0;
