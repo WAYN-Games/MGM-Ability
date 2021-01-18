@@ -23,7 +23,7 @@ namespace WaynGroup.Mgm.Ability.UI
         {
             if (!EntityManager.Exists(TargetEntity) || !EntityManager.HasComponent<AbilityInput>(TargetEntity)) return;
             EntityManager.SetComponentData(TargetEntity, new AbilityInput(AbilityID));
-            Debug.Log($"Triggereing ability {AbilityID} for entity {TargetEntity}");
+            Debug.Log($"Clicked");
         }
     }
 
@@ -56,14 +56,20 @@ namespace WaynGroup.Mgm.Ability.UI
 
         public void AssignAbility(Entity owner, uint abilityID, EntityManager entityManager)
         {
-            World.DefaultGameObjectInjectionWorld.GetOrCreateSystem<AddressableAbilityCatalogSystem>().OnAbilityUpdate += UpdateCalatoguedInfo;
+            entityManager.World.GetOrCreateSystem<AddressableAbilityCatalogSystem>().OnAbilityUpdate += UpdateCalatoguedInfo;
             _command = new AbilityUICommand()
             {
                 TargetEntity = owner,
                 AbilityID = abilityID,
                 EntityManager = entityManager
             };
-            this.Q<Button>(name: "abilityButton").clicked += _command.Execute;
+            this.Q<Button>(name: "abilityButton").RegisterCallback<ClickEvent>(Clicked);
+
+        }
+
+        private void Clicked(ClickEvent evt)
+        {
+            _command.Execute();
         }
 
         private void UpdateCalatoguedInfo(Dictionary<uint, ScriptableAbility> abilityCatalogue)

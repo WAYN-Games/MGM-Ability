@@ -1,5 +1,5 @@
-<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
-    <Style src="TestUI.uss" />
-    <ui:Label text="That Better Work !" class="testLabel" />
-    <WaynGroup.Mgm.Ability.UI.AbilityUIElement />
+﻿<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+  <Style src="TestUI.uss" />
+  <ui:Label text="That Better Work !" class="testLabel" />
+  <WaynGroup.Mgm.Ability.UI.AbilityUIElement name="AbilitySlot" />
 </ui:UXML>
