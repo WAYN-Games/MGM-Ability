@@ -1,4 +1,11 @@
+using Unity.Entities;
+
+using _NAMESPACE_;
+
 using WaynGroup.Mgm.Ability;
+
+[assembly: RegisterGenericJobType(typeof(AbilityCostCheckerSystem<#SCRIPTNAME#, _RESOURCE_, #SCRIPTNAME#Handler>.CostHandlerJob))]
+[assembly: RegisterGenericJobType(typeof(AbilityCostConsumerSystem<#SCRIPTNAME#, _RESOURCE_, #SCRIPTNAME#Handler>.CostHandlerJob))]
 
 namespace _NAMESPACE_
 {
@@ -20,10 +27,7 @@ namespace _NAMESPACE_
         }
     }
 
-    public class #SCRIPTNAME#HandlerSystem : AbilityCostHanlderSystem<#SCRIPTNAME#, _RESOURCE_, #SCRIPTNAME#Handler>
-    {
-    }
-	    public class #SCRIPTNAME#CheckerSystem : AbilityCostCheckerSystem<#SCRIPTNAME#, Mana, #SCRIPTNAME#Handler>
+    public class #SCRIPTNAME#CheckerSystem : AbilityCostCheckerSystem<#SCRIPTNAME#, Mana, #SCRIPTNAME#Handler>
     {
     }
     public class #SCRIPTNAME#ConsumerSystem : AbilityCostConsumerSystem<#SCRIPTNAME#, Mana, #SCRIPTNAME#Handler>

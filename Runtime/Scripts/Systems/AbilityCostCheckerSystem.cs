@@ -62,7 +62,7 @@ namespace WaynGroup.Mgm.Ability
         /// This job will call the WriteContextualizedEffect method of the CTX_WRITER when the efect has to be triggered.
         /// </summary>
         [BurstCompile]
-        private struct CostHandlerJob : IJobChunk
+        public struct CostHandlerJob : IJobChunk
         {
             public COST_HANDLER CostHandler;
             public BufferTypeHandle<AbilityBufferElement> AbilityBufferChunk;

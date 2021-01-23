@@ -12,9 +12,8 @@
     }
   ],
   "dependencies": {
-    "com.unity.entities": "0.16.0-preview.21",
-    "com.unity.ui": "1.0.0-preview.6",
-    "com.unity.burst": "1.5.0-pre.3",
-    "com.unity.addressables": "1.16.15"
+    "com.unity.entities": "0.17.0-preview.41",
+    "com.unity.ui": "1.0.0-preview.13",
+    "com.unity.addressables": "1.17.2-preview"
   }
 }

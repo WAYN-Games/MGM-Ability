@@ -70,7 +70,7 @@ namespace WaynGroup.Mgm.Ability
         /// This job will call the WriteContextualizedEffect method of the CTX_WRITER when the efect has to be triggered.
         /// </summary>
         [BurstCompile]
-        private struct TriggerJob : IJobChunk
+        public struct TriggerJob : IJobChunk
         {
             public CTX_BUILDER EffectContextBuilder;
             [ReadOnly] public BufferTypeHandle<AbilityBufferElement> AbilityBufferChunk;

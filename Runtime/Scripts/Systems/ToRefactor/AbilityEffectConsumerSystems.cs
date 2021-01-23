@@ -138,7 +138,7 @@ namespace WaynGroup.Mgm.Ability
 
             // If the producer did not actually write anything to the stream, the native stream will not be flaged as created.
             // In that case we don't need to do anything.
-            // Not doing this checks actually result in a non authrorized access to the memory and crashes Unity.
+            // Not doing the IsCreated check actually result in a non authrorized access to the memory and crashes Unity.
             if (!_effectStream.IsCreated) return;
             NativeStream.Reader effectReader = GetEffectReader();
             SetupEffectMap AllocateJob = new SetupEffectMap()

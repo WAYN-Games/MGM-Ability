@@ -1,9 +1,14 @@
 using Unity.Collections;
 using Unity.Entities;
 
+using _NAMESPACE_;
+
 using WaynGroup.Mgm.Ability;
 
-namespace #SCRIPTNAME#
+[assembly: RegisterGenericJobType(typeof(AbilityEffectTriggerSystem<#SCRIPTNAME#, #SCRIPTNAME#ConsumerSystem, #SCRIPTNAME#TriggerSystem.EffectWriter,#SCRIPTNAME#Context>.TriggerJob))]
+
+
+namespace _NAMESPACE_
 {
     public struct #SCRIPTNAME# : IEffect
     {
@@ -38,6 +43,7 @@ namespace #SCRIPTNAME#
             NativeMultiHashMap<Entity, ContextualizedEffect> effects = _effects;
             Entities.WithReadOnly(effects).ForEach((ref Entity targetEntity) =>
             {
+				if (effects.CountValuesForKey(targetEntity) <= 0) return;
                 NativeMultiHashMap<Entity, ContextualizedEffect>.Enumerator effectEnumerator = effects.GetValuesForKey(targetEntity);
                 while (effectEnumerator.MoveNext())
                 {
