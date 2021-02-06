@@ -1,4 +1,5 @@
-﻿using Unity.Burst;
+﻿
+using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -14,21 +15,28 @@ namespace WaynGroup.Mgm.Ability
     public struct AbilityUpdateRangeSystem : ISystemBase
     {
         private EntityQuery _query;
+        private EntityQuery _cache;
 
         public void OnCreate(ref SystemState state)
         {
             _query = state.GetEntityQuery(typeof(AbilityBufferElement));
-
+            _cache = state.GetEntityQuery(ComponentType.ReadOnly(typeof(RangeCache)));
+            state.RequireSingletonForUpdate<RangeCache>();
         }
+
+        [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
+            RangeCache cache = _cache.GetSingleton<RangeCache>();
             state.Dependency = new UpdateRangeJob()
             {
                 TargetChunk = state.GetComponentTypeHandle<Target>(true),
                 EntityChunk = state.GetEntityTypeHandle(),
                 Translations = state.GetComponentDataFromEntity<Translation>(true),
-                AbilityBufferChunk = state.GetBufferTypeHandle<AbilityBufferElement>()
+                AbilityBufferChunk = state.GetBufferTypeHandle<AbilityBufferElement>(),
+                Cache = cache.Cache
             }.ScheduleParallel(_query, state.Dependency);
+
         }
 
         public void OnDestroy(ref SystemState state)
@@ -41,6 +49,7 @@ namespace WaynGroup.Mgm.Ability
             [ReadOnly] public ComponentDataFromEntity<Translation> Translations;
             [ReadOnly] public ComponentTypeHandle<Target> TargetChunk;
             [ReadOnly] public EntityTypeHandle EntityChunk;
+            [ReadOnly] public BlobAssetReference<BlobMultiHashMap<uint, Range>> Cache;
 
             public BufferTypeHandle<AbilityBufferElement> AbilityBufferChunk;
 
@@ -50,6 +59,8 @@ namespace WaynGroup.Mgm.Ability
                 BufferAccessor<AbilityBufferElement> abilityBuffers = chunk.GetBufferAccessor(AbilityBufferChunk);
                 NativeArray<Target> targets = chunk.GetNativeArray(TargetChunk);
                 NativeArray<Entity> entities = chunk.GetNativeArray(EntityChunk);
+
+                ref var cacheMap = ref Cache.Value;
 
                 for (int entityIndex = 0; entityIndex < chunk.Count; ++entityIndex)
                 {
@@ -66,7 +77,8 @@ namespace WaynGroup.Mgm.Ability
                     {
                         AbilityBufferElement ability = sbArray[i];
                         float distance = math.distance(casterPosition, targetPosition);
-                        // ability.IsInRange = ability.Range.Min <= distance && distance <= ability.Range.Max;
+                        Range range = cacheMap.GetValuesForKey(ability.Guid)[0];
+                        ability.IsInRange = range.Min <= distance && distance <= range.Max;
                         sbArray[i] = ability;
                     }
                 }

@@ -69,10 +69,7 @@ public class AbilityAuthoring : MonoBehaviour, IConvertGameObjectToEntity
             UIDocument uiDocument = FindObjectOfType<UIDocument>();
             Entities.WithStructuralChanges().ForEach((Entity entity, ref RequiereUIBootstrap boostrap, in DynamicBuffer<AbilityBufferElement> abilities) =>
             {
-                foreach (AbilityBufferElement ability in abilities)
-                {
-                    uiDocument.rootVisualElement.Q<AbilityUIElement>(boostrap.uiElementName.ConvertToString()).AssignAbility(entity, ability.Guid, EntityManager);
-                }
+                uiDocument.rootVisualElement.Q<AbilityBookUIElement>(boostrap.uiElementName.ConvertToString()).Populate(abilities, entity, EntityManager);
                 EntityManager.RemoveComponent<RequiereUIBootstrap>(entity);
             }).WithoutBurst().Run();
         }

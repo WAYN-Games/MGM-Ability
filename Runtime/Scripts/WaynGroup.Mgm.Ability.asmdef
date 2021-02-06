@@ -1,15 +1,17 @@
 {
     "name": "WaynGroup.Mgm.Ability",
+    "rootNamespace": "",
     "references": [
-        "Guid:734d92eba21c94caba915361bd5ac177",
-        "Guid:8819f35a0fc84499b990e90a4ca1911f",
-        "Guid:e0cd26848372d4e5c891c569017e11f1",
-        "Guid:2665a8d13d1b3f18800f46e256720795",
-        "Guid:a5baed0c9693541a5bd947d336ec7659",
-        "Guid:d8b63aba1907145bea998dd612889d6b",
-        "Guid:8c09aa1e4b73db04094be9d510142dd2",
-        "Guid:9e24947de15b9834991c9d8411ea37cf",
-        "Guid:84651a3751eca9349aac36a66bba901b"
+        "GUID:734d92eba21c94caba915361bd5ac177",
+        "GUID:8819f35a0fc84499b990e90a4ca1911f",
+        "GUID:e0cd26848372d4e5c891c569017e11f1",
+        "GUID:2665a8d13d1b3f18800f46e256720795",
+        "GUID:a5baed0c9693541a5bd947d336ec7659",
+        "GUID:d8b63aba1907145bea998dd612889d6b",
+        "GUID:8c09aa1e4b73db04094be9d510142dd2",
+        "GUID:9e24947de15b9834991c9d8411ea37cf",
+        "GUID:84651a3751eca9349aac36a66bba901b",
+        "GUID:34cb4867b0cdb1c4696143e712cc618f"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

@@ -152,7 +152,7 @@ namespace WaynGroup.Mgm.Ability
             return default;
         }
 
-        private void UpdateEffectCache(MultiMap<Type, EffectData> effectMap)
+        private void UpdateEffectCache(MultiHashMap<Type, EffectData> effectMap)
         {
             if (!effectMap.ContainsKey(typeof(EFFECT)))
             {
@@ -174,7 +174,7 @@ namespace WaynGroup.Mgm.Ability
             _effectMap = map;
         }
 
-        private static NativeMultiHashMap<uint, EFFECT> BuildEffectMapCache(MultiMap<Type, EffectData> effectMap)
+        private static NativeMultiHashMap<uint, EFFECT> BuildEffectMapCache(MultiHashMap<Type, EffectData> effectMap)
         {
             NativeMultiHashMap<uint, EFFECT> map = new NativeMultiHashMap<uint, EFFECT>(effectMap.Count(typeof(EFFECT)), Allocator.Persistent);
             foreach (EffectData effectData in effectMap[typeof(EFFECT)])

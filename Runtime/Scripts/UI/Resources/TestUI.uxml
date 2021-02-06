@@ -1,4 +1,0 @@
-﻿<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
-  <Style src="TestUI.uss" />
-  <WaynGroup.Mgm.Ability.UI.AbilityUIElement name="AbilitySlot" />
-</ui:UXML>

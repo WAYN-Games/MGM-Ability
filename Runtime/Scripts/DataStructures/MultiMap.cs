@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 
-public class MultiMap<TKey, TValue>
+public class MultiHashMap<TKey, TValue>
 {
     private readonly Dictionary<TKey, IList<TValue>> storage;
 
-    public MultiMap()
+    public MultiHashMap()
     {
         storage = new Dictionary<TKey, IList<TValue>>();
     }

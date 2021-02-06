@@ -2,19 +2,45 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
+using Unity.Collections;
 using Unity.Entities;
 
 using UnityEngine.AddressableAssets;
-using UnityEngine.ResourceManagement.AsyncOperations;
+
+
 
 namespace WaynGroup.Mgm.Ability
 {
+
+    public interface ICacheComponent : IComponentData, IDisposable
+    {
+    }
+
+    public struct AbilityTimingsCache : ICacheComponent
+    {
+        public BlobAssetReference<BlobMultiHashMap<uint, AbilityTimings>> Cache { get; set; }
+
+        public void Dispose()
+        {
+            if (Cache.IsCreated) Cache.Dispose();
+        }
+    }
+    public struct RangeCache : ICacheComponent
+    {
+        public BlobAssetReference<BlobMultiHashMap<uint, Range>> Cache { get; set; }
+
+        public void Dispose()
+        {
+            if (Cache.IsCreated) Cache.Dispose();
+        }
+    }
+
     [UpdateInGroup(typeof(InitializationSystemGroup))]
     public class AddressableAbilityCatalogSystem : SystemBase
     {
 
-        public delegate void OnEffectUpdateDelegate(MultiMap<Type, EffectData> effectMap);
-        public delegate void OnCostUpdateDelegate(MultiMap<Type, CostData> costMap);
+        public delegate void OnEffectUpdateDelegate(MultiHashMap<Type, EffectData> effectMap);
+        public delegate void OnCostUpdateDelegate(MultiHashMap<Type, CostData> costMap);
         public delegate void OnAbilityUpdateDelegate(Dictionary<uint, ScriptableAbility> abilityCatalogue);
 
         public OnEffectUpdateDelegate OnEffectUpdate;
@@ -23,15 +49,84 @@ namespace WaynGroup.Mgm.Ability
 
         public Dictionary<uint, ScriptableAbility> AbilityCatalog;
 
+        private struct AbilityCacheEntityTag : IComponentData { }
+
         protected override void OnCreate()
         {
             base.OnCreate();
+            Enabled = false;
+
             AbilityCatalog = new Dictionary<uint, ScriptableAbility>();
             OnAbilityUpdate += BuildEffectCatalogueAsync;
             OnAbilityUpdate += BuildCostCatalogueAsync;
+            OnAbilityUpdate += RefreshRangeCacheAsync;
+            OnAbilityUpdate += RefreshTimmingsCacheAsync;
             LoadAbilityCatalogueAsync();
-            Enabled = false;
+
         }
+
+        private void RefreshCache<T>(T newCache) where T : struct, ICacheComponent
+        {
+            Entity cacheEntity;
+            if (!TryGetSingletonEntity<AbilityCacheEntityTag>(out cacheEntity))
+            {
+                cacheEntity = World.EntityManager.CreateEntity();
+                World.EntityManager.AddComponent(cacheEntity, typeof(AbilityCacheEntityTag));
+            }
+            if (!World.EntityManager.HasComponent<T>(cacheEntity))
+            {
+                World.EntityManager.AddComponent(cacheEntity, typeof(T));
+            }
+
+            if (TryGetSingleton(out T cache))
+            {
+                cache.Dispose();
+            }
+
+            SetSingleton(newCache);
+
+        }
+
+
+        #region Timmings Cache
+        private void RefreshTimmingsCacheAsync(Dictionary<uint, ScriptableAbility> abilityCatalogue)
+        {
+
+
+            using (BlobBuilder bb = new BlobBuilder(Allocator.Temp))
+            {
+                var mapBuilder = new BlobHashMapBuilder<uint, AbilityTimings>(bb);
+                foreach (KeyValuePair<uint, ScriptableAbility> ability in abilityCatalogue)
+                {
+                    mapBuilder.Add(ability.Key, ability.Value.Timings);
+                }
+                var newCache = mapBuilder.CreateBlobAssetReference(Allocator.Persistent);
+                RefreshCache(new AbilityTimingsCache() { Cache = newCache });
+
+            }
+
+        }
+        #endregion
+
+        #region Range Cache
+        private void RefreshRangeCacheAsync(Dictionary<uint, ScriptableAbility> abilityCatalogue)
+        {
+
+
+            using (BlobBuilder bb = new BlobBuilder(Allocator.Temp))
+            {
+                var mapBuilder = new BlobHashMapBuilder<uint, Range>(bb);
+                foreach (KeyValuePair<uint, ScriptableAbility> ability in abilityCatalogue)
+                {
+                    mapBuilder.Add(ability.Key, ability.Value.Range);
+                }
+                var newCache = mapBuilder.CreateBlobAssetReference(Allocator.Persistent);
+                RefreshCache(new RangeCache() { Cache = newCache });
+            }
+
+
+        }
+        #endregion
 
         protected override void OnUpdate()
         {
@@ -44,15 +139,10 @@ namespace WaynGroup.Mgm.Ability
         private void LoadAbilityCatalogueAsync()
         {
 
-            AsyncOperationHandle<IList<ScriptableAbility>> handle = Addressables.LoadAssetsAsync<ScriptableAbility>(new AssetLabelReference() { labelString = AbilityHelper.ADDRESSABLE_ABILITY_LABEL }, null, false);
-
-            SendAbilityCatalogueUpdateOnComplete(handle);
-
-        }
-
-        private void SendAbilityCatalogueUpdateOnComplete(AsyncOperationHandle<IList<ScriptableAbility>> handle)
-        {
-            handle.Completed += objects =>
+            Addressables.LoadAssetsAsync<ScriptableAbility>(new AssetLabelReference()
+            {
+                labelString = AbilityHelper.ADDRESSABLE_ABILITY_LABEL
+            }, null, false).Completed += objects =>
             {
                 if (objects.Result == null) return;
                 foreach (ScriptableAbility ability in objects.Result)
@@ -60,15 +150,17 @@ namespace WaynGroup.Mgm.Ability
                     AbilityCatalog.Add(ability.Id, ability);
                 }
                 OnAbilityUpdate.Invoke(AbilityCatalog);
-            };
+            }; ;
+
         }
+
 
         private void BuildEffectCatalogueAsync(Dictionary<uint, ScriptableAbility> _abilities)
         {
             Task task = new Task(
               () =>
               {
-                  MultiMap<Type, EffectData> _effectMap = new MultiMap<Type, EffectData>();
+                  MultiHashMap<Type, EffectData> effectMap = new MultiHashMap<Type, EffectData>();
 
                   foreach (KeyValuePair<uint, ScriptableAbility> keyValuePair in _abilities)
                   {
@@ -76,14 +168,14 @@ namespace WaynGroup.Mgm.Ability
                       foreach (IEffect effect in ability.Effects)
                       {
 
-                          _effectMap.Add(effect.GetType(), new EffectData()
+                          effectMap.Add(effect.GetType(), new EffectData()
                           {
                               Guid = ability.Id,
                               effect = effect
                           });
                       }
                   }
-                  OnEffectUpdate.Invoke(_effectMap);
+                  OnEffectUpdate.Invoke(effectMap);
               });
             task.Start();
         }
@@ -93,7 +185,7 @@ namespace WaynGroup.Mgm.Ability
             Task task = new Task(
               () =>
               {
-                  MultiMap<Type, CostData> _costMap = new MultiMap<Type, CostData>();
+                  MultiHashMap<Type, CostData> _costMap = new MultiHashMap<Type, CostData>();
                   foreach (KeyValuePair<uint, ScriptableAbility> keyValuePair in _abilities)
                   {
                       ScriptableAbility ability = keyValuePair.Value;
@@ -110,6 +202,12 @@ namespace WaynGroup.Mgm.Ability
                   OnCostUpdate.Invoke(_costMap);
               });
             task.Start();
+        }
+
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+            World.EntityManager.DestroyEntity(GetEntityQuery(typeof(AbilityCacheEntityTag)));
         }
         #endregion
     }

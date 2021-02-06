@@ -107,7 +107,7 @@ namespace WaynGroup.Mgm.Ability
             return default;
         }
 
-        private void UpdateCostCache(MultiMap<Type, CostData> costMap)
+        private void UpdateCostCache(MultiHashMap<Type, CostData> costMap)
         {
             NativeMultiHashMap<uint, COST> map = BuildEffectMapCache(costMap);
             RefreshEffectMapChache(map);
@@ -120,7 +120,7 @@ namespace WaynGroup.Mgm.Ability
             _costMap = map;
         }
 
-        private static NativeMultiHashMap<uint, COST> BuildEffectMapCache(MultiMap<Type, CostData> effectMap)
+        private static NativeMultiHashMap<uint, COST> BuildEffectMapCache(MultiHashMap<Type, CostData> effectMap)
         {
             NativeMultiHashMap<uint, COST> map = new NativeMultiHashMap<uint, COST>(effectMap.Count(typeof(COST)), Allocator.Persistent);
             foreach (CostData costData in effectMap[typeof(COST)])

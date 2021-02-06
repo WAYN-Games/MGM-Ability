@@ -1,71 +1,91 @@
-﻿using System.Collections.Generic;
-
+﻿using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
-using Unity.Jobs;
 
 using UnityEngine;
 
 namespace WaynGroup.Mgm.Ability
 {
+
+
+    public struct CurrentlyCasting : ISystemStateComponentData
+    {
+        public bool IsCasting;
+        public uint abilityId;
+    }
     /// <summary>
     /// This system update each ability's timming (cast and/or cooldown).
     /// Once a timing is elapsed, the ability state is updated to the next value in the life cycle.
     /// (Casting -> Active -> CoolingDown -> CooledDown -> Casting)
     /// </summary>
+    /// 
     [UpdateInGroup(typeof(AbilityUpdateSystemGroup))]
-    public class AbilityUpdateStateAndTimingsSystem : SystemBase
+    [UpdateAfter(typeof(OldAbilityUpdateStateAndTimingsSystem))]
+    [BurstCompile]
+    public struct AbilityUpdateStateAndTimingsSystem : ISystemBase
     {
-        /// <summary>
-        /// Struct holding methods encapsulating logic used by the Job in a human readable way.
-        /// This struct is used to help 'self document' the code.
-        /// </summary>
-        private JobMethods _jm;
+        private EntityQuery _query;
+        private EntityQuery _cache;
 
-        protected override void OnCreate()
+        public void OnCreate(ref SystemState state)
         {
-            base.OnCreate();
-            _jm = new JobMethods();
-            ListenForAbilityCatalogUpdate();
+            _query = state.GetEntityQuery(typeof(AbilityBufferElement), typeof(AbilityInput), typeof(CurrentlyCasting));
+            _cache = state.GetEntityQuery(ComponentType.ReadOnly(typeof(AbilityTimingsCache)));
+            state.RequireSingletonForUpdate<AbilityTimingsCache>();
         }
 
-        protected override void OnUpdate()
-        {
-            float DeltaTime = World.Time.DeltaTime;
-            JobMethods jm = _jm;
 
-            Entities.ForEach((ref DynamicBuffer<AbilityBufferElement> abilityBuffer, ref AbilityInput abilityInput) =>
+        [BurstCompile]
+        public void OnUpdate(ref SystemState state)
+        {
+            AbilityTimingsCache cache = _cache.GetSingleton<AbilityTimingsCache>();
+            state.Dependency = new AbilityUpdateStateAndTimingsJob()
             {
-                NativeArray<AbilityBufferElement> sbArray = abilityBuffer.AsNativeArray();
-                for (int i = 0; i < sbArray.Length; i++)
+                DeltaTime = state.WorldUnmanaged.CurrentTime.DeltaTime,
+                CurrentlyCastingChunk = state.GetComponentTypeHandle<CurrentlyCasting>(),
+                AbilityInputChunk = state.GetComponentTypeHandle<AbilityInput>(),
+                AbilityBufferChunk = state.GetBufferTypeHandle<AbilityBufferElement>(),
+                Cache = cache.Cache
+
+            }.ScheduleParallel(_query, state.Dependency);
+        }
+
+
+        [BurstCompile]
+        public struct AbilityUpdateStateAndTimingsJob : IJobChunk
+        {
+            [ReadOnly] public BlobAssetReference<BlobMultiHashMap<uint, AbilityTimings>> Cache;
+            [ReadOnly] public float DeltaTime;
+
+            public BufferTypeHandle<AbilityBufferElement> AbilityBufferChunk;
+            public ComponentTypeHandle<AbilityInput> AbilityInputChunk;
+            public ComponentTypeHandle<CurrentlyCasting> CurrentlyCastingChunk;
+
+            public void Execute(ArchetypeChunk chunk, int chunkIndex, int firstEntityIndex)
+            {
+                BufferAccessor<AbilityBufferElement> abilityBufferAccessor = chunk.GetBufferAccessor(AbilityBufferChunk);
+                NativeArray<AbilityInput> inputArray = chunk.GetNativeArray(AbilityInputChunk);
+                NativeArray<CurrentlyCasting> currentlyCastingArray = chunk.GetNativeArray(CurrentlyCastingChunk);
+
+                ref var cahcheMap = ref Cache.Value;
+
+                for (int entityIndex = 0; entityIndex < chunk.Count; ++entityIndex)
                 {
-                    AbilityBufferElement Ability = sbArray[i];
-                    Ability = jm.UpdateTiming(DeltaTime, Ability);
-                    Ability = jm.UpdateState(Ability, abilityInput);
-                    sbArray[i] = Ability;
+                    AbilityInput input = inputArray[entityIndex];
+                    CurrentlyCasting currentlyCasting = currentlyCastingArray[entityIndex];
+                    NativeArray<AbilityBufferElement> sbArray = abilityBufferAccessor[entityIndex].AsNativeArray();
+                    for (int i = 0; i < sbArray.Length; i++)
+                    {
+                        var ability = sbArray[i];
+                        AbilityTimings timming = cahcheMap.GetValuesForKey(ability.Guid)[0];
+                        ability = UpdateTiming(DeltaTime, ability);
+                        ability = UpdateState(ability, input, ref currentlyCasting, timming);
+                        sbArray[i] = ability;
+                    }
+                    currentlyCastingArray[entityIndex] = currentlyCasting;
                 }
-                abilityInput.Enabled = false;
-            }).WithBurst()
-            .ScheduleParallel();
-        }
+            }
 
-        protected override void OnDestroy()
-        {
-            base.OnDestroy();
-            _jm.TimmingMap.Dispose();
-        }
-
-        #region Self Documenting Encapsulations
-        /// <summary>
-        /// Struct holding methods encapsulating logic used by the Job in a human readable way.
-        /// This struct is used to help 'self document' the code.
-        /// </summary>
-        private struct JobMethods
-        {
-            /// <summary>
-            /// A cached native hashmap of default timings for each ability.
-            /// </summary>
-            [ReadOnly] public NativeHashMap<uint, AbilityTimings> TimmingMap;
 
             public AbilityBufferElement UpdateTiming(float DeltaTime, AbilityBufferElement Ability)
             {
@@ -74,29 +94,38 @@ namespace WaynGroup.Mgm.Ability
                 return Ability;
             }
 
-            public AbilityBufferElement UpdateState(AbilityBufferElement ability, AbilityInput abilityInput)
+            public AbilityBufferElement UpdateState(AbilityBufferElement ability, AbilityInput abilityInput, ref CurrentlyCasting currentlyCasting, AbilityTimings timming)
             {
                 if (abilityInput.AbilityId == ability.Guid && abilityInput.Enabled)
                 {
                     bool canCast = true;
+                    if (currentlyCasting.IsCasting)
+                    {
+                        canCast = false;
+                        Debug.Log($"Alreading casting.");
+                    }
+                    else
                     if (ability.AbilityState != AbilityState.CooledDown)
                     {
                         canCast = false;
                         Debug.Log($"Ability not ready yet.");
                     }
-                    /*if (!ability.IsInRange)
+                    else
+                    if (!ability.IsInRange)
                     {
                         canCast = false;
                         Debug.Log($"Target out of range.");
-                    }*/
+                    }
+                    else
                     if (!ability.HasEnougthRessource)
                     {
                         canCast = false;
                         Debug.Log($"Not enougth ressources.");
                     }
+
                     if (canCast)
                     {
-                        ability = StartCasting(ability);
+                        ability = StartCasting(ability, ref currentlyCasting, timming);
                         return ability;
                     }
                 }
@@ -110,7 +139,7 @@ namespace WaynGroup.Mgm.Ability
 
                 if (ability.AbilityState == AbilityState.Active)
                 {
-                    ability = StartCoolDown(ability);
+                    ability = StartCoolDown(ability, timming);
                     return ability;
                 }
 
@@ -118,7 +147,7 @@ namespace WaynGroup.Mgm.Ability
 
                 if (IsCastComplete)
                 {
-                    ability = Activate(ability);
+                    ability = Activate(ability, ref currentlyCasting);
                     return ability;
                 }
 
@@ -131,71 +160,56 @@ namespace WaynGroup.Mgm.Ability
                 return Ability;
             }
 
-            public AbilityBufferElement StartCasting(AbilityBufferElement Ability)
+            public AbilityBufferElement StartCasting(AbilityBufferElement ability, ref CurrentlyCasting casting, AbilityTimings timming)
             {
-                if (TimmingMap.TryGetValue(Ability.Guid, out AbilityTimings timming))
-                {
-                    Ability.AbilityState = AbilityState.Casting;
-                    Ability.CurrentTimming = timming.Cast;
-                }
-                return Ability;
+
+                ability.AbilityState = AbilityState.Casting;
+                ability.CurrentTimming = timming.Cast;
+                casting.IsCasting = true;
+                casting.abilityId = ability.Guid;
+
+                return ability;
             }
 
-            public AbilityBufferElement Activate(AbilityBufferElement Ability)
+            public AbilityBufferElement Activate(AbilityBufferElement Ability, ref CurrentlyCasting casting)
             {
+                if (!casting.IsCasting) return Ability;
                 Ability.AbilityState = AbilityState.Active;
+                casting.IsCasting = false;
                 return Ability;
             }
 
-            public AbilityBufferElement StartCoolDown(AbilityBufferElement Ability)
+            public AbilityBufferElement StartCoolDown(AbilityBufferElement Ability, AbilityTimings timming)
             {
                 Ability.AbilityState = AbilityState.CoolingDown;
-                Ability.CurrentTimming = TimmingMap[Ability.Guid].CoolDown;
+                Ability.CurrentTimming = timming.CoolDown;
                 return Ability;
             }
-
-            public void UpdateCachedMap(NativeHashMap<uint, AbilityTimings> tmpMap)
-            {
-                DisposeOfPrevioudCacheIfExists();
-                TimmingMap = tmpMap;
-            }
-
-            private void DisposeOfPrevioudCacheIfExists()
-            {
-                if (TimmingMap.IsCreated)
-                {
-                    TimmingMap.Dispose();
-                }
-            }
         }
 
 
-        private NativeHashMap<uint, AbilityTimings> BuildTimingMap(Dictionary<uint, ScriptableAbility> abilityCatalog)
-        {
-            NativeHashMap<uint, AbilityTimings> tmpMap = new NativeHashMap<uint, AbilityTimings>(abilityCatalog.Count, Allocator.Persistent);
-            foreach (KeyValuePair<uint, ScriptableAbility> keyValuePair in abilityCatalog)
-            {
-                ScriptableAbility scriptableAbility = keyValuePair.Value;
-                tmpMap.Add(scriptableAbility.Id, scriptableAbility.Timings);
-            }
-
-            return tmpMap;
-        }
-
-        private void ListenForAbilityCatalogUpdate()
-        {
-            Enabled = false; // Avoid system update with not ready catalog.
-            World.GetOrCreateSystem<AddressableAbilityCatalogSystem>().OnAbilityUpdate += UpdpateCatalog;
-        }
-
-        private void UpdpateCatalog(Dictionary<uint, ScriptableAbility> abilityCatalog)
+        public void OnDestroy(ref SystemState state)
         {
 
-            NativeHashMap<uint, AbilityTimings> tmpMap = BuildTimingMap(abilityCatalog);
-            _jm.UpdateCachedMap(tmpMap);
-
-            Enabled = true; // Catalog is ready, so sytem can update.
         }
-        #endregion
+    }
+
+
+
+
+    [UpdateInGroup(typeof(AbilityUpdateSystemGroup))]
+    public class OldAbilityUpdateStateAndTimingsSystem : SystemBase
+    {
+
+        protected override void OnUpdate()
+        {
+
+            Entities.WithNone<CurrentlyCasting>().WithAll<AbilityBufferElement>().WithStructuralChanges().ForEach((Entity entity) =>
+            {
+                EntityManager.AddComponentData(entity, new CurrentlyCasting() { IsCasting = false });
+            }).WithoutBurst().Run();
+
+        }
+
     }
 }

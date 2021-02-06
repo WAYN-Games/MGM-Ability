@@ -44,19 +44,12 @@ public class ScriptableAbilityEditor : Editor
     public void OnEnable()
     {
         Undo.RecordObject(target, "Ability Change");
-        CreateInspectorGUI();
         Undo.undoRedoPerformed += RefreshInspector;
-    }
-
-    private void CheckForDuplication()
-    {
-        Debug.Log(Event.current);
     }
 
     private void RefreshInspector()
     {
         CreateInspectorGUI();
-        Repaint();
     }
     public void OnDisable()
     {

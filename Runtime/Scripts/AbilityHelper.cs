@@ -4,8 +4,6 @@ using System.Text;
 
 using Unity.Entities;
 
-using UnityEngine;
-
 using WaynGroup.Mgm.Ability;
 
 public static class AbilityHelper
@@ -14,7 +12,6 @@ public static class AbilityHelper
 
     public static void AddAbility(ScriptableAbility ability, ref DynamicBuffer<AbilityBufferElement> buffer, float initalCoolDown = -1)
     {
-        Debug.Log($"Adding {ability.Name} / {ability.Timings.CoolDown} ");
         AddAbility(ability.Id, initalCoolDown > 0 ? initalCoolDown : ability.Timings.CoolDown, ref buffer);
     }
 
