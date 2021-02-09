@@ -82,6 +82,8 @@ namespace WaynGroup.Mgm.Ability
                         ability = UpdateState(ability, input, ref currentlyCasting, timming);
                         sbArray[i] = ability;
                     }
+                    input.Enabled = false;
+                    inputArray[entityIndex] = input;
                     currentlyCastingArray[entityIndex] = currentlyCasting;
                 }
             }

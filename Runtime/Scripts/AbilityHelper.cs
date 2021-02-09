@@ -12,6 +12,7 @@ public static class AbilityHelper
 
     public static void AddAbility(ScriptableAbility ability, ref DynamicBuffer<AbilityBufferElement> buffer, float initalCoolDown = -1)
     {
+        if (ability == null) return;
         AddAbility(ability.Id, initalCoolDown > 0 ? initalCoolDown : ability.Timings.CoolDown, ref buffer);
     }
 

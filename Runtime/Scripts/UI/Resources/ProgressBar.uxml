@@ -1,0 +1,6 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" mgm-ability="WaynGroup.Mgm.Ability.UI" editor-extension-mode="False">
+    <ui:VisualElement name="progressbar-root" style="flex-direction: row; height: 20px;">
+        <ui:VisualElement name="progressbar-fill" style="width: 10%;" />
+        <ui:VisualElement name="progressbar-background" style="flex-grow: 1;" />
+    </ui:VisualElement>
+</ui:UXML>

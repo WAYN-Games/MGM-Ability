@@ -15,14 +15,14 @@ namespace WaynGroup.Mgm.Ability.UI
 
     public struct AbilityUICommand : ICommand
     {
-        public Entity TargetEntity;
+        public Entity CommandedEntity;
         public uint AbilityID;
         public EntityManager EntityManager;
 
         public void Execute()
         {
-            if (!EntityManager.Exists(TargetEntity) || !EntityManager.HasComponent<AbilityInput>(TargetEntity)) return;
-            EntityManager.SetComponentData(TargetEntity, new AbilityInput(AbilityID));
+            if (!EntityManager.Exists(CommandedEntity) || !EntityManager.HasComponent<AbilityInput>(CommandedEntity)) return;
+            EntityManager.SetComponentData(CommandedEntity, new AbilityInput(AbilityID));
         }
     }
 
@@ -50,6 +50,7 @@ namespace WaynGroup.Mgm.Ability.UI
 
         private Texture2D Icon;
         private float CooldownTime;
+        private ScriptableAbility _ability;
 
         public AbilityUIElement()
         {
@@ -59,6 +60,17 @@ namespace WaynGroup.Mgm.Ability.UI
             SetTime(0);
             SetBackGroundFill(0);
             _command = default;
+
+            RegisterCallback<MouseEnterEvent>(e =>
+            {
+                VisualElement ve = (VisualElement)e.target;
+                ve.panel.visualTree.Q<AbilityUITooltip>(name: "Tooltip").Show(_ability);
+            });
+            RegisterCallback<MouseLeaveEvent>(e =>
+            {
+                VisualElement ve = (VisualElement)e.target;
+                ve.panel.visualTree.Q<AbilityUITooltip>(name: "Tooltip").Hide();
+            });
         }
 
         public void AssignAbility(Entity owner, uint abilityID, EntityManager entityManager)
@@ -70,7 +82,7 @@ namespace WaynGroup.Mgm.Ability.UI
 
             _command = new AbilityUICommand()
             {
-                TargetEntity = owner,
+                CommandedEntity = owner,
                 AbilityID = abilityID,
                 EntityManager = entityManager
             };
@@ -83,8 +95,11 @@ namespace WaynGroup.Mgm.Ability.UI
 
         private void Clicked(ClickEvent evt)
         {
+            Debug.Log("Clicked");
             _command.Execute();
         }
+
+        private string Tooltip_Title = "";
 
         private void UpdateCalatoguedInfo(Dictionary<uint, ScriptableAbility> abilityCatalogue)
         {
@@ -92,6 +107,8 @@ namespace WaynGroup.Mgm.Ability.UI
             if (TryGetAbilityFromCatalogue(_abilityId, out ScriptableAbility ability))
             {
                 SetIcon(ability.Icon);
+                Tooltip_Title = ability.name;
+                _ability = ability;
             }
         }
 
@@ -99,6 +116,7 @@ namespace WaynGroup.Mgm.Ability.UI
         {
             _command = default;
             SetIcon(null);
+            Tooltip_Title = "";
             this.Q<Button>(name: "abilityButton").clicked -= _command.Execute;
             World.DefaultGameObjectInjectionWorld.GetOrCreateSystem<AddressableAbilityCatalogSystem>().OnAbilityUpdate -= UpdateCalatoguedInfo;
 

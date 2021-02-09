@@ -16,5 +16,6 @@ public class UpdateUIManager : MonoBehaviour
     void Update()
     {
         _uiDocument.rootVisualElement.Query<AbilityUIElement>().ForEach((AbilityUIElement abilityUIElement) => { abilityUIElement.UpdateCoolDown(); });
+
     }
 }
