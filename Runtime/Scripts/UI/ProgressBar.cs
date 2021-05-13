@@ -11,6 +11,36 @@ namespace WaynGroup.Mgm.Ability.UI
         private VisualElement backround;
         private VisualElement root;
         private VisualElement fill;
+        private Label title;
+        private float _value;
+        public float Value
+        {
+            get => _value;
+            set
+            {
+                _value = value;
+                if (IsHorizontal)
+                {
+                    fill.style.width = new StyleLength(new Length(_value, LengthUnit.Percent));
+                }
+                else
+                {
+                    fill.style.height = new StyleLength(new Length(_value, LengthUnit.Percent));
+                }
+
+            }
+        }
+        private string _title;
+        public string Title
+        {
+            get => _title;
+            set
+            {
+                _title = value;
+                title.text = _title;
+            }
+        }
+
 
         public new class UxmlFactory : UxmlFactory<ProgressBar, UxmlTraits>
         {
@@ -26,20 +56,16 @@ namespace WaynGroup.Mgm.Ability.UI
             root = this.Q<VisualElement>(name: "progressbar-root");
             backround = root.Q<VisualElement>(name: "progressbar-background");
             fill = root.Q<VisualElement>(name: "progressbar-fill");
-            SetProgresss(50f);
-
-
-            Color c = fill.style.backgroundColor.value;
-            c.a = 1;
-            fill.style.backgroundColor = new StyleColor(c);
+            title = root.Q<Label>(name: "progressbar-title");
         }
 
-        public void SetOrinetation(FlexDirection orientation)
+        public void SetOrientation(FlexDirection orientation)
         {
-
+            Debug.Log($"Setting orientation to {orientation}");
             if ((orientation.Equals(FlexDirection.Column) || orientation.Equals(FlexDirection.ColumnReverse))
                 && IsHorizontal)
             {
+                Debug.Log($"Setting {orientation}");
                 fill.style.height = fill.style.width;
                 fill.style.width = new StyleLength(new Length(100, LengthUnit.Percent));
             }
@@ -57,9 +83,10 @@ namespace WaynGroup.Mgm.Ability.UI
         /// 
         /// </summary>
         /// <param name="percent">value between 0 and 100</param>
-        public void SetProgresss(float percent)
+        public void Update()
         {
-            fill.style.width = new StyleLength(new Length(percent, LengthUnit.Percent));
+
+
         }
     }
 }

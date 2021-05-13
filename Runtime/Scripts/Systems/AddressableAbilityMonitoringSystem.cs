@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Unity.Collections;
 using Unity.Entities;
 
+using UnityEngine;
 using UnityEngine.AddressableAssets;
 
 
@@ -147,7 +148,9 @@ namespace WaynGroup.Mgm.Ability
                 if (objects.Result == null) return;
                 foreach (ScriptableAbility ability in objects.Result)
                 {
-                    AbilityCatalog.Add(ability.Id, ability);
+                    Debug.Log($"Adding ability {ability.Id} to catalogue.");
+
+                    AbilityCatalog.Add(ability.Id, ScriptableAbility.CopyOf(ability));
                 }
                 OnAbilityUpdate.Invoke(AbilityCatalog);
             }; ;

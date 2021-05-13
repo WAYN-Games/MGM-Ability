@@ -13,7 +13,6 @@
   ],
   "dependencies": {
     "com.unity.entities": "0.17.0-preview.41",
-    "com.unity.ui": "1.0.0-preview.13",
     "com.unity.addressables": "1.17.2-preview",
     "com.wayn-group.blob": "0.1.0"
   }

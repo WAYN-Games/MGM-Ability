@@ -24,6 +24,7 @@ namespace WaynGroup.Mgm.Ability.UI
 
         public void Show(ScriptableAbility ability)
         {
+            if (ability == null) return;
             visible = true;
             this.Q<Label>(name: "Title").text = ability.name;
         }

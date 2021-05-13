@@ -13,6 +13,7 @@ using UnityEngine.UIElements;
 
 using WaynGroup.Mgm.Ability;
 
+
 [CustomEditor(typeof(ScriptableAbility))]
 public class ScriptableAbilityEditor : Editor
 {

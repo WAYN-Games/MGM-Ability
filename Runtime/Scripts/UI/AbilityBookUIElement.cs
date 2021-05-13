@@ -22,10 +22,12 @@ namespace WaynGroup.Mgm.Ability.UI
             VisualTreeAsset visualTree = Resources.Load<VisualTreeAsset>("AbilityBookUIElement");
             visualTree.CloneTree(this);
             _bookRoot = this;
+
         }
 
         public void Populate(DynamicBuffer<AbilityBufferElement> abilities, Entity owner, EntityManager entityManager)
         {
+            _bookRoot.Clear();
             foreach (AbilityBufferElement ability in abilities)
             {
                 AbilityUIElement uiAbility = new AbilityUIElement();

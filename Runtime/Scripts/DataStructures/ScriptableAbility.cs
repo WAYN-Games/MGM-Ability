@@ -50,7 +50,20 @@ public class ScriptableAbility : ScriptableObject
 
     public List<SpawnableData> Spawnables;
 
-
+    // Needed to prevent issue between "Fast enter play mode" and addressable.
+    public static ScriptableAbility CopyOf(ScriptableAbility original)
+    {
+        ScriptableAbility copy = new ScriptableAbility();
+        copy.Id = original.Id;
+        copy.Icon = original.Icon;
+        copy.Name = original.Name;
+        copy.Range = original.Range;
+        copy.Spawnables = original.Spawnables;
+        copy.Timings = original.Timings;
+        copy.Costs = original.Costs;
+        copy.Effects = original.Effects;
+        return copy;
+    }
 
 }
 

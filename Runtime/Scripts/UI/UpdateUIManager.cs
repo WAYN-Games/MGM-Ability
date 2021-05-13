@@ -3,9 +3,11 @@ using UnityEngine.UIElements;
 
 using WaynGroup.Mgm.Ability.UI;
 
+[RequireComponent(typeof(UIDocument))]
 public class UpdateUIManager : MonoBehaviour
 {
     UIDocument _uiDocument;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -15,7 +17,7 @@ public class UpdateUIManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        _uiDocument.rootVisualElement.Query<AbilityUIElement>().ForEach((AbilityUIElement abilityUIElement) => { abilityUIElement.UpdateCoolDown(); });
-
+        _uiDocument.rootVisualElement.Query<EntityOwnedUpdatableVisualElement>().ForEach((EntityOwnedUpdatableVisualElement ve) => { ve.Update(); });
     }
+
 }

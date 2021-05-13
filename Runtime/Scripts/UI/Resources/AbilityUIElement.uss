@@ -25,19 +25,6 @@
     display: flex;
 }
 
-.coolDownTimeText {
-    -unity-font-style: bold;
-    font-size: 60px;
-    color: rgb(0, 255, 255);
-    -unity-text-align: middle-center;
-    position: absolute;
-    left: 0;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    -unity-font: resource('Fonts & Materials/LiberationSans');
-}
-
 .abilityButton {
     position: absolute;
     left: 0;
@@ -71,3 +58,4 @@
     border-top-color: rgba(0, 0, 0, 0);
     border-bottom-color: rgba(0, 0, 0, 0);
 }
+

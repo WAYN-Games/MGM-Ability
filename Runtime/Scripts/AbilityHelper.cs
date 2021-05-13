@@ -9,6 +9,7 @@ using WaynGroup.Mgm.Ability;
 public static class AbilityHelper
 {
     public const string ADDRESSABLE_ABILITY_LABEL = "Ability";
+    public const string ADDRESSABLE_UiLink_LABEL = "UiLink";
 
     public static void AddAbility(ScriptableAbility ability, ref DynamicBuffer<AbilityBufferElement> buffer, float initalCoolDown = -1)
     {

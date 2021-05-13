@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 68bab39dcf961d640bd8e6dfc6b3f754, type: 3}
+  m_Name: AbilityUiLink
+  m_EditorClassIdentifier: 
+  Id: 960063025
+  AbilityBookVisualElementName: 
+  CastBarVisualElementName: 
+  PanelSettings: {fileID: 11400000, guid: 1ba3e0ab81466114bb2c1444f8f98b0c, type: 2}
+  UxmlUi: {fileID: 0}
+  SortingOrder: 0

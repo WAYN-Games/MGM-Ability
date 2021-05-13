@@ -12,6 +12,8 @@ namespace WaynGroup.Mgm.Ability
     {
         public bool IsCasting;
         public uint abilityId;
+        public float castTime;
+        public int index;
     }
     /// <summary>
     /// This system update each ability's timming (cast and/or cooldown).
@@ -79,7 +81,7 @@ namespace WaynGroup.Mgm.Ability
                         var ability = sbArray[i];
                         AbilityTimings timming = cahcheMap.GetValuesForKey(ability.Guid)[0];
                         ability = UpdateTiming(DeltaTime, ability);
-                        ability = UpdateState(ability, input, ref currentlyCasting, timming);
+                        ability = UpdateState(ability, input, ref currentlyCasting, timming, i);
                         sbArray[i] = ability;
                     }
                     input.Enabled = false;
@@ -96,7 +98,7 @@ namespace WaynGroup.Mgm.Ability
                 return Ability;
             }
 
-            public AbilityBufferElement UpdateState(AbilityBufferElement ability, AbilityInput abilityInput, ref CurrentlyCasting currentlyCasting, AbilityTimings timming)
+            public AbilityBufferElement UpdateState(AbilityBufferElement ability, AbilityInput abilityInput, ref CurrentlyCasting currentlyCasting, AbilityTimings timming, int index)
             {
                 if (abilityInput.AbilityId == ability.Guid && abilityInput.Enabled)
                 {
@@ -127,7 +129,7 @@ namespace WaynGroup.Mgm.Ability
 
                     if (canCast)
                     {
-                        ability = StartCasting(ability, ref currentlyCasting, timming);
+                        ability = StartCasting(ability, ref currentlyCasting, timming, index);
                         return ability;
                     }
                 }
@@ -162,13 +164,15 @@ namespace WaynGroup.Mgm.Ability
                 return Ability;
             }
 
-            public AbilityBufferElement StartCasting(AbilityBufferElement ability, ref CurrentlyCasting casting, AbilityTimings timming)
+            public AbilityBufferElement StartCasting(AbilityBufferElement ability, ref CurrentlyCasting casting, AbilityTimings timming, int index)
             {
 
                 ability.AbilityState = AbilityState.Casting;
                 ability.CurrentTimming = timming.Cast;
                 casting.IsCasting = true;
+                casting.castTime = timming.Cast;
                 casting.abilityId = ability.Guid;
+                casting.index = index;
 
                 return ability;
             }

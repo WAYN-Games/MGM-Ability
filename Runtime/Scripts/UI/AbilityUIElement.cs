@@ -26,7 +26,7 @@ namespace WaynGroup.Mgm.Ability.UI
         }
     }
 
-    class AbilityUIElement : VisualElement
+    class AbilityUIElement : EntityOwnedUpdatableVisualElement
     {
         public new class UxmlFactory : UxmlFactory<AbilityUIElement, UxmlTraits>
         {
@@ -35,31 +35,44 @@ namespace WaynGroup.Mgm.Ability.UI
         public new class UxmlTraits : VisualElement.UxmlTraits { }
 
         private ICommand _command;
-        private bool TryGetAbilityFromCatalogue(uint abilityId, out ScriptableAbility ability)
-        {
-            if (World.DefaultGameObjectInjectionWorld.GetOrCreateSystem<AddressableAbilityCatalogSystem>().AbilityCatalog.TryGetValue(_abilityId, out ability))
-            {
-                return true;
-            }
-            ability = null;
-            return false;
-        }
 
-        private Entity _owner;
-        private uint _abilityId;
 
         private Texture2D Icon;
-        private float CooldownTime;
         private ScriptableAbility _ability;
+        private ProgressBar _CoolDown;
 
         public AbilityUIElement()
         {
 
             VisualTreeAsset visualTree = Resources.Load<VisualTreeAsset>("AbilityUIElement");
             visualTree.CloneTree(this);
-            SetTime(0);
-            SetBackGroundFill(0);
+            VisualElement root = this.Q<VisualElement>(name: "Shape");
+            _CoolDown = this.Q<ProgressBar>(name: "coolDown");
+            _CoolDown.Value = 0;
+            _CoolDown.SetOrientation(FlexDirection.ColumnReverse);
             _command = default;
+        }
+
+        public void AssignAbility(Entity owner, uint abilityID, EntityManager entityManager)
+        {
+            Debug.Log($"Assigning ability {abilityID}.");
+            _entityManager = entityManager;
+            entityManager.World.GetOrCreateSystem<AddressableAbilityCatalogSystem>().OnAbilityUpdate += UpdateCalatoguedInfo;
+
+            _owner = owner;
+
+            _command = new AbilityUICommand()
+            {
+                CommandedEntity = owner,
+                AbilityID = abilityID,
+                EntityManager = entityManager
+            };
+
+
+            // Need to force the first update on assignement because the ability assignement happens after the first catalogue update
+            UpdatedCachedInfo(entityManager.World.GetOrCreateSystem<AddressableAbilityCatalogSystem>().AbilityCatalog, abilityID);
+
+            this.Q<Button>(name: "abilityButton").RegisterCallback<ClickEvent>(Clicked);
 
             RegisterCallback<MouseEnterEvent>(e =>
             {
@@ -71,44 +84,27 @@ namespace WaynGroup.Mgm.Ability.UI
                 VisualElement ve = (VisualElement)e.target;
                 ve.panel.visualTree.Q<AbilityUITooltip>(name: "Tooltip").Hide();
             });
-        }
 
-        public void AssignAbility(Entity owner, uint abilityID, EntityManager entityManager)
-        {
-
-            entityManager.World.GetOrCreateSystem<AddressableAbilityCatalogSystem>().OnAbilityUpdate += UpdateCalatoguedInfo;
-            _abilityId = abilityID;
-            _owner = owner;
-
-            _command = new AbilityUICommand()
-            {
-                CommandedEntity = owner,
-                AbilityID = abilityID,
-                EntityManager = entityManager
-            };
-
-            this.Q<Button>(name: "abilityButton").RegisterCallback<ClickEvent>(Clicked);
-
-            UpdateCalatoguedInfo(null);
-            UpdateCoolDown();
         }
 
         private void Clicked(ClickEvent evt)
         {
-            Debug.Log("Clicked");
             _command.Execute();
         }
 
-        private string Tooltip_Title = "";
 
         private void UpdateCalatoguedInfo(Dictionary<uint, ScriptableAbility> abilityCatalogue)
         {
+            UpdatedCachedInfo(abilityCatalogue, _ability.Id);
+        }
 
-            if (TryGetAbilityFromCatalogue(_abilityId, out ScriptableAbility ability))
+        private void UpdatedCachedInfo(Dictionary<uint, ScriptableAbility> abilityCatalogue, uint abilityID)
+        {
+            if (abilityCatalogue.TryGetValue(abilityID, out ScriptableAbility ability))
             {
                 SetIcon(ability.Icon);
-                Tooltip_Title = ability.name;
                 _ability = ability;
+                UpdateCoolDown();
             }
         }
 
@@ -116,7 +112,7 @@ namespace WaynGroup.Mgm.Ability.UI
         {
             _command = default;
             SetIcon(null);
-            Tooltip_Title = "";
+
             this.Q<Button>(name: "abilityButton").clicked -= _command.Execute;
             World.DefaultGameObjectInjectionWorld.GetOrCreateSystem<AddressableAbilityCatalogSystem>().OnAbilityUpdate -= UpdateCalatoguedInfo;
 
@@ -126,15 +122,26 @@ namespace WaynGroup.Mgm.Ability.UI
 
         public void UpdateCoolDown()
         {
+
+#if UNITY_EDITOR
+                    UnityEngine.Debug.Log($"If it's null ({_ability == null}) how come I don't get a null pointer  ( {_ability.Id})?.");
+#endif
+
+            if (_ability == null) return;
             if (!IsAssigned) return;
-            if (TryGetAbilityFromCatalogue(_abilityId, out ScriptableAbility ability)
-                && TryFindAbilityInBuffer(_abilityId, out AbilityBufferElement bufferElement)
+
+            if (
+                TryFindAbilityInBuffer(_ability.Id, out AbilityBufferElement bufferElement)
                 && bufferElement.AbilityState == AbilityState.CoolingDown)
             {
                 float remainingTime = bufferElement.CurrentTimming;
-                SetTime(remainingTime);
-
-                SetBackGroundFill((remainingTime / ability.Timings.CoolDown));
+                _CoolDown.Value = remainingTime / _ability.Timings.CoolDown * 100;
+                _CoolDown.Title = $"{math.round(remainingTime / .1f) * .1f} s";
+            }
+            else
+            {
+                _CoolDown.Value = 0;
+                _CoolDown.Title = $"";
             }
         }
 
@@ -144,7 +151,7 @@ namespace WaynGroup.Mgm.Ability.UI
         private bool TryFindAbilityInBuffer(uint abilityId, out AbilityBufferElement ability)
         {
             ability = default;
-            DynamicBuffer<AbilityBufferElement> buffer = World.DefaultGameObjectInjectionWorld.EntityManager.GetBuffer<AbilityBufferElement>(_owner);
+            DynamicBuffer<AbilityBufferElement> buffer = _entityManager.GetBuffer<AbilityBufferElement>(_owner);
             if (buffer[_cachedAbilityIndex].Guid == abilityId)
             {
                 ability = buffer[_cachedAbilityIndex];
@@ -166,31 +173,14 @@ namespace WaynGroup.Mgm.Ability.UI
             return false;
         }
 
-        private void SetBackGroundFill(float fill)
-        {
-            VisualElement bg = this.Q(name: "coolDownBackground");
-
-            if (fill <= 0)
-            {
-                bg.visible = false;
-                return;
-            }
-            if (!bg.visible) bg.visible = true;
-
-            bg.style.height = bg.parent.worldBound.height * math.clamp(fill, 0, 1);
-        }
-
-        private void SetTime(float seconds)
-        {
-            Label label = this.Q<Label>(name: "coolDownTime");
-            seconds = math.round(seconds * 10) / 10;
-            label.text = seconds <= 0 ? "" : $"{seconds}s";
-        }
-
         private void SetIcon(Texture2D icon)
         {
             this.Q(name: "Icon").style.backgroundImage = new StyleBackground(icon);
         }
 
+        public override void Update()
+        {
+            UpdateCoolDown();
+        }
     }
 }
