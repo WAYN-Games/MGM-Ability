@@ -26,7 +26,7 @@ namespace WaynGroup.Mgm.Ability.UI
         {
             if (ability == null) return;
             visible = true;
-            this.Q<Label>(name: "Title").text = ability.name;
+            this.Q<Label>(name: "Title").text = ability.Name.GetLocalizedString();
         }
 
         public void Hide()

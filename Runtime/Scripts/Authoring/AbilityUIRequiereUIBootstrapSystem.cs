@@ -51,8 +51,10 @@ public partial class AbilityAuthoring
                         uiDoc.panelSettings = link.PanelSettings;
                         uiDoc.visualTreeAsset = link.UxmlUi;
                         uiDoc.sortingOrder = link.SortingOrder;
-                        uiDoc.rootVisualElement.Q<AbilityBookUIElement>().Populate(abilities, entity, EntityManager);
-                        uiDoc.rootVisualElement.Q<CastBar>().SetOwnership(entity, EntityManager);
+                        AbilityBookUIElement book = uiDoc.rootVisualElement.Q<AbilityBookUIElement>();
+                        if (book != null) book.Populate(abilities, entity, EntityManager);
+                        CastBar CastBar = uiDoc.rootVisualElement.Q<CastBar>();
+                        if (CastBar != null) CastBar.SetOwnership(entity, EntityManager);
                     }
                 }
                 EntityManager.RemoveComponent<RequiereUIBootstrap>(entity);

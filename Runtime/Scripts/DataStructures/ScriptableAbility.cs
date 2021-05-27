@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using UnityEngine.Localization;
 
 using WaynGroup.Mgm.Ability;
 
@@ -17,7 +18,7 @@ public class ScriptableAbility : ScriptableObject
     /// <summary>
     /// The name of the ability.
     /// </summary>
-    public string Name;
+    public LocalizedString Name;
 
     /// <summary>
     /// The skill Icon.
@@ -53,7 +54,7 @@ public class ScriptableAbility : ScriptableObject
     // Needed to prevent issue between "Fast enter play mode" and addressable.
     public static ScriptableAbility CopyOf(ScriptableAbility original)
     {
-        ScriptableAbility copy = new ScriptableAbility();
+        ScriptableAbility copy = CreateInstance<ScriptableAbility>();
         copy.Id = original.Id;
         copy.Icon = original.Icon;
         copy.Name = original.Name;

@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: AbilityUiLink
   m_EditorClassIdentifier: 
   Id: 960063025
-  AbilityBookVisualElementName: 
-  CastBarVisualElementName: 
+  UiPrefab: {fileID: 3430629774996621187, guid: a026aaf90cba5d645af6635f3728fed1,
+    type: 3}
   PanelSettings: {fileID: 11400000, guid: 1ba3e0ab81466114bb2c1444f8f98b0c, type: 2}
   UxmlUi: {fileID: 0}
   SortingOrder: 0

@@ -22,7 +22,7 @@ namespace WaynGroup.Mgm.Ability.UI
             VisualTreeAsset visualTree = Resources.Load<VisualTreeAsset>("AbilityBookUIElement");
             visualTree.CloneTree(this);
             _bookRoot = this;
-
+            // this.AddManipulator(new DragableAbility());
         }
 
         public void Populate(DynamicBuffer<AbilityBufferElement> abilities, Entity owner, EntityManager entityManager)

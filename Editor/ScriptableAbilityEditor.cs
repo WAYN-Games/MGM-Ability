@@ -87,7 +87,6 @@ public class ScriptableAbilityEditor : Editor
     {
         ScriptableAbility ability = (ScriptableAbility)target;
         Undo.RecordObject(ability, "Ability Change");
-        AssignDefaultName(ability);
         RegisterAsAddressable(ability);
     }
     public void RegisterAsAddressable(ScriptableAbility ability)
@@ -128,7 +127,7 @@ public class ScriptableAbilityEditor : Editor
         if (entry != null)
         {
             entry.labels.Add(AbilityHelper.ADDRESSABLE_ABILITY_LABEL);
-            entry.address = ability.Name;
+            entry.address = ability.name;
             ability.Id = GuidHash;
             //You'll need these to run to save the changes!
             settings.SetDirty(AddressableAssetSettings.ModificationEvent.EntryMoved, entry, true);
@@ -138,11 +137,6 @@ public class ScriptableAbilityEditor : Editor
     }
 
 
-
-    private static void AssignDefaultName(ScriptableAbility ability)
-    {
-        if (string.IsNullOrEmpty(ability.Name)) ability.Name = ability.name;
-    }
 
     private void Cache()
     {

@@ -1,6 +1,6 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" mgm-ability="WaynGroup.Mgm.Ability.UI" editor-extension-mode="False">
     <ui:VisualElement style="flex-grow: 1;">
-        <ui:Label display-tooltip-when-elided="true" name="Title" style="-unity-font: resource(&apos;Fonts &amp; Materials/LiberationSans&apos;);" />
+        <ui:Label display-tooltip-when-elided="true" name="Title" class="title" />
         <ui:Label display-tooltip-when-elided="true" name="Content" style="-unity-font: resource(&apos;Fonts &amp; Materials/LiberationSans&apos;);" />
         <ui:Label display-tooltip-when-elided="true" name="CastTime" style="-unity-font: resource(&apos;Fonts &amp; Materials/LiberationSans&apos;);" />
         <ui:Label display-tooltip-when-elided="true" name="CoolDown" style="-unity-font: resource(&apos;Fonts &amp; Materials/LiberationSans&apos;);" />

@@ -51,6 +51,14 @@ namespace WaynGroup.Mgm.Ability.UI
             _CoolDown.Value = 0;
             _CoolDown.SetOrientation(FlexDirection.ColumnReverse);
             _command = default;
+            this.AddManipulator(new DragableAbility());
+        }
+
+        public AbilityUIElement Clone()
+        {
+            AbilityUIElement copy = new AbilityUIElement();
+            copy.AssignAbility(_owner, _ability.Id, _entityManager);
+            return copy;
         }
 
         public void AssignAbility(Entity owner, uint abilityID, EntityManager entityManager)
@@ -72,7 +80,6 @@ namespace WaynGroup.Mgm.Ability.UI
             // Need to force the first update on assignement because the ability assignement happens after the first catalogue update
             UpdatedCachedInfo(entityManager.World.GetOrCreateSystem<AddressableAbilityCatalogSystem>().AbilityCatalog, abilityID);
 
-            this.Q<Button>(name: "abilityButton").RegisterCallback<ClickEvent>(Clicked);
 
             RegisterCallback<MouseEnterEvent>(e =>
             {
@@ -87,11 +94,10 @@ namespace WaynGroup.Mgm.Ability.UI
 
         }
 
-        private void Clicked(ClickEvent evt)
+        public void ExecuteAction()
         {
             _command.Execute();
         }
-
 
         private void UpdateCalatoguedInfo(Dictionary<uint, ScriptableAbility> abilityCatalogue)
         {
@@ -122,10 +128,6 @@ namespace WaynGroup.Mgm.Ability.UI
 
         public void UpdateCoolDown()
         {
-
-#if UNITY_EDITOR
-                    UnityEngine.Debug.Log($"If it's null ({_ability == null}) how come I don't get a null pointer  ( {_ability.Id})?.");
-#endif
 
             if (_ability == null) return;
             if (!IsAssigned) return;
@@ -183,4 +185,7 @@ namespace WaynGroup.Mgm.Ability.UI
             UpdateCoolDown();
         }
     }
+
+
+
 }
