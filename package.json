@@ -13,8 +13,9 @@
   ],
   "dependencies": {
     "com.unity.entities": "0.17.0-preview.41",
-    "com.unity.addressables": "1.17.2-preview",
+    "com.unity.addressables": "1.18.4",
     "com.wayn-group.blob": "0.1.0",
-    "com.unity.localization": "1.0.0-pre.9"
+    "com.unity.localization": "1.0.0-pre.9",
+    "com.unity.inputsystem": "1.1.0-pre.5"
   }
 }
