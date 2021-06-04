@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using UnityEngine.UIElements;
-
 namespace WaynGroup.Mgm.Ability.UI
 {
     public class DragableAbility : MouseManipulator
@@ -82,32 +81,43 @@ namespace WaynGroup.Mgm.Ability.UI
                 return;
             m_Dragging = false;
             m_Active = false;
-            target.ReleaseMouse();
+
             target.style.top = m_topStart;
             target.style.left = m_leftStart;
-            VisualElement actionSlot = DragAndDropData.Instance.FindClosestDropArea(target);
-            if (actionSlot == null) return;
+            VisualElement actionSlot = AbilityUIData.Instance.FindDropArea(e.mousePosition);
+
+
+
             if (target.parent is ActionSlot)
             {
-                AbilityUIElement swap = actionSlot.Q<AbilityUIElement>();
-                if (swap != null)
+                if (actionSlot == null)
                 {
-                    target.parent.Add(swap);
-                    swap.style.top = 0;
-                    swap.style.left = 0;
-                    swap.style.width = new StyleLength(new Length(100, LengthUnit.Percent));
-                    swap.style.height = new StyleLength(new Length(100, LengthUnit.Percent));
+                    target.SetEnabled(false);
+                    target.parent.Remove(target);
                 }
+                else
+                {
+                    AbilityUIElement swap = actionSlot.Q<AbilityUIElement>();
+                    if (swap != null)
+                    {
+                        target.parent.Add(swap);
+                        swap.style.top = 0;
+                        swap.style.left = 0;
+                        swap.style.width = new StyleLength(new Length(100, LengthUnit.Percent));
+                        swap.style.height = new StyleLength(new Length(100, LengthUnit.Percent));
+                    }
 
-                actionSlot.Clear();
-                actionSlot.Add(target);
-                target.style.top = 0;
-                target.style.left = 0;
-                target.style.width = new StyleLength(new Length(100, LengthUnit.Percent));
-                target.style.height = new StyleLength(new Length(100, LengthUnit.Percent));
+                    actionSlot.Clear();
+                    actionSlot.Add(target);
+                    target.style.top = 0;
+                    target.style.left = 0;
+                    target.style.width = new StyleLength(new Length(100, LengthUnit.Percent));
+                    target.style.height = new StyleLength(new Length(100, LengthUnit.Percent));
+                }
             }
-            else
+            else if (actionSlot != null)
             {
+
                 AbilityUIElement copy = ((AbilityUIElement)target).Clone();
                 actionSlot.Clear();
                 actionSlot.Add(copy);
@@ -120,7 +130,7 @@ namespace WaynGroup.Mgm.Ability.UI
 
 
 
-
+            target.ReleaseMouse();
             e.StopPropagation();
         }
         #endregion

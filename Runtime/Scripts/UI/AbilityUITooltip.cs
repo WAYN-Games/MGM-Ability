@@ -20,6 +20,7 @@ namespace WaynGroup.Mgm.Ability.UI
             VisualTreeAsset visualTree = Resources.Load<VisualTreeAsset>("AbilityUITooltip");
             visualTree.CloneTree(this);
             Hide();
+            AbilityUIData.Instance.AbilityTooltip = this;
         }
 
         public void Show(ScriptableAbility ability)

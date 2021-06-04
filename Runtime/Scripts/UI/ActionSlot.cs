@@ -20,24 +20,25 @@ namespace WaynGroup.Mgm.Ability.UI
         {
             VisualTreeAsset visualTree = Resources.Load<VisualTreeAsset>("ActionSlot");
             visualTree.CloneTree(this);
-            DragAndDropData.Instance.AddDropArea(this);
+            AbilityUIData.Instance.AddDropArea(this);
         }
 
 
     }
 
 
-    public sealed class DragAndDropData
+    public sealed class AbilityUIData
     {
         private List<VisualElement> DropAreas = new List<VisualElement>();
+        internal AbilityUITooltip AbilityTooltip;
 
         // Explicit static constructor to tell C# compiler
         // not to mark type as beforefieldinit
-        static DragAndDropData()
+        static AbilityUIData()
         {
         }
 
-        private DragAndDropData()
+        private AbilityUIData()
         {
         }
 
@@ -51,11 +52,11 @@ namespace WaynGroup.Mgm.Ability.UI
             DropAreas.Remove(dropArea);
         }
 
-        public VisualElement FindClosestDropArea(VisualElement elepentToDrop)
+        public VisualElement FindDropArea(Vector2 mousePosition)
         {
-            return DropAreas.Where(x => x.worldBound.Overlaps(elepentToDrop.worldBound)).OrderBy(x => Vector2.Distance(x.worldBound.position, elepentToDrop.worldBound.position)).FirstOrDefault();
+            return DropAreas.Where(x => x.worldBound.Contains(mousePosition)).FirstOrDefault();
         }
 
-        public static DragAndDropData Instance { get; } = new DragAndDropData();
+        public static AbilityUIData Instance { get; } = new AbilityUIData();
     }
 }

@@ -81,17 +81,24 @@ namespace WaynGroup.Mgm.Ability.UI
             UpdatedCachedInfo(entityManager.World.GetOrCreateSystem<AddressableAbilityCatalogSystem>().AbilityCatalog, abilityID);
 
 
-            RegisterCallback<MouseEnterEvent>(e =>
-            {
-                VisualElement ve = (VisualElement)e.target;
-                ve.panel.visualTree.Q<AbilityUITooltip>(name: "Tooltip").Show(_ability);
-            });
-            RegisterCallback<MouseLeaveEvent>(e =>
-            {
-                VisualElement ve = (VisualElement)e.target;
-                ve.panel.visualTree.Q<AbilityUITooltip>(name: "Tooltip").Hide();
-            });
+            RegisterCallback<PointerEnterEvent>(MouseOver);
+            RegisterCallback<PointerLeaveEvent>(MouseUnOver);
 
+        }
+
+
+        private void MouseUnOver(PointerLeaveEvent evt)
+        {
+            VisualElement ve = (VisualElement)evt.target;
+            AbilityUIData.Instance.AbilityTooltip.Hide();
+            evt.StopPropagation();
+        }
+
+        private void MouseOver(PointerEnterEvent evt)
+        {
+            VisualElement ve = (VisualElement)evt.target;
+            AbilityUIData.Instance.AbilityTooltip.Show(_ability);
+            evt.StopPropagation();
         }
 
         public void ExecuteAction()
@@ -131,7 +138,6 @@ namespace WaynGroup.Mgm.Ability.UI
 
             if (_ability == null) return;
             if (!IsAssigned) return;
-
             if (
                 TryFindAbilityInBuffer(_ability.Id, out AbilityBufferElement bufferElement)
                 && bufferElement.AbilityState == AbilityState.CoolingDown)
@@ -145,6 +151,7 @@ namespace WaynGroup.Mgm.Ability.UI
                 _CoolDown.Value = 0;
                 _CoolDown.Title = $"";
             }
+
         }
 
 
