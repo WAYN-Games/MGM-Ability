@@ -16,6 +16,7 @@
     "com.unity.addressables": "1.18.4",
     "com.wayn-group.blob": "0.1.0",
     "com.unity.localization": "1.0.0-pre.9",
-    "com.unity.inputsystem": "1.1.0-pre.5"
+    "com.unity.inputsystem": "1.1.0-pre.5",
+"com.wayn_group.editor.extension":"https://github.com/WAYNGROUP/WAYN-Editor-Extension.git"
   }
 }
