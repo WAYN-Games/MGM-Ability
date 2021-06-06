@@ -14,9 +14,11 @@
   "dependencies": {
     "com.unity.entities": "0.17.0-preview.42",
     "com.unity.addressables": "1.18.4",
-    "com.wayn-group.blob": "0.1.0",
     "com.unity.localization": "1.0.0-pre.9",
-    "com.unity.inputsystem": "1.1.0-pre.5",
-"com.wayn_group.editor.extension":"https://github.com/WAYNGROUP/WAYN-Editor-Extension.git"
+    "com.unity.inputsystem": "1.1.0-pre.5"
+  },
+  "gitDependencies": {
+    "com.wayn_group.editor.extension":"https://github.com/WAYNGROUP/WAYN-Editor-Extension.git",
+	"com.wayn-group.blob":"https://github.com/WAYNGROUP/wayn.blob.git"
   }
 }
