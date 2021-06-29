@@ -29,7 +29,7 @@ public partial class AbilityAuthoring : MonoBehaviour, IConvertGameObjectToEntit
 #endif
 #if !UNITY_EDITOR
             Debug.LogWarning($"Runtime conversion through AbilityAuthoring does not support asset loading. It will take default value instead");
-            AbilityHelper.AddAbility(AbilityHelper.ComputeAbilityIdFromGuid(Abilities[i].AssetGUID), InitialGlobalCoolDown, ref abilityBuffer);
+            AbilityHelper.AddAbility(Abilities[i].Id, InitialGlobalCoolDown, ref abilityBuffer);
 #endif
 
         }

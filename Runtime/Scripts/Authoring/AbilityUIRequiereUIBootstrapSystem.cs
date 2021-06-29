@@ -12,6 +12,7 @@ using WaynGroup.Mgm.Ability.UI;
 public partial class AbilityAuthoring
 {
     [UpdateInGroup(typeof(InitializationSystemGroup))]
+    [UpdateAfter(typeof(AddressableAbilityCatalogSystem))]
     public class AbilityUIRequiereUIBootstrapSystem : SystemBase
     {
         Dictionary<uint, AbilityUiLink> uiMap;
@@ -20,6 +21,17 @@ public partial class AbilityAuthoring
         {
             base.OnCreate();
             Enabled = false;
+            EntityManager.World.GetOrCreateSystem<AddressableAbilityCatalogSystem>().OnAbilityUpdate += BootstrapUi;
+
+        }
+
+        private void BootstrapUi(Dictionary<uint, ScriptableAbility> abilityCatalogue)
+        {
+            LinkUiToEntity();
+        }
+
+        public void LinkUiToEntity()
+        {
             Addressables.LoadAssetsAsync<AbilityUiLink>(new AssetLabelReference()
             {
                 labelString = AbilityHelper.ADDRESSABLE_UiLink_LABEL
@@ -30,6 +42,7 @@ public partial class AbilityAuthoring
                 foreach (AbilityUiLink uiLink in objects.Result)
                 {
                     Debug.Log($"boostrap {uiLink.Id}");
+                    Debug.Log($"Adding  {uiLink.Id},{uiLink}");
                     uiMap.Add(uiLink.Id, uiLink);
                 }
 
@@ -46,6 +59,8 @@ public partial class AbilityAuthoring
                 if (uiMap.TryGetValue(boostrap.uiAssetGuid, out var link))
                 {
                     UIDocument uiDoc = Instantiate(link.UiPrefab).GetComponent<UIDocument>();
+
+                    Debug.Log($"uiDoc  {uiDoc == null}");
                     if (uiDoc != null)
                     {
                         uiDoc.panelSettings = link.PanelSettings;
@@ -60,5 +75,7 @@ public partial class AbilityAuthoring
                 EntityManager.RemoveComponent<RequiereUIBootstrap>(entity);
             }).WithoutBurst().Run();
         }
+
+
     }
 }

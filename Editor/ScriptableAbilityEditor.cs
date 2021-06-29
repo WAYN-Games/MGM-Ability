@@ -143,31 +143,28 @@ public class ScriptableAbilityEditor : Editor
 
         EffectsProperty = serializedObject.FindProperty("Effects");
 
-        EffectTypes = AppDomain.CurrentDomain.GetAssemblies()
-            .SelectMany(s => s.GetTypes())
-            .Where(p => typeof(IEffect).IsAssignableFrom(p) && p.IsValueType).ToList();
+        EffectTypes = TypeCache.GetTypesDerivedFrom<IEffect>().ToList();
+
 
         CostsProperty = serializedObject.FindProperty("Costs");
 
         SpawnablesProperty = serializedObject.FindProperty("Spawnables");
 
-        CostTypes = AppDomain.CurrentDomain.GetAssemblies()
-            .SelectMany(s => s.GetTypes())
-            .Where(p => typeof(IAbilityCost).IsAssignableFrom(p) && p.IsValueType).ToList();
+        CostTypes = TypeCache.GetTypesDerivedFrom<IAbilityCost>().ToList();
     }
 
     private void LoadBaseLayout()
     {
         root = new VisualElement();
         // Import UXML
-        VisualTreeAsset visualTree = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Packages/wayn-group.mgm.ability/Editor/ScriptableAbilityEditor.uxml");
+        VisualTreeAsset visualTree = Resources.Load<VisualTreeAsset>("ScriptableAbilityEditor");
         TemplateContainer uxmlVe = visualTree.CloneTree();
         root.Add(uxmlVe.contentContainer);
         root.Bind(serializedObject);
 
         // A stylesheet can be added to a VisualElement.
         // The style will be applied to the VisualElement and all of its children.
-        StyleSheet styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>("Packages/wayn-group.mgm.ability/Editor/ScriptableAbilityEditor.uss");
+        StyleSheet styleSheet = Resources.Load<StyleSheet>("ScriptableAbilityEditor");
         root.styleSheets.Add(styleSheet);
 
 

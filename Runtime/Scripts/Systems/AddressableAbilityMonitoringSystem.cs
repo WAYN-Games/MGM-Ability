@@ -150,7 +150,7 @@ namespace WaynGroup.Mgm.Ability
                 {
                     Debug.Log($"Adding ability {ability.Id} to catalogue.");
 
-                    AbilityCatalog.Add(ability.Id, ScriptableAbility.CopyOf(ability));
+                    AbilityCatalog.Add(ability.Id, ability);
                 }
                 OnAbilityUpdate.Invoke(AbilityCatalog);
             }; ;

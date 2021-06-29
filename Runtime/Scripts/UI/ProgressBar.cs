@@ -61,11 +61,9 @@ namespace WaynGroup.Mgm.Ability.UI
 
         public void SetOrientation(FlexDirection orientation)
         {
-            Debug.Log($"Setting orientation to {orientation}");
             if ((orientation.Equals(FlexDirection.Column) || orientation.Equals(FlexDirection.ColumnReverse))
                 && IsHorizontal)
             {
-                Debug.Log($"Setting {orientation}");
                 fill.style.height = fill.style.width;
                 fill.style.width = new StyleLength(new Length(100, LengthUnit.Percent));
             }

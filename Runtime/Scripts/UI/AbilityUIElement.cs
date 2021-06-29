@@ -63,7 +63,6 @@ namespace WaynGroup.Mgm.Ability.UI
 
         public void AssignAbility(Entity owner, uint abilityID, EntityManager entityManager)
         {
-            Debug.Log($"Assigning ability {abilityID}.");
             _entityManager = entityManager;
             entityManager.World.GetOrCreateSystem<AddressableAbilityCatalogSystem>().OnAbilityUpdate += UpdateCalatoguedInfo;
 
@@ -115,6 +114,7 @@ namespace WaynGroup.Mgm.Ability.UI
         {
             if (abilityCatalogue.TryGetValue(abilityID, out ScriptableAbility ability))
             {
+
                 SetIcon(ability.Icon);
                 _ability = ability;
                 UpdateCoolDown();

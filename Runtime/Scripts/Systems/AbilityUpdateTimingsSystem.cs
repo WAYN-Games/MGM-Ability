@@ -2,8 +2,6 @@
 using Unity.Collections;
 using Unity.Entities;
 
-using UnityEngine;
-
 namespace WaynGroup.Mgm.Ability
 {
 
@@ -63,68 +61,30 @@ namespace WaynGroup.Mgm.Ability
             public ComponentTypeHandle<AbilityInput> AbilityInputChunk;
             public ComponentTypeHandle<CurrentlyCasting> CurrentlyCastingChunk;
 
-            public void Execute(ArchetypeChunk chunk, int chunkIndex, int firstEntityIndex)
-            {
-                BufferAccessor<AbilityBufferElement> abilityBufferAccessor = chunk.GetBufferAccessor(AbilityBufferChunk);
-                NativeArray<AbilityInput> inputArray = chunk.GetNativeArray(AbilityInputChunk);
-                NativeArray<CurrentlyCasting> currentlyCastingArray = chunk.GetNativeArray(CurrentlyCastingChunk);
-
-                ref var cahcheMap = ref Cache.Value;
-
-                for (int entityIndex = 0; entityIndex < chunk.Count; ++entityIndex)
-                {
-                    AbilityInput input = inputArray[entityIndex];
-                    CurrentlyCasting currentlyCasting = currentlyCastingArray[entityIndex];
-                    NativeArray<AbilityBufferElement> sbArray = abilityBufferAccessor[entityIndex].AsNativeArray();
-                    for (int i = 0; i < sbArray.Length; i++)
-                    {
-                        var ability = sbArray[i];
-                        AbilityTimings timming = cahcheMap.GetValuesForKey(ability.Guid)[0];
-                        ability = UpdateTiming(DeltaTime, ability);
-                        ability = UpdateState(ability, input, ref currentlyCasting, timming, i);
-                        sbArray[i] = ability;
-                    }
-                    input.Enabled = false;
-                    inputArray[entityIndex] = input;
-                    currentlyCastingArray[entityIndex] = currentlyCasting;
-                }
-            }
-
-
-            public AbilityBufferElement UpdateTiming(float DeltaTime, AbilityBufferElement Ability)
-            {
-                if (Ability.AbilityState == AbilityState.Casting || Ability.AbilityState == AbilityState.CoolingDown)
-                    Ability.CurrentTimming -= DeltaTime;
-                return Ability;
-            }
-
             public AbilityBufferElement UpdateState(AbilityBufferElement ability, AbilityInput abilityInput, ref CurrentlyCasting currentlyCasting, AbilityTimings timming, int index)
             {
                 if (abilityInput.AbilityId == ability.Guid && abilityInput.Enabled)
                 {
+
                     bool canCast = true;
                     if (currentlyCasting.IsCasting)
                     {
                         canCast = false;
-                        Debug.Log($"Alreading casting.");
                     }
                     else
                     if (ability.AbilityState != AbilityState.CooledDown)
                     {
                         canCast = false;
-                        Debug.Log($"Ability not ready yet.");
                     }
                     else
                     if (!ability.IsInRange)
                     {
                         canCast = false;
-                        Debug.Log($"Target out of range.");
                     }
                     else
                     if (!ability.HasEnougthRessource)
                     {
                         canCast = false;
-                        Debug.Log($"Not enougth ressources.");
                     }
 
                     if (canCast)
@@ -190,6 +150,38 @@ namespace WaynGroup.Mgm.Ability
                 Ability.AbilityState = AbilityState.CoolingDown;
                 Ability.CurrentTimming = timming.CoolDown;
                 return Ability;
+            }
+
+
+            public void Execute(ArchetypeChunk chunk, int chunkIndex, int firstEntityIndex)
+            {
+                BufferAccessor<AbilityBufferElement> abilityBufferAccessor = chunk.GetBufferAccessor(AbilityBufferChunk);
+                NativeArray<AbilityInput> inputArray = chunk.GetNativeArray(AbilityInputChunk);
+                NativeArray<CurrentlyCasting> currentlyCastingArray = chunk.GetNativeArray(CurrentlyCastingChunk);
+
+                ref var cahcheMap = ref Cache.Value;
+
+                for (int entityIndex = 0; entityIndex < chunk.Count; ++entityIndex)
+                {
+                    AbilityInput input = inputArray[entityIndex];
+                    CurrentlyCasting currentlyCasting = currentlyCastingArray[entityIndex];
+                    NativeArray<AbilityBufferElement> sbArray = abilityBufferAccessor[entityIndex].AsNativeArray();
+                    for (int i = 0; i < sbArray.Length; i++)
+                    {
+                        var ability = sbArray[i];
+                        var timmings = cahcheMap.GetValuesForKey(ability.Guid);
+
+
+                        AbilityTimings timming = timmings[0];
+                        ability.CurrentTimming -= DeltaTime;
+                        ability = UpdateState(ability, input, ref currentlyCasting, timming, i);
+
+                        sbArray[i] = ability;
+                    }
+                    input.Enabled = false;
+                    inputArray[entityIndex] = input;
+                    currentlyCastingArray[entityIndex] = currentlyCasting;
+                }
             }
         }
 

@@ -23,6 +23,7 @@ namespace WaynGroup.Mgm.Ability
     /// </summary>
     public interface IAbilityCost : IComponentData
     {
+
     }
 
 
