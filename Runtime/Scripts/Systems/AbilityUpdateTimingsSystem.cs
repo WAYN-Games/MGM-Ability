@@ -38,10 +38,16 @@ namespace WaynGroup.Mgm.Ability
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            AbilityTimingsCache cache = _cache.GetSingleton<AbilityTimingsCache>();
-            state.Dependency = new AbilityUpdateStateAndTimingsJob()
+            state.Dependency = new AbilityUpdpdateCooldownJob()
             {
                 DeltaTime = state.WorldUnmanaged.CurrentTime.DeltaTime,
+                AbilityBufferChunk = state.GetBufferTypeHandle<AbilityBufferElement>()
+
+            }.ScheduleParallel(_query, state.Dependency);
+
+            AbilityTimingsCache cache = _cache.GetSingleton<AbilityTimingsCache>();
+            state.Dependency = new AbilityUpdateStateJob()
+            {
                 CurrentlyCastingChunk = state.GetComponentTypeHandle<CurrentlyCasting>(),
                 AbilityInputChunk = state.GetComponentTypeHandle<AbilityInput>(),
                 AbilityBufferChunk = state.GetBufferTypeHandle<AbilityBufferElement>(),
@@ -49,13 +55,37 @@ namespace WaynGroup.Mgm.Ability
 
             }.ScheduleParallel(_query, state.Dependency);
         }
-
+        
 
         [BurstCompile]
-        public struct AbilityUpdateStateAndTimingsJob : IJobChunk
+        public struct AbilityUpdpdateCooldownJob : IJobChunk
+        {
+            [ReadOnly] public float DeltaTime;
+
+            public BufferTypeHandle<AbilityBufferElement> AbilityBufferChunk;
+            public void Execute(ArchetypeChunk chunk, int chunkIndex, int firstEntityIndex)
+            {
+                BufferAccessor<AbilityBufferElement> abilityBufferAccessor = chunk.GetBufferAccessor(AbilityBufferChunk);
+
+                for (int entityIndex = 0; entityIndex < chunk.Count; ++entityIndex)
+                {
+                    NativeArray<AbilityBufferElement> sbArray = abilityBufferAccessor[entityIndex].AsNativeArray();
+                    for (int i = 0; i < sbArray.Length; i++)
+                    {
+                        var ability = sbArray[i];
+                        ability.CurrentTimming -= DeltaTime;
+                        sbArray[i] = ability;
+                    }
+                }
+
+            }
+
+        }
+
+        [BurstCompile]
+        public struct AbilityUpdateStateJob : IJobChunk
         {
             [ReadOnly] public BlobAssetReference<BlobMultiHashMap<uint, AbilityTimings>> Cache;
-            [ReadOnly] public float DeltaTime;
 
             public BufferTypeHandle<AbilityBufferElement> AbilityBufferChunk;
             public ComponentTypeHandle<AbilityInput> AbilityInputChunk;
@@ -173,9 +203,7 @@ namespace WaynGroup.Mgm.Ability
 
 
                         AbilityTimings timming = timmings[0];
-                        ability.CurrentTimming -= DeltaTime;
                         ability = UpdateState(ability, input, ref currentlyCasting, timming, i);
-
                         sbArray[i] = ability;
                     }
                     input.Enabled = false;
