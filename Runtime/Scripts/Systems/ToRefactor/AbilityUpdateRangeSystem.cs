@@ -66,7 +66,7 @@ namespace WaynGroup.Mgm.Ability
                 NativeArray<Entity> entities = batchInChunk.GetNativeArray(EntityChunk);
 
                 ref BlobMultiHashMap<uint, Range> cacheMap = ref Cache.Value;
-                Range range;
+
                 for (int entityIndex = 0; entityIndex < entities.Length; ++entityIndex)
                 {
                     // only check range when trying to activate an ability
@@ -76,7 +76,7 @@ namespace WaynGroup.Mgm.Ability
                     Entity target = targets[entityIndex].Value;
 
 
-                    if (!Translations.HasComponent(caster) || !Translations.HasComponent(targets[entityIndex].Value)) return;
+                    if (!Translations.HasComponent(caster) || !Translations.HasComponent(target)) return;
                     float3 casterPosition = Translations[caster].Value;
                     float3 targetPosition = Translations[target].Value;
 
@@ -89,9 +89,7 @@ namespace WaynGroup.Mgm.Ability
                         if (inputs[entityIndex].AbilityId != ability.Guid) continue;
                         float distance = math.distancesq(casterPosition, targetPosition);
                         NativeArray<Range> ranges = cacheMap.GetValuesForKey(ability.Guid);
-
-
-                        range = ranges[0];
+                        Range range = ranges[0];
                         ability.IsInRange = math.pow(range.Min, 2) <= distance && distance <= math.pow(range.Max, 2);
                         sbArray[i] = ability;
                     }
@@ -99,7 +97,5 @@ namespace WaynGroup.Mgm.Ability
                 }
             }
         }
-
-
     }
 }

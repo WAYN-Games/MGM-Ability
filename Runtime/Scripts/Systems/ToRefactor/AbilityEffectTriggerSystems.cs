@@ -116,8 +116,11 @@ namespace WaynGroup.Mgm.Ability
                     {
                         ConsumerWriter.Write(targetEntities[i]);
                     }
+                    targetEntities.Dispose();
 
                 }
+
+                effectEnumerator.Dispose();
             }
 
             private static NativeArray<Entity> FindTargets(ref NativeArray<Target> targets, ref NativeArray<Entity> entities, int entityIndex, TargetingMode efffectTargetingMode)
