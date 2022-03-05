@@ -32,8 +32,8 @@ namespace WaynGroup.Mgm.Ability
             {
                 All = new ComponentType[]
                 {
-                        ComponentType.ReadOnly<AbilityBufferElement>(),
-                        ComponentType.ReadWrite<RESOURCE>()
+                        ComponentType.ReadWrite<RESOURCE>(),
+                        ComponentType.ReadOnly<AbilityInput>()
                 }
             });
             World.GetOrCreateSystem<AddressableAbilityCatalogSystem>().OnCostUpdate += UpdateCostCache;
@@ -44,7 +44,7 @@ namespace WaynGroup.Mgm.Ability
         {
             Dependency = new CostHandlerJob()
             {
-                AbilityBufferChunk = GetBufferTypeHandle<AbilityBufferElement>(true),
+                AbilityInputComponent = GetComponentTypeHandle<AbilityInput>(true),
                 ResourceComponent = GetComponentTypeHandle<RESOURCE>(false),
                 CostMap = _costMap,
                 CostHandler = GetCostHandler()
@@ -66,28 +66,24 @@ namespace WaynGroup.Mgm.Ability
         [BurstCompile]
         public struct CostHandlerJob : IJobChunk
         {
-            public COST_HANDLER CostHandler;
-            [ReadOnly] public BufferTypeHandle<AbilityBufferElement> AbilityBufferChunk;
+            [ReadOnly] public ComponentTypeHandle<AbilityInput> AbilityInputComponent;
             [ReadOnly] public NativeMultiHashMap<uint, COST> CostMap;
+            public COST_HANDLER CostHandler;
             public ComponentTypeHandle<RESOURCE> ResourceComponent;
 
             public void Execute(ArchetypeChunk chunk, int chunkIndex, int firstEntityIndex)
             {
-                BufferAccessor<AbilityBufferElement> abilityBufffers = chunk.GetBufferAccessor(AbilityBufferChunk);
                 NativeArray<RESOURCE> resourceComponent = chunk.GetNativeArray(ResourceComponent);
+                NativeArray<AbilityInput> abilityInputComponent = chunk.GetNativeArray(AbilityInputComponent);
 
                 for (int entityIndex = 0; entityIndex < chunk.Count; ++entityIndex)
                 {
+                    AbilityInput abilityInput = abilityInputComponent[entityIndex];
+                    if (!abilityInput.IsApplicable()) continue;
+                    
+                    
                     RESOURCE resource = resourceComponent[entityIndex];
-                    NativeArray<AbilityBufferElement> AbilityBufferArray = abilityBufffers[entityIndex].AsNativeArray();
-                    for (int abilityIndex = 0; abilityIndex < AbilityBufferArray.Length; ++abilityIndex)
-                    {
-                        AbilityBufferElement ability = AbilityBufferArray[abilityIndex];
-
-
-                        if (ability.AbilityState != AbilityState.Active || !ability.HasEnougthRessource) continue;
-
-                        NativeMultiHashMap<uint, COST>.Enumerator enumerator = CostMap.GetValuesForKey(AbilityBufferArray[abilityIndex].Guid);
+                    NativeMultiHashMap<uint, COST>.Enumerator enumerator = CostMap.GetValuesForKey(abilityInput.AbilityId);
                         while (enumerator.MoveNext())
                         {
                             COST cost = enumerator.Current;
@@ -98,7 +94,7 @@ namespace WaynGroup.Mgm.Ability
                 }
 
             }
-        }
+        
 
 
 

@@ -22,7 +22,9 @@ namespace WaynGroup.Mgm.Ability.UI
         public void Execute()
         {
             if (!EntityManager.Exists(CommandedEntity) || !EntityManager.HasComponent<AbilityInput>(CommandedEntity)) return;
-            EntityManager.SetComponentData(CommandedEntity, new AbilityInput(AbilityID));
+            var ai = new AbilityInput(AbilityID);
+            ai.Enable();
+            EntityManager.SetComponentData(CommandedEntity,ai);
         }
     }
 
@@ -74,7 +76,10 @@ namespace WaynGroup.Mgm.Ability.UI
                 AbilityID = abilityID,
                 EntityManager = entityManager
             };
+            var abilitiesMapIndex = entityManager.GetComponentData<AbilitiesMapIndex>(owner);
 
+            ref BlobMultiHashMap<uint, int> guidToIndex = ref abilitiesMapIndex.guidToIndex.Value;
+            _cachedAbilityIndex = guidToIndex.GetValuesForKey(abilityID)[0];
 
             // Need to force the first update on assignement because the ability assignement happens after the first catalogue update
             UpdatedCachedInfo(entityManager.World.GetOrCreateSystem<AddressableAbilityCatalogSystem>().AbilityCatalog, abilityID);
@@ -138,11 +143,11 @@ namespace WaynGroup.Mgm.Ability.UI
 
             if (_ability == null) return;
             if (!IsAssigned) return;
-            if (
-                TryFindAbilityInBuffer(_ability.Id, out AbilityBufferElement bufferElement)
-                && bufferElement.AbilityState == AbilityState.CoolingDown)
+
+            var cooldownBuffer = _entityManager.GetBuffer<AbilityCooldownBufferElement>(_owner).AsNativeArray();
+            float remainingTime = cooldownBuffer[_cachedAbilityIndex].CooldownTime;
+            if (remainingTime > 0)
             {
-                float remainingTime = bufferElement.CurrentTimming;
                 _CoolDown.Value = remainingTime / _ability.Timings.CoolDown * 100;
                 _CoolDown.Title = $"{math.round(remainingTime / .1f) * .1f} s";
             }
@@ -155,32 +160,7 @@ namespace WaynGroup.Mgm.Ability.UI
         }
 
 
-        private int _cachedAbilityIndex;
-
-        private bool TryFindAbilityInBuffer(uint abilityId, out AbilityBufferElement ability)
-        {
-            ability = default;
-            DynamicBuffer<AbilityBufferElement> buffer = _entityManager.GetBuffer<AbilityBufferElement>(_owner);
-            if (buffer[_cachedAbilityIndex].Guid == abilityId)
-            {
-                ability = buffer[_cachedAbilityIndex];
-                return true;
-            }
-            else
-            {
-                for (int i = 0; i <= buffer.Length; ++i)
-                {
-                    if (buffer[i].Guid == abilityId)
-                    {
-                        ability = buffer[i];
-                        _cachedAbilityIndex = i;
-                        return true;
-                    }
-                }
-
-            }
-            return false;
-        }
+        private int _cachedAbilityIndex;       
 
         private void SetIcon(Texture2D icon)
         {

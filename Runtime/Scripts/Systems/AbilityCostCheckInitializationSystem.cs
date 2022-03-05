@@ -1,23 +1,18 @@
 ﻿using Unity.Entities;
+using UnityEngine;
 
 namespace WaynGroup.Mgm.Ability
 {
-    [UpdateInGroup(typeof(AbilityCostsSystemGroup), OrderFirst = true)]
+    [UpdateAfter(typeof(AbilityConsumerSystemGroup))]
     public class AbilityCostCheckInitializationSystem : SystemBase
     {
         protected override void OnUpdate()
         {
-            Entities.ForEach((ref DynamicBuffer<AbilityBufferElement> abilityBuffer) =>
+            Entities.ForEach((ref AbilityInput abilityInput) =>
             {
-                for (int abilityIndex = 0; abilityIndex < abilityBuffer.Length; ++abilityIndex)
-                {
-                    AbilityBufferElement ability = abilityBuffer[abilityIndex];
-                    ability.HasEnougthRessource = true;
-                    abilityBuffer[abilityIndex] = ability;
-                }
+                abilityInput.Disable();
             }).WithBurst()
                 .ScheduleParallel();
-
         }
     }
 

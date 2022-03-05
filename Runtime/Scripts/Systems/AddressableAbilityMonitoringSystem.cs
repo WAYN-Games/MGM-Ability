@@ -60,8 +60,8 @@ namespace WaynGroup.Mgm.Ability
             AbilityCatalog = new Dictionary<uint, ScriptableAbility>();
             OnAbilityUpdate += BuildEffectCatalogueAsync;
             OnAbilityUpdate += BuildCostCatalogueAsync;
-            OnAbilityUpdate += RefreshRangeCacheAsync;
-            OnAbilityUpdate += RefreshTimmingsCacheAsync;
+            OnAbilityUpdate += RefreshRangeCache;
+            OnAbilityUpdate += RefreshTimmingsCache;
             LoadAbilityCatalogueAsync();
 
         }
@@ -90,7 +90,7 @@ namespace WaynGroup.Mgm.Ability
 
 
         #region Timmings Cache
-        private void RefreshTimmingsCacheAsync(Dictionary<uint, ScriptableAbility> abilityCatalogue)
+        private void RefreshTimmingsCache(Dictionary<uint, ScriptableAbility> abilityCatalogue)
         {
 
 
@@ -110,7 +110,7 @@ namespace WaynGroup.Mgm.Ability
         #endregion
 
         #region Range Cache
-        private void RefreshRangeCacheAsync(Dictionary<uint, ScriptableAbility> abilityCatalogue)
+        private void RefreshRangeCache(Dictionary<uint, ScriptableAbility> abilityCatalogue)
         {
 
 
@@ -148,8 +148,6 @@ namespace WaynGroup.Mgm.Ability
                 if (objects.Result == null) return;
                 foreach (ScriptableAbility ability in objects.Result)
                 {
-                    Debug.Log($"Adding ability {ability.Id} to catalogue.");
-
                     AbilityCatalog.Add(ability.Id, ability);
                 }
                 OnAbilityUpdate.Invoke(AbilityCatalog);

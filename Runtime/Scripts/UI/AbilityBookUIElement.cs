@@ -25,15 +25,30 @@ namespace WaynGroup.Mgm.Ability.UI
             // this.AddManipulator(new DragableAbility());
         }
 
-        public void Populate(DynamicBuffer<AbilityBufferElement> abilities, Entity owner, EntityManager entityManager)
+        public void Populate(Entity owner, EntityManager entityManager)
         {
             _bookRoot.Clear();
-            foreach (AbilityBufferElement ability in abilities)
+            var abilitiesMapIndex = entityManager.GetComponentData<AbilitiesMapIndex>(owner);
+
+            ref BlobMultiHashMap<int, uint> indexToGuid = ref abilitiesMapIndex.indexToGuid.Value;
+
+            int abilityCount = indexToGuid.ValueCount.Value;
+            for (int i = 0; i < abilityCount; i++)
             {
                 AbilityUIElement uiAbility = new AbilityUIElement();
-                uiAbility.AssignAbility(owner, ability.Guid, entityManager);
+                var array = indexToGuid.GetValuesForKey(i);
+                if (!array.IsCreated)
+                {
+                    Debug.Log("Fail");
+                    continue;
+                }
+                uint abilityId = array[0];
+                uiAbility.AssignAbility(owner, abilityId, entityManager);
                 _bookRoot.Add(uiAbility);
+
+
             }
+            
         }
     }
 }

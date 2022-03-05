@@ -69,9 +69,11 @@ namespace WaynGroup.Mgm.Ability.UI
             CurrentlyCasting cc = _entityManager.GetComponentData<CurrentlyCasting>(_owner);
             if (cc.IsCasting)
             {
-                float ct = _entityManager.GetBuffer<AbilityBufferElement>(_owner)[cc.index].CurrentTimming;
-                SetProgresss(ct / cc.castTime * 100);
-                pb.Title = $"{math.round(ct / precisionAttr) * precisionAttr} s";
+                var AbilityTimingsCache = _entityManager.CreateEntityQuery(new Unity.Entities.ComponentType[] { Unity.Entities.ComponentType.ReadOnly<AbilityTimingsCache>() }).GetSingleton<AbilityTimingsCache>();
+                ref var cache = ref AbilityTimingsCache.Cache.Value;
+
+                SetProgresss(cc.castTime / cache.GetValuesForKey(cc.abilityGuid)[0].Cast * 100);
+                pb.Title = $"{math.round(cc.castTime / precisionAttr) * precisionAttr} s";
             }
             else
             {

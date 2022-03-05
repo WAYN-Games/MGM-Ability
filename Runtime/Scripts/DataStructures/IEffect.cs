@@ -10,12 +10,21 @@ namespace WaynGroup.Mgm.Ability
 
     }
 
+    public enum ActivationPhase
+    {
+
+        CastingStart,
+        CastingEnd
+
+    }
+
     /// <summary>
     /// Interface for declaring new effect struct.
     /// </summary>
-    public interface IEffect
+    public interface IEffect : IComponentData
     {
         TargetingMode Affects { get; set; }
+        ActivationPhase Phase{ get; set; }
     }
 
     /// <summary>

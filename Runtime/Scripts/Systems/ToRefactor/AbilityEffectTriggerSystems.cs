@@ -53,7 +53,7 @@ namespace WaynGroup.Mgm.Ability
 
             Dependency = new TriggerJob()
             {
-                AbilityBufferChunk = GetBufferTypeHandle<AbilityBufferElement>(true),
+                CurrentlyCastingChunk = GetComponentTypeHandle<CurrentlyCasting>(true),
                 TargetChunk = GetComponentTypeHandle<Target>(true),
                 EntityChunk = GetEntityTypeHandle(),
                 ConsumerWriter = _conusmerSystem.CreateConsumerWriter(_query.CalculateChunkCount()),
@@ -72,16 +72,16 @@ namespace WaynGroup.Mgm.Ability
         [BurstCompile]
         public struct TriggerJob : IJobChunk
         {
-            public CTX_BUILDER EffectContextBuilder;
-            [ReadOnly] public BufferTypeHandle<AbilityBufferElement> AbilityBufferChunk;
+            [ReadOnly] public ComponentTypeHandle<CurrentlyCasting> CurrentlyCastingChunk;
             [ReadOnly] public ComponentTypeHandle<Target> TargetChunk;
             [ReadOnly] public EntityTypeHandle EntityChunk;
             [ReadOnly] public NativeMultiHashMap<uint, EFFECT> EffectMap;
             public NativeStream.Writer ConsumerWriter;
+            public CTX_BUILDER EffectContextBuilder;
 
             public void Execute(ArchetypeChunk chunk, int chunkIndex, int firstEntityIndex)
             {
-                BufferAccessor<AbilityBufferElement> abilityBufffers = chunk.GetBufferAccessor(AbilityBufferChunk);
+                NativeArray<CurrentlyCasting> CurrentlyCastingComponent = chunk.GetNativeArray(CurrentlyCastingChunk);
                 NativeArray<Target> targets = chunk.GetNativeArray(TargetChunk);
                 NativeArray<Entity> entities = chunk.GetNativeArray(EntityChunk);
                 EffectContextBuilder.PrepareChunk(chunk);
@@ -89,55 +89,30 @@ namespace WaynGroup.Mgm.Ability
                 // removing this result in exception for more than 2 chunks whatever the index passed to BeginForEachIndex
                 ConsumerWriter.PatchMinMaxRange(chunkIndex);
 
-
                 ConsumerWriter.BeginForEachIndex(chunkIndex);
                 for (int entityIndex = 0; entityIndex < chunk.Count; ++entityIndex)
                 {
-                    uint activeAbilityIndex = FindActiveAbility(abilityBufffers, entityIndex, abilityBufffers[entityIndex].AsNativeArray());
-                    WriteEffectsForActiveAbility(targets, entities, entityIndex, activeAbilityIndex);
+                   CurrentlyCasting cc = CurrentlyCastingComponent[entityIndex];
+                    NativeMultiHashMap<uint, EFFECT>.Enumerator effectEnumerator = EffectMap.GetValuesForKey(cc.abilityGuid);
+                    while (effectEnumerator.MoveNext())
+                    {
+                        EFFECT effect = effectEnumerator.Current;
+                        if (cc.castTime < 0) { 
+                            ConsumerWriter.Write(effect);
+                            Entity targetEntity = FindTargets(ref targets, ref entities, entityIndex, effect.Affects);
+                            ConsumerWriter.Write(EffectContextBuilder.BuildEffectContext(entityIndex));
+                            ConsumerWriter.Write(1);
+                            ConsumerWriter.Write(targetEntity);
+                        }
+                    }
+                    effectEnumerator.Dispose();              
                 }
                 ConsumerWriter.EndForEachIndex();
-
             }
 
-            private void WriteEffectsForActiveAbility(NativeArray<Target> targets, NativeArray<Entity> entities, int entityIndex, uint activeAbilityGuid)
+            private static Entity FindTargets(ref NativeArray<Target> targets, ref NativeArray<Entity> entities, int entityIndex, TargetingMode efffectTargetingMode)
             {
-                if (activeAbilityGuid.Equals(default)) return;
-
-                NativeMultiHashMap<uint, EFFECT>.Enumerator effectEnumerator = EffectMap.GetValuesForKey(activeAbilityGuid);
-                while (effectEnumerator.MoveNext())
-                {
-                    ConsumerWriter.Write(effectEnumerator.Current);
-                    NativeArray<Entity> targetEntities = FindTargets(ref targets, ref entities, entityIndex, effectEnumerator.Current.Affects);
-
-                    ConsumerWriter.Write(EffectContextBuilder.BuildEffectContext(entityIndex));
-                    ConsumerWriter.Write(targetEntities.Length);
-                    for (int i = 0; i < targetEntities.Length; ++i)
-                    {
-                        ConsumerWriter.Write(targetEntities[i]);
-                    }
-                    targetEntities.Dispose();
-
-                }
-
-                effectEnumerator.Dispose();
-            }
-
-            private static NativeArray<Entity> FindTargets(ref NativeArray<Target> targets, ref NativeArray<Entity> entities, int entityIndex, TargetingMode efffectTargetingMode)
-            {
-                NativeArray<Entity> targetEntities = new NativeArray<Entity>(1, Allocator.Temp);
-                targetEntities[0] = efffectTargetingMode == TargetingMode.Target ? targets[entityIndex].Value : entities[entityIndex];
-                return targetEntities;
-            }
-
-            private static uint FindActiveAbility(BufferAccessor<AbilityBufferElement> abilityBufffers, int entityIndex, NativeArray<AbilityBufferElement> AbilityBufferArray)
-            {
-                for (int abilityIndex = 0; abilityIndex < AbilityBufferArray.Length; ++abilityIndex)
-                {
-                    if (AbilityBufferArray[abilityIndex].AbilityState != AbilityState.Active) continue;
-                    return AbilityBufferArray[abilityIndex].Guid;
-                }
-                return default;
+                return efffectTargetingMode == TargetingMode.Target ? targets[entityIndex].Value : entities[entityIndex];
             }
         }
 
@@ -203,7 +178,7 @@ namespace WaynGroup.Mgm.Ability
             {
                 All = new ComponentType[]
                 {
-                        ComponentType.ReadOnly<AbilityBufferElement>(),
+                        ComponentType.ReadOnly<CurrentlyCasting>(),
                         ComponentType.ReadOnly<Target>()
                 }
             };

@@ -2,10 +2,13 @@
 
 using Unity.Burst;
 using Unity.Collections;
+using Unity.Collections.LowLevel.Unsafe;
 using Unity.Entities;
+using Unity.Jobs;
 
 namespace WaynGroup.Mgm.Ability
 {
+
     [UpdateInGroup(typeof(AbilityCostsCheckerSystemGroup))]
     public abstract class AbilityCostCheckerSystem<COST, RESOURCE, COST_HANDLER> : SystemBase
       where COST : struct, IAbilityCost
@@ -30,8 +33,8 @@ namespace WaynGroup.Mgm.Ability
             {
                 All = new ComponentType[]
                 {
-                        ComponentType.ReadOnly<AbilityBufferElement>(),
-                        ComponentType.ReadOnly<RESOURCE>()
+                        ComponentType.ReadOnly<RESOURCE>(),
+                        ComponentType.ReadWrite<AbilityInput>()
                 }
             });
             World.GetOrCreateSystem<AddressableAbilityCatalogSystem>().OnCostUpdate += UpdateCostCache;
@@ -42,8 +45,8 @@ namespace WaynGroup.Mgm.Ability
         {
             Dependency = new CostHandlerJob()
             {
-                AbilityBufferChunk = GetBufferTypeHandle<AbilityBufferElement>(false),
                 ResourceComponent = GetComponentTypeHandle<RESOURCE>(true),
+                AbilityInputComponent = GetComponentTypeHandle<AbilityInput>(),
                 CostMap = _costMap,
                 CostHandler = GetCostHandler()
 
@@ -65,36 +68,39 @@ namespace WaynGroup.Mgm.Ability
         public struct CostHandlerJob : IJobChunk
         {
             public COST_HANDLER CostHandler;
-            public BufferTypeHandle<AbilityBufferElement> AbilityBufferChunk;
+            public ComponentTypeHandle<AbilityInput> AbilityInputComponent;
             [ReadOnly] public NativeMultiHashMap<uint, COST> CostMap;
             [ReadOnly] public ComponentTypeHandle<RESOURCE> ResourceComponent;
 
             public void Execute(ArchetypeChunk chunk, int chunkIndex, int firstEntityIndex)
             {
-                BufferAccessor<AbilityBufferElement> abilityBufffers = chunk.GetBufferAccessor(AbilityBufferChunk);
-                NativeArray<RESOURCE> resourceComponent = chunk.GetNativeArray(ResourceComponent);
 
+                NativeArray<RESOURCE> resourceComponent = chunk.GetNativeArray(ResourceComponent);
+                NativeArray<AbilityInput> abilityInputComponent = chunk.GetNativeArray(AbilityInputComponent);
                 for (int entityIndex = 0; entityIndex < chunk.Count; ++entityIndex)
                 {
-                    RESOURCE resource = resourceComponent[entityIndex];
-                    NativeArray<AbilityBufferElement> AbilityBufferArray = abilityBufffers[entityIndex].AsNativeArray();
-                    for (int abilityIndex = 0; abilityIndex < AbilityBufferArray.Length; ++abilityIndex)
+                    AbilityInput input = abilityInputComponent[entityIndex];
+                    if (input.IsEnabled())
                     {
-                        AbilityBufferElement ability = AbilityBufferArray[abilityIndex];
+                        RESOURCE resource = resourceComponent[entityIndex];
                         bool temp = true;
-                        NativeMultiHashMap<uint, COST>.Enumerator enumerator = CostMap.GetValuesForKey(AbilityBufferArray[abilityIndex].Guid);
+                        NativeMultiHashMap<uint, COST>.Enumerator enumerator = CostMap.GetValuesForKey(input.AbilityId);
                         while (enumerator.MoveNext())
                         {
                             COST cost = enumerator.Current;
                             temp &= CostHandler.HasEnougthResourceLeft(cost, in resource);
                         }
-                        ability.HasEnougthRessource &= temp;
-                        AbilityBufferArray[abilityIndex] = ability;
+                        if (!temp)
+                        {
+                            input.AddRestriction(4);
+                        }
+                        abilityInputComponent[entityIndex] = input;
                     }
                 }
-
             }
+
         }
+        
 
         protected virtual COST_HANDLER GetCostHandler()
         {

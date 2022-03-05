@@ -1,4 +1,5 @@
 ﻿using Unity.Burst;
+using Unity.Burst.CompilerServices;
 using Unity.Collections;
 using Unity.Entities;
 
@@ -8,28 +9,40 @@ namespace WaynGroup.Mgm.Ability
 
     public struct CurrentlyCasting : ISystemStateComponentData
     {
-        public bool IsCasting;
-        public uint abilityId;
         public float castTime;
-        public int index;
+        public uint abilityGuid;
+        public bool IsCasting => !float.NaN.Equals(castTime) ; 
     }
-    /// <summary>
-    /// This system update each ability's timming (cast and/or cooldown).
-    /// Once a timing is elapsed, the ability state is updated to the next value in the life cycle.
-    /// (Casting -> Active -> CoolingDown -> CooledDown -> Casting)
-    /// </summary>
-    /// 
     [UpdateInGroup(typeof(AbilityUpdateSystemGroup))]
-    [UpdateAfter(typeof(OldAbilityUpdateStateAndTimingsSystem))]
+    public class CooldownRestrictionSystem : SystemBase
+    {
+
+
+        protected override void OnUpdate()
+        {
+            Entities.ForEach((ref AbilityInput abilityInput,in DynamicBuffer<AbilityCooldownBufferElement> cooldownBuffer, 
+                in AbilitiesMapIndex indexMap) => {
+                    ref BlobMultiHashMap<uint,int> map = ref indexMap.guidToIndex.Value;
+                    var bufferIndex = map.GetValuesForKey(abilityInput.AbilityId)[0];
+                    if (cooldownBuffer[bufferIndex].CooldownTime > 0)
+                        abilityInput.AddRestriction(16);
+
+                }).Run();
+        }
+    }
+
+    [UpdateInGroup(typeof(AbilityUpdateSystemGroup))]
     [BurstCompile]
     public struct AbilityUpdateStateAndTimingsSystem : ISystemBase
     {
-        private EntityQuery _query;
-        private EntityQuery _cache;
 
+        private EntityQuery _queryCooldown;
+        private EntityQuery _queryCasting;
+        private EntityQuery _cache;
         public void OnCreate(ref SystemState state)
         {
-            _query = state.GetEntityQuery(typeof(AbilityBufferElement), typeof(AbilityInput), typeof(CurrentlyCasting));
+            _queryCooldown = state.GetEntityQuery(typeof(AbilityCooldownBufferElement));
+            _queryCasting = state.GetEntityQuery(typeof(AbilitiesMapIndex), typeof(AbilityCooldownBufferElement), typeof(CurrentlyCasting),typeof(AbilityInput));
             _cache = state.GetEntityQuery(ComponentType.ReadOnly(typeof(AbilityTimingsCache)));
             state.RequireSingletonForUpdate<AbilityTimingsCache>();
         }
@@ -38,204 +51,127 @@ namespace WaynGroup.Mgm.Ability
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
+            // Cooldown all abilities
             state.Dependency = new AbilityUpdpdateCooldownJob()
             {
                 DeltaTime = state.WorldUnmanaged.CurrentTime.DeltaTime,
-                AbilityBufferChunk = state.GetBufferTypeHandle<AbilityBufferElement>()
+                AbilityCooldownBufferChunk = state.GetBufferTypeHandle<AbilityCooldownBufferElement>()
 
-            }.ScheduleParallel(_query, state.Dependency);
+            }.ScheduleParallel(_queryCooldown, state.Dependency);
 
-            AbilityTimingsCache cache = _cache.GetSingleton<AbilityTimingsCache>();
-            state.Dependency = new AbilityUpdateStateJob()
+            state.Dependency = new AbilityUpdateCastingJob()
             {
+                DeltaTime = state.WorldUnmanaged.CurrentTime.DeltaTime,
+                Cache = _cache.GetSingleton<AbilityTimingsCache>(),
+                AbilityMapIndexChunk = state.GetComponentTypeHandle<AbilitiesMapIndex>(true),
                 CurrentlyCastingChunk = state.GetComponentTypeHandle<CurrentlyCasting>(),
                 AbilityInputChunk = state.GetComponentTypeHandle<AbilityInput>(),
-                AbilityBufferChunk = state.GetBufferTypeHandle<AbilityBufferElement>(),
-                Cache = cache.Cache
+                AbilityCooldownBufferChunk = state.GetBufferTypeHandle<AbilityCooldownBufferElement>()
+            }.ScheduleParallel(_queryCasting, state.Dependency);
 
-            }.ScheduleParallel(_query, state.Dependency);
         }
-        
+
+        [BurstCompile]
+        public struct AbilityUpdateCastingJob : IJobChunk
+        {
+            [ReadOnly] public float DeltaTime;
+            [ReadOnly] public AbilityTimingsCache Cache;
+            [ReadOnly]  public ComponentTypeHandle<AbilitiesMapIndex> AbilityMapIndexChunk;
+
+            public ComponentTypeHandle<CurrentlyCasting> CurrentlyCastingChunk;
+            public ComponentTypeHandle<AbilityInput> AbilityInputChunk;
+            public BufferTypeHandle<AbilityCooldownBufferElement> AbilityCooldownBufferChunk;
+
+            public void Execute(ArchetypeChunk chunk, int chunkIndex, int firstEntityIndex)
+            {
+                NativeArray<AbilitiesMapIndex> abilityMapIndexer = chunk.GetNativeArray(AbilityMapIndexChunk);
+                BufferAccessor<AbilityCooldownBufferElement> abilityCooldownBufferElementAccessor = chunk.GetBufferAccessor(AbilityCooldownBufferChunk);
+                NativeArray<CurrentlyCasting> currentlyCastingArray = chunk.GetNativeArray(CurrentlyCastingChunk);
+                NativeArray<AbilityInput> abilityInputArray = chunk.GetNativeArray(AbilityInputChunk);
+
+                ref BlobMultiHashMap<uint, AbilityTimings> timmingCacheMap = ref Cache.Cache.Value;
+
+                for (int entityIndex = 0; entityIndex < chunk.Count; ++entityIndex)
+                {
+                    CurrentlyCasting cc = currentlyCastingArray[entityIndex];
+                    AbilityInput ai = abilityInputArray[entityIndex];
+                    
+                    if (cc.castTime < 0)
+                    {
+                        // If casting finished, star coolingdown
+                        var entityIndexToGuid = abilityMapIndexer[entityIndex];
+                        ref BlobMultiHashMap<uint, int> guidToIndex = ref entityIndexToGuid.guidToIndex.Value;
+                        int index = guidToIndex.GetValuesForKey(cc.abilityGuid)[0];
+                        var timmings = timmingCacheMap.GetValuesForKey(cc.abilityGuid)[0];
+
+                        NativeArray<AbilityCooldownBufferElement> acbe = abilityCooldownBufferElementAccessor[entityIndex].AsNativeArray();
+                        AbilityCooldownBufferElement abilityCooldown = acbe[index];
+                        abilityCooldown.CooldownTime = timmings.CoolDown;
+                        acbe[index] = abilityCooldown;
+                        // and stop casting
+                        cc.castTime = float.NaN;
+                    }
+                    // if casting 
+                    if (cc.IsCasting)
+                    {
+                        // Reduce casting time left
+                        cc.castTime -= DeltaTime;
+                    }
+
+
+
+                    // want to start casting while casting ? add restriction
+                    if (ai.IsEnabled() && cc.IsCasting)
+                    {
+                        ai.AddRestriction(8);
+                    }
+                    // if applicable (enabled and no retriction)
+                    if (ai.IsApplicable())
+                    {
+                        // Start casting
+                        cc.abilityGuid = ai.AbilityId;
+                        cc.castTime = timmingCacheMap.GetValuesForKey(cc.abilityGuid)[0].Cast;
+                    }
+
+                    abilityInputArray[entityIndex] = ai;
+                    currentlyCastingArray[entityIndex] = cc;
+                }
+            }
+
+        }
 
         [BurstCompile]
         public struct AbilityUpdpdateCooldownJob : IJobChunk
         {
             [ReadOnly] public float DeltaTime;
 
-            public BufferTypeHandle<AbilityBufferElement> AbilityBufferChunk;
+            public BufferTypeHandle<AbilityCooldownBufferElement> AbilityCooldownBufferChunk;
             public void Execute(ArchetypeChunk chunk, int chunkIndex, int firstEntityIndex)
             {
-                BufferAccessor<AbilityBufferElement> abilityBufferAccessor = chunk.GetBufferAccessor(AbilityBufferChunk);
+                BufferAccessor<AbilityCooldownBufferElement> abilityBufferAccessor = chunk.GetBufferAccessor(AbilityCooldownBufferChunk);
 
                 for (int entityIndex = 0; entityIndex < chunk.Count; ++entityIndex)
                 {
-                    NativeArray<AbilityBufferElement> sbArray = abilityBufferAccessor[entityIndex].AsNativeArray();
+                    NativeArray<AbilityCooldownBufferElement> sbArray = abilityBufferAccessor[entityIndex].AsNativeArray();
+                    Cooldown(sbArray, DeltaTime);
+                }
+              
+                void Cooldown(NativeArray<AbilityCooldownBufferElement> sbArray, float DeltaTime)
+                {
                     for (int i = 0; i < sbArray.Length; i++)
                     {
                         var ability = sbArray[i];
-                        ability.CurrentTimming -= DeltaTime;
+                        ability.CooldownTime -= DeltaTime;
                         sbArray[i] = ability;
                     }
                 }
-
             }
 
         }
-
-        [BurstCompile]
-        public struct AbilityUpdateStateJob : IJobChunk
-        {
-            [ReadOnly] public BlobAssetReference<BlobMultiHashMap<uint, AbilityTimings>> Cache;
-
-            public BufferTypeHandle<AbilityBufferElement> AbilityBufferChunk;
-            public ComponentTypeHandle<AbilityInput> AbilityInputChunk;
-            public ComponentTypeHandle<CurrentlyCasting> CurrentlyCastingChunk;
-
-            public AbilityBufferElement UpdateState(AbilityBufferElement ability, AbilityInput abilityInput, ref CurrentlyCasting currentlyCasting, AbilityTimings timming, int index)
-            {
-                if (abilityInput.AbilityId == ability.Guid && abilityInput.Enabled)
-                {
-
-                    bool canCast = true;
-                    if (currentlyCasting.IsCasting)
-                    {
-                        canCast = false;
-                    }
-                    else
-                    if (ability.AbilityState != AbilityState.CooledDown)
-                    {
-                        canCast = false;
-                    }
-                    else
-                    if (!ability.IsInRange)
-                    {
-                        canCast = false;
-                    }
-                    else
-                    if (!ability.HasEnougthRessource)
-                    {
-                        canCast = false;
-                    }
-
-                    if (canCast)
-                    {
-                        ability = StartCasting(ability, ref currentlyCasting, timming, index);
-                        return ability;
-                    }
-                }
-
-                bool IsCooldownComplete = ability.AbilityState == AbilityState.CoolingDown && ability.CurrentTimming < 0;
-                if (IsCooldownComplete)
-                {
-                    ability = WaitForActivation(ability);
-                    return ability;
-                }
-
-                if (ability.AbilityState == AbilityState.Active)
-                {
-                    ability = StartCoolDown(ability, timming);
-                    return ability;
-                }
-
-                bool IsCastComplete = ability.AbilityState == AbilityState.Casting && ability.CurrentTimming < 0;
-
-                if (IsCastComplete)
-                {
-                    ability = Activate(ability, ref currentlyCasting);
-                    return ability;
-                }
-
-                return ability;
-            }
-
-            public AbilityBufferElement WaitForActivation(AbilityBufferElement Ability)
-            {
-                Ability.AbilityState = AbilityState.CooledDown;
-                return Ability;
-            }
-
-            public AbilityBufferElement StartCasting(AbilityBufferElement ability, ref CurrentlyCasting casting, AbilityTimings timming, int index)
-            {
-
-                ability.AbilityState = AbilityState.Casting;
-                ability.CurrentTimming = timming.Cast;
-                casting.IsCasting = true;
-                casting.castTime = timming.Cast;
-                casting.abilityId = ability.Guid;
-                casting.index = index;
-
-                return ability;
-            }
-
-            public AbilityBufferElement Activate(AbilityBufferElement Ability, ref CurrentlyCasting casting)
-            {
-                if (!casting.IsCasting) return Ability;
-                Ability.AbilityState = AbilityState.Active;
-                casting.IsCasting = false;
-                return Ability;
-            }
-
-            public AbilityBufferElement StartCoolDown(AbilityBufferElement Ability, AbilityTimings timming)
-            {
-                Ability.AbilityState = AbilityState.CoolingDown;
-                Ability.CurrentTimming = timming.CoolDown;
-                return Ability;
-            }
-
-
-            public void Execute(ArchetypeChunk chunk, int chunkIndex, int firstEntityIndex)
-            {
-                BufferAccessor<AbilityBufferElement> abilityBufferAccessor = chunk.GetBufferAccessor(AbilityBufferChunk);
-                NativeArray<AbilityInput> inputArray = chunk.GetNativeArray(AbilityInputChunk);
-                NativeArray<CurrentlyCasting> currentlyCastingArray = chunk.GetNativeArray(CurrentlyCastingChunk);
-
-                ref var cahcheMap = ref Cache.Value;
-
-                for (int entityIndex = 0; entityIndex < chunk.Count; ++entityIndex)
-                {
-                    AbilityInput input = inputArray[entityIndex];
-                    CurrentlyCasting currentlyCasting = currentlyCastingArray[entityIndex];
-                    NativeArray<AbilityBufferElement> sbArray = abilityBufferAccessor[entityIndex].AsNativeArray();
-                    for (int i = 0; i < sbArray.Length; i++)
-                    {
-                        var ability = sbArray[i];
-                        var timmings = cahcheMap.GetValuesForKey(ability.Guid);
-
-
-                        AbilityTimings timming = timmings[0];
-                        ability = UpdateState(ability, input, ref currentlyCasting, timming, i);
-                        sbArray[i] = ability;
-                    }
-                    input.Enabled = false;
-                    inputArray[entityIndex] = input;
-                    currentlyCastingArray[entityIndex] = currentlyCasting;
-                }
-            }
-        }
-
 
         public void OnDestroy(ref SystemState state)
         {
 
         }
-    }
-
-
-
-
-    [UpdateInGroup(typeof(AbilityUpdateSystemGroup))]
-    public class OldAbilityUpdateStateAndTimingsSystem : SystemBase
-    {
-
-        protected override void OnUpdate()
-        {
-
-            Entities.WithNone<CurrentlyCasting>().WithAll<AbilityBufferElement>().WithStructuralChanges().ForEach((Entity entity) =>
-            {
-                EntityManager.AddComponentData(entity, new CurrentlyCasting() { IsCasting = false });
-            }).WithoutBurst().Run();
-
-        }
-
     }
 }
