@@ -4,8 +4,13 @@ namespace WaynGroup.Mgm.Ability
 {
     internal class ScriptTemplates
     {
+        #region Public Fields
 
         public const string TemplatesRoot = "Packages/wayn-group.mgm.ability/Editor/ScriptTemplates";
+
+        #endregion Public Fields
+
+        #region Public Methods
 
         [MenuItem("Assets/Create/MGM/Effect Type")]
         public static void CreateAbilityEffectType()
@@ -14,6 +19,7 @@ namespace WaynGroup.Mgm.Ability
                 $"{TemplatesRoot}/EffectType.txt",
                 "NewEffect.cs");
         }
+
         [MenuItem("Assets/Create/MGM/Cost Type")]
         public static void CreateAbilityCostType()
         {
@@ -21,5 +27,7 @@ namespace WaynGroup.Mgm.Ability
                 $"{TemplatesRoot}/CostType.txt",
                 "NewCost.cs");
         }
+
+        #endregion Public Methods
     }
 }

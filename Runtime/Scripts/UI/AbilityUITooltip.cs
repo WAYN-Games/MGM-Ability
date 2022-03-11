@@ -1,19 +1,11 @@
-﻿
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace WaynGroup.Mgm.Ability.UI
 {
-
-
-    class AbilityUITooltip : VisualElement
+    internal class AbilityUITooltip : VisualElement
     {
-        public new class UxmlFactory : UxmlFactory<AbilityUITooltip, UxmlTraits>
-        {
-        }
-
-        public new class UxmlTraits : VisualElement.UxmlTraits { }
-
+        #region Public Constructors
 
         public AbilityUITooltip()
         {
@@ -22,6 +14,10 @@ namespace WaynGroup.Mgm.Ability.UI
             Hide();
             AbilityUIData.Instance.AbilityTooltip = this;
         }
+
+        #endregion Public Constructors
+
+        #region Public Methods
 
         public void Show(ScriptableAbility ability)
         {
@@ -37,5 +33,17 @@ namespace WaynGroup.Mgm.Ability.UI
             this.Q<Label>(name: "Title").text = "";
         }
 
+        #endregion Public Methods
+
+        #region Public Classes
+
+        public new class UxmlFactory : UxmlFactory<AbilityUITooltip, UxmlTraits>
+        {
+        }
+
+        public new class UxmlTraits : VisualElement.UxmlTraits
+        { }
+
+        #endregion Public Classes
     }
 }

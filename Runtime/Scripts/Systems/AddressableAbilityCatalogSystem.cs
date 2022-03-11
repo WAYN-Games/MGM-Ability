@@ -4,53 +4,38 @@ using System.Threading.Tasks;
 
 using Unity.Collections;
 using Unity.Entities;
-
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 
-
-
 namespace WaynGroup.Mgm.Ability
 {
-
-    public interface ICacheComponent : IComponentData, IDisposable
-    {
-    }
-
-    public struct AbilityTimingsCache : ICacheComponent
-    {
-        public BlobAssetReference<BlobMultiHashMap<uint, AbilityTimings>> Cache { get; set; }
-
-        public void Dispose()
-        {
-            if (Cache.IsCreated) Cache.Dispose();
-        }
-    }
-    public struct RangeCache : ICacheComponent
-    {
-        public BlobAssetReference<BlobMultiHashMap<uint, Range>> Cache { get; set; }
-
-        public void Dispose()
-        {
-            if (Cache.IsCreated) Cache.Dispose();
-        }
-    }
-
     [UpdateInGroup(typeof(InitializationSystemGroup))]
     public class AddressableAbilityCatalogSystem : SystemBase
     {
-
-        public delegate void OnEffectUpdateDelegate(MultiHashMap<Type, EffectData> effectMap);
-        public delegate void OnCostUpdateDelegate(MultiHashMap<Type, CostData> costMap);
-        public delegate void OnAbilityUpdateDelegate(Dictionary<uint, ScriptableAbility> abilityCatalogue);
+        #region Public Fields
 
         public OnEffectUpdateDelegate OnEffectUpdate;
+
         public OnCostUpdateDelegate OnCostUpdate;
+
         public OnAbilityUpdateDelegate OnAbilityUpdate;
 
         public Dictionary<uint, ScriptableAbility> AbilityCatalog;
 
-        private struct AbilityCacheEntityTag : IComponentData { }
+        #endregion Public Fields
+
+        #region Public Delegates
+
+        public delegate void OnEffectUpdateDelegate(MultiHashMap<Type, EffectData> effectMap);
+
+        public delegate void OnCostUpdateDelegate(MultiHashMap<Type, CostData> costMap);
+
+        public delegate void OnAbilityUpdateDelegate(Dictionary<uint, ScriptableAbility> abilityCatalogue);
+
+        #endregion Public Delegates
+
+        #region Protected Methods
 
         protected override void OnCreate()
         {
@@ -63,8 +48,22 @@ namespace WaynGroup.Mgm.Ability
             OnAbilityUpdate += RefreshRangeCache;
             OnAbilityUpdate += RefreshTimmingsCache;
             LoadAbilityCatalogueAsync();
-
         }
+
+        protected override void OnUpdate()
+        {
+            // Nothing, it's an initialisation system.
+        }
+
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+            World.EntityManager.DestroyEntity(GetEntityQuery(typeof(AbilityCacheEntityTag)));
+        }
+
+        #endregion Protected Methods
+
+        #region Private Methods
 
         private void RefreshCache<T>(T newCache) where T : struct, ICacheComponent
         {
@@ -85,15 +84,10 @@ namespace WaynGroup.Mgm.Ability
             }
 
             SetSingleton(newCache);
-
         }
 
-
-        #region Timmings Cache
         private void RefreshTimmingsCache(Dictionary<uint, ScriptableAbility> abilityCatalogue)
         {
-
-
             using (BlobBuilder bb = new BlobBuilder(Allocator.Temp))
             {
                 var mapBuilder = new BlobHashMapBuilder<uint, AbilityTimings>(bb);
@@ -103,43 +97,25 @@ namespace WaynGroup.Mgm.Ability
                 }
                 var newCache = mapBuilder.CreateBlobAssetReference(Allocator.Persistent);
                 RefreshCache(new AbilityTimingsCache() { Cache = newCache });
-
             }
-
         }
-        #endregion
 
-        #region Range Cache
         private void RefreshRangeCache(Dictionary<uint, ScriptableAbility> abilityCatalogue)
         {
-
-
             using (BlobBuilder bb = new BlobBuilder(Allocator.Temp))
             {
                 var mapBuilder = new BlobHashMapBuilder<uint, Range>(bb);
                 foreach (KeyValuePair<uint, ScriptableAbility> ability in abilityCatalogue)
                 {
-                    mapBuilder.Add(ability.Key, ability.Value.Range);
+                    mapBuilder.Add(ability.Key, new Range() { Min = math.pow(ability.Value.Range.Min, 2), Max = math.pow(ability.Value.Range.Max, 2) });
                 }
                 var newCache = mapBuilder.CreateBlobAssetReference(Allocator.Persistent);
-                RefreshCache(new RangeCache() { Cache = newCache });
+                RefreshCache(new SquaredRangeCache() { Cache = newCache });
             }
-
-
         }
-        #endregion
-
-        protected override void OnUpdate()
-        {
-            // Nothing, it's an initialisation system.
-        }
-
-        #region Self Documenting Encapsulations
-
 
         private void LoadAbilityCatalogueAsync()
         {
-
             Addressables.LoadAssetsAsync<ScriptableAbility>(new AssetLabelReference()
             {
                 labelString = AbilityHelper.ADDRESSABLE_ABILITY_LABEL
@@ -152,9 +128,7 @@ namespace WaynGroup.Mgm.Ability
                 }
                 OnAbilityUpdate.Invoke(AbilityCatalog);
             }; ;
-
         }
-
 
         private void BuildEffectCatalogueAsync(Dictionary<uint, ScriptableAbility> _abilities)
         {
@@ -168,7 +142,6 @@ namespace WaynGroup.Mgm.Ability
                       ScriptableAbility ability = keyValuePair.Value;
                       foreach (IEffect effect in ability.Effects)
                       {
-
                           effectMap.Add(effect.GetType(), new EffectData()
                           {
                               Guid = ability.Id,
@@ -192,7 +165,6 @@ namespace WaynGroup.Mgm.Ability
                       ScriptableAbility ability = keyValuePair.Value;
                       foreach (IAbilityCost cost in ability.Costs)
                       {
-
                           _costMap.Add(cost.GetType(), new CostData()
                           {
                               Guid = ability.Id,
@@ -205,11 +177,13 @@ namespace WaynGroup.Mgm.Ability
             task.Start();
         }
 
-        protected override void OnDestroy()
-        {
-            base.OnDestroy();
-            World.EntityManager.DestroyEntity(GetEntityQuery(typeof(AbilityCacheEntityTag)));
-        }
-        #endregion
+        #endregion Private Methods
+
+        #region Private Structs
+
+        private struct AbilityCacheEntityTag : IComponentData
+        { }
+
+        #endregion Private Structs
     }
 }

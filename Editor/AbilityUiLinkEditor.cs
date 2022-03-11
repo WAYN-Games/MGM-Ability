@@ -1,11 +1,11 @@
-﻿
-using UnityEditor;
+﻿using UnityEditor;
 using UnityEditor.AddressableAssets;
 using UnityEditor.AddressableAssets.Settings;
 
 [CustomEditor(typeof(AbilityUiLink))]
 public class AbilityUiLinkEditor : Editor
 {
+    #region Public Methods
 
     public void OnEnable()
     {
@@ -36,9 +36,7 @@ public class AbilityUiLinkEditor : Editor
                 AssetDatabase.SaveAssets();
             }
             return;
-
         }
-
 
         AddressableAssetGroup grp = settings.FindGroup("MGM-Abilities");
         if (grp == null)
@@ -56,6 +54,7 @@ public class AbilityUiLinkEditor : Editor
             settings.SetDirty(AddressableAssetSettings.ModificationEvent.EntryMoved, entry, true);
         }
         AssetDatabase.SaveAssets();
-
     }
+
+    #endregion Public Methods
 }

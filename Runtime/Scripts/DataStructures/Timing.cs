@@ -8,23 +8,25 @@ namespace WaynGroup.Mgm.Ability
     [Serializable]
     public struct Timing
     {
-        /// <summary>
-        /// The original amount of time on the timing.
-        /// </summary>
-        private readonly float OrginalValue;
+        #region Public Fields
+
         /// <summary>
         /// The current remaining time on the timing.
         /// </summary>
         public float CurrentValue;
 
+        #endregion Public Fields
+
+        #region Private Fields
+
         /// <summary>
-        /// Compute the time remaining on that timing. First float is in seconds, second float is in % of total timing.
+        /// The original amount of time on the timing.
         /// </summary>
-        /// <returns></returns>
-        public (float, float) ComputeRemainingTime()
-        {
-            return (CurrentValue, CurrentValue / OrginalValue);
-        }
+        private readonly float OrginalValue;
+
+        #endregion Private Fields
+
+        #region Public Constructors
 
         /// <summary>
         /// Initialize the timing to the number of seconds passed as value.
@@ -34,6 +36,19 @@ namespace WaynGroup.Mgm.Ability
         {
             CurrentValue = value;
             OrginalValue = value;
+        }
+
+        #endregion Public Constructors
+
+        #region Public Methods
+
+        /// <summary>
+        /// Compute the time remaining on that timing. First float is in seconds, second float is in % of total timing.
+        /// </summary>
+        /// <returns></returns>
+        public (float, float) ComputeRemainingTime()
+        {
+            return (CurrentValue, CurrentValue / OrginalValue);
         }
 
         /// <summary>
@@ -61,6 +76,7 @@ namespace WaynGroup.Mgm.Ability
         {
             CurrentValue = OrginalValue;
         }
-    }
 
+        #endregion Public Methods
+    }
 }

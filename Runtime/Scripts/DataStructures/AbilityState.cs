@@ -10,5 +10,4 @@ namespace WaynGroup.Mgm.Ability
         CoolingDown,    // Ability is cooling down
         Active          // Ability will apply it's effect during this tick
     }
-
 }

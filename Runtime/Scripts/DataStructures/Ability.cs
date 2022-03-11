@@ -8,13 +8,18 @@ namespace WaynGroup.Mgm.Ability
     [Serializable]
     public struct Ability
     {
+        #region Public Fields
+
         public uint id;
-        public AbilityState State { get; set; }
         public Timing CoolDown;
         public Timing CastTime;
         public Range Range;
         public bool IsInRange;
         public bool HasEnougthRessource;
+
+        #endregion Public Fields
+
+        #region Public Constructors
 
         public Ability(float coolDown, float castTime, Range range) : this()
         {
@@ -25,6 +30,16 @@ namespace WaynGroup.Mgm.Ability
             IsInRange = false;
             HasEnougthRessource = true;
         }
+
+        #endregion Public Constructors
+
+        #region Public Properties
+
+        public AbilityState State { get; set; }
+
+        #endregion Public Properties
+
+        #region Public Methods
 
         /// <summary>
         /// Mark the ability as inactive so that it's effects are no longer applied.
@@ -80,6 +95,7 @@ namespace WaynGroup.Mgm.Ability
                 State = AbilityState.CooledDown;
             }
         }
-    }
 
+        #endregion Public Methods
+    }
 }

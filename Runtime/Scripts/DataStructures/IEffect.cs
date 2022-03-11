@@ -4,18 +4,14 @@ namespace WaynGroup.Mgm.Ability
 {
     public enum TargetingMode
     {
-
         Target,
         Self
-
     }
 
     public enum ActivationPhase
     {
-
         CastingStart,
         CastingEnd
-
     }
 
     /// <summary>
@@ -23,8 +19,12 @@ namespace WaynGroup.Mgm.Ability
     /// </summary>
     public interface IEffect : IComponentData
     {
+        #region Public Properties
+
         TargetingMode Affects { get; set; }
-        ActivationPhase Phase{ get; set; }
+        ActivationPhase Phase { get; set; }
+
+        #endregion Public Properties
     }
 
     /// <summary>
@@ -32,14 +32,16 @@ namespace WaynGroup.Mgm.Ability
     /// </summary>
     public interface IAbilityCost : IComponentData
     {
-
     }
-
 
     public interface ICostHandler<COST, RESOURCE> where RESOURCE : struct, IComponentData
     {
-        void ConsumeCost(COST cost, ref RESOURCE resource);
-        bool HasEnougthResourceLeft(COST cost, in RESOURCE resource);
-    }
+        #region Public Methods
 
+        void ConsumeCost(COST cost, ref RESOURCE resource);
+
+        bool HasEnougthResourceLeft(COST cost, in RESOURCE resource);
+
+        #endregion Public Methods
+    }
 }

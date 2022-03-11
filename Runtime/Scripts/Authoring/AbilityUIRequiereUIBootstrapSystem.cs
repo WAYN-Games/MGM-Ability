@@ -13,8 +13,15 @@ using WaynGroup.Mgm.Ability.UI;
 [UpdateAfter(typeof(AddressableAbilityCatalogSystem))]
 public struct AbilitiesInitializationSystem : ISystemBase
 {
+    #region Private Fields
+
     private EntityQuery _newEntityWithAbilities;
     private EntityQuery _cache;
+
+    #endregion Private Fields
+
+    #region Public Methods
+
     public void OnCreate(ref SystemState state)
     {
         _newEntityWithAbilities = state.EntityManager.CreateEntityQuery(new EntityQueryDesc()
@@ -28,7 +35,6 @@ public struct AbilitiesInitializationSystem : ISystemBase
 
     public void OnDestroy(ref SystemState state)
     {
-        
     }
 
     public void OnUpdate(ref SystemState state)
@@ -42,19 +48,27 @@ public struct AbilitiesInitializationSystem : ISystemBase
             AbilityMapChunk = state.GetComponentTypeHandle<AbilitiesMapIndex>(true),
             EntityChunk = state.GetEntityTypeHandle(),
             Ecb = ecb.AsParallelWriter()
-
         }.ScheduleSingle(_newEntityWithAbilities, state.Dependency);
         state.World.GetOrCreateSystem<EndInitializationEntityCommandBufferSystem>().AddJobHandleForProducer(state.Dependency);
-
     }
+
+    #endregion Public Methods
+
+    #region Public Structs
 
     public struct InitializeAbilityCooldownJob : IJobChunk
     {
+        #region Public Fields
+
         [ReadOnly] public BlobAssetReference<BlobMultiHashMap<uint, AbilityTimings>> Cache;
         [ReadOnly] public ComponentTypeHandle<AbilitiesMapIndex> AbilityMapChunk;
         [ReadOnly] public EntityTypeHandle EntityChunk;
 
         public EntityCommandBuffer.ParallelWriter Ecb;
+
+        #endregion Public Fields
+
+        #region Public Methods
 
         public void Execute(ArchetypeChunk chunk, int chunkIndex, int firstEntityIndex)
         {
@@ -71,89 +85,99 @@ public struct AbilitiesInitializationSystem : ISystemBase
                 int abilityCount = indexToGuid.ValueCount.Value;
 
                 NativeArray<AbilityCooldownBufferElement> abilityBuffer = new NativeArray<AbilityCooldownBufferElement>(abilityCount, Allocator.Temp);
-                for(int i = 0; i < abilityCount; i++)
+                for (int i = 0; i < abilityCount; i++)
                 {
-
                     abilityBuffer[i] = new AbilityCooldownBufferElement()
                     {
                         CooldownTime = 2 // cahcheMap.GetValuesForKey(indexToGuid.GetValuesForKey(i)[0])[0].CoolDown
                     };
                 }
 
-
-                DynamicBuffer< AbilityCooldownBufferElement> buffer = Ecb.AddBuffer<AbilityCooldownBufferElement>(entityIndex, entitiesArray[entityIndex]);
+                DynamicBuffer<AbilityCooldownBufferElement> buffer = Ecb.AddBuffer<AbilityCooldownBufferElement>(entityIndex, entitiesArray[entityIndex]);
                 buffer.AddRange(abilityBuffer);
 
                 Ecb.AddComponent<CurrentlyCasting>(entityIndex, entitiesArray[entityIndex], new CurrentlyCasting() { castTime = float.NaN });
-                Ecb.AddComponent<AbilityInput>(entityIndex, entitiesArray[entityIndex],new AbilityInput(indexToGuid.GetValuesForKey(0)[0]));
+                if (indexToGuid.ValueCount.Value > 0)
+                    Ecb.AddComponent<AbilityInput>(entityIndex, entitiesArray[entityIndex], new AbilityInput(indexToGuid.GetValuesForKey(0)[0]));
             }
         }
+
+        #endregion Public Methods
     }
 
+    #endregion Public Structs
 }
 
+internal class AbilityUIRequiereUIBootstrapSystem : SystemBase
+{
+    #region Private Fields
 
+    private Dictionary<uint, AbilityUiLink> uiMap;
 
+    #endregion Private Fields
 
-class AbilityUIRequiereUIBootstrapSystem : SystemBase
+    #region Public Methods
+
+    public void LinkUiToEntity()
     {
-        Dictionary<uint, AbilityUiLink> uiMap;
-
-        protected override void OnCreate()
+        Addressables.LoadAssetsAsync<AbilityUiLink>(new AssetLabelReference()
         {
-            base.OnCreate();
-            Enabled = false;
-            EntityManager.World.GetOrCreateSystem<AddressableAbilityCatalogSystem>().OnAbilityUpdate += BootstrapUi;
-
-        }
-
-        private void BootstrapUi(Dictionary<uint, ScriptableAbility> abilityCatalogue)
+            labelString = AbilityHelper.ADDRESSABLE_UiLink_LABEL
+        }, null, false).Completed += objects =>
         {
-            LinkUiToEntity();
-        }
-
-        public void LinkUiToEntity()
-        {
-            Addressables.LoadAssetsAsync<AbilityUiLink>(new AssetLabelReference()
+            if (objects.Result == null) return;
+            uiMap = new Dictionary<uint, AbilityUiLink>();
+            foreach (AbilityUiLink uiLink in objects.Result)
             {
-                labelString = AbilityHelper.ADDRESSABLE_UiLink_LABEL
-            }, null, false).Completed += objects =>
-            {
-                if (objects.Result == null) return;
-                uiMap = new Dictionary<uint, AbilityUiLink>();
-                foreach (AbilityUiLink uiLink in objects.Result)
-                {
-                    uiMap.Add(uiLink.Id, uiLink);
-                }
+                uiMap.Add(uiLink.Id, uiLink);
+            }
 
-                Enabled = true;
-            }; ;
-        }
-
-        protected override void OnUpdate()
-        {
-
-            Entities.WithStructuralChanges().ForEach((Entity entity, ref RequiereUIBootstrap boostrap) =>
-            {
-
-                if (uiMap.TryGetValue(boostrap.uiAssetGuid, out var link))
-                {
-                    UIDocument uiDoc = Object.Instantiate(link.UiPrefab).GetComponent<UIDocument>();
-
-                    if (uiDoc != null)
-                    {
-                        uiDoc.panelSettings = link.PanelSettings;
-                        uiDoc.visualTreeAsset = link.UxmlUi;
-                        uiDoc.sortingOrder = link.SortingOrder;
-                        AbilityBookUIElement book = uiDoc.rootVisualElement.Q<AbilityBookUIElement>();
-                        if (book != null) book.Populate(entity, EntityManager);
-                        CastBar CastBar = uiDoc.rootVisualElement.Q<CastBar>();
-                        if (CastBar != null) CastBar.SetOwnership(entity, EntityManager);
-                    }
-                }
-                EntityManager.RemoveComponent<RequiereUIBootstrap>(entity);
-            }).WithoutBurst().Run();
-        }
-
-
+            Enabled = true;
+        }; ;
     }
+
+    #endregion Public Methods
+
+    #region Protected Methods
+
+    protected override void OnCreate()
+    {
+        base.OnCreate();
+        Enabled = false;
+        EntityManager.World.GetOrCreateSystem<AddressableAbilityCatalogSystem>().OnAbilityUpdate += BootstrapUi;
+    }
+
+    protected override void OnUpdate()
+    {
+        Entities.WithStructuralChanges().ForEach((Entity entity, ref RequiereUIBootstrap boostrap) =>
+        {
+            if (uiMap.TryGetValue(boostrap.uiAssetGuid, out var link))
+            {
+                UIDocument uiDoc = Object.Instantiate(link.UiPrefab).GetComponent<UIDocument>();
+
+                if (uiDoc != null)
+                {
+                    uiDoc.panelSettings = link.PanelSettings;
+                    uiDoc.visualTreeAsset = link.UxmlUi;
+                    uiDoc.sortingOrder = link.SortingOrder;
+                    AbilityBookUIElement book = uiDoc.rootVisualElement.Q<AbilityBookUIElement>();
+                    if (book != null) book.Populate(entity, EntityManager);
+                    CastBar CastBar = uiDoc.rootVisualElement.Q<CastBar>();
+                    if (CastBar != null) CastBar.SetOwnership(entity, EntityManager);
+                }
+            }
+            EntityManager.RemoveComponent<RequiereUIBootstrap>(entity);
+        }).WithoutBurst().Run();
+    }
+
+    #endregion Protected Methods
+
+    #region Private Methods
+
+    private void BootstrapUi(Dictionary<uint, ScriptableAbility> abilityCatalogue)
+    {
+        LinkUiToEntity();
+    }
+
+    #endregion Private Methods
+}

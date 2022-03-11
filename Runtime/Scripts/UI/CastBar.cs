@@ -1,38 +1,21 @@
-﻿
-using Unity.Mathematics;
+﻿using Unity.Mathematics;
 
 using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace WaynGroup.Mgm.Ability.UI
 {
-    class CastBar : EntityOwnedUpdatableVisualElement
+    internal class CastBar : EntityOwnedUpdatableVisualElement
     {
-        /// <summary>
-        /// Represent the precision format to use for the cast bar text.
-        /// i.e. 0.01 will display a 2 decimal precison.
-        /// Default is 0.1
-        /// </summary>
-        public float precisionAttr { get; set; }
+        #region Private Fields
+
         private VisualElement root;
+
         private ProgressBar pb;
 
+        #endregion Private Fields
 
-        public new class UxmlFactory : UxmlFactory<CastBar, UxmlTraits>
-        {
-        }
-
-        public new class UxmlTraits : VisualElement.UxmlTraits
-        {
-            UxmlFloatAttributeDescription _precision = new UxmlFloatAttributeDescription { name = "precision-attr", defaultValue = 0.1F };
-
-            public override void Init(VisualElement ve, IUxmlAttributes bag, CreationContext cc)
-            {
-                base.Init(ve, bag, cc);
-                CastBar cb = ve as CastBar;
-                cb.precisionAttr = _precision.GetValueFromBag(bag, cc);
-            }
-        }
+        #region Public Constructors
 
         public CastBar()
         {
@@ -44,8 +27,23 @@ namespace WaynGroup.Mgm.Ability.UI
             SetProgresss(0f);
         }
 
+        #endregion Public Constructors
+
+        #region Public Properties
+
         /// <summary>
-        /// 
+        /// Represent the precision format to use for the cast bar text.
+        /// i.e. 0.01 will display a 2 decimal precison.
+        /// Default is 0.1
+        /// </summary>
+        public float precisionAttr { get; set; }
+
+        #endregion Public Properties
+
+        #region Public Methods
+
+        /// <summary>
+        ///
         /// </summary>
         /// <param name="percent">value between 0 and 100</param>
         public void SetProgresss(float percent)
@@ -63,7 +61,6 @@ namespace WaynGroup.Mgm.Ability.UI
             pb.Title = "";
         }
 
-
         public override void Update()
         {
             CurrentlyCasting cc = _entityManager.GetComponentData<CurrentlyCasting>(_owner);
@@ -80,8 +77,35 @@ namespace WaynGroup.Mgm.Ability.UI
                 SetProgresss(-1f);
             }
         }
+
+        #endregion Public Methods
+
+        #region Public Classes
+
+        public new class UxmlFactory : UxmlFactory<CastBar, UxmlTraits>
+        {
+        }
+
+        public new class UxmlTraits : VisualElement.UxmlTraits
+        {
+            #region Private Fields
+
+            private UxmlFloatAttributeDescription _precision = new UxmlFloatAttributeDescription { name = "precision-attr", defaultValue = 0.1F };
+
+            #endregion Private Fields
+
+            #region Public Methods
+
+            public override void Init(VisualElement ve, IUxmlAttributes bag, CreationContext cc)
+            {
+                base.Init(ve, bag, cc);
+                CastBar cb = ve as CastBar;
+                cb.precisionAttr = _precision.GetValueFromBag(bag, cc);
+            }
+
+            #endregion Public Methods
+        }
+
+        #endregion Public Classes
     }
-
-
-
 }

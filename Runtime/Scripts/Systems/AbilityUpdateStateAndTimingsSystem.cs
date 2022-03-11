@@ -2,51 +2,31 @@
 using Unity.Burst.CompilerServices;
 using Unity.Collections;
 using Unity.Entities;
+using UnityEngine;
 
 namespace WaynGroup.Mgm.Ability
 {
-
-
-    public struct CurrentlyCasting : ISystemStateComponentData
-    {
-        public float castTime;
-        public uint abilityGuid;
-        public bool IsCasting => !float.NaN.Equals(castTime) ; 
-    }
-    [UpdateInGroup(typeof(AbilityUpdateSystemGroup))]
-    public class CooldownRestrictionSystem : SystemBase
-    {
-
-
-        protected override void OnUpdate()
-        {
-            Entities.ForEach((ref AbilityInput abilityInput,in DynamicBuffer<AbilityCooldownBufferElement> cooldownBuffer, 
-                in AbilitiesMapIndex indexMap) => {
-                    ref BlobMultiHashMap<uint,int> map = ref indexMap.guidToIndex.Value;
-                    var bufferIndex = map.GetValuesForKey(abilityInput.AbilityId)[0];
-                    if (cooldownBuffer[bufferIndex].CooldownTime > 0)
-                        abilityInput.AddRestriction(16);
-
-                }).Run();
-        }
-    }
-
-    [UpdateInGroup(typeof(AbilityUpdateSystemGroup))]
+    [UpdateAfter(typeof(AbilityCostsCheckerSystemGroup))]
     [BurstCompile]
     public struct AbilityUpdateStateAndTimingsSystem : ISystemBase
     {
+        #region Private Fields
 
         private EntityQuery _queryCooldown;
         private EntityQuery _queryCasting;
         private EntityQuery _cache;
+
+        #endregion Private Fields
+
+        #region Public Methods
+
         public void OnCreate(ref SystemState state)
         {
             _queryCooldown = state.GetEntityQuery(typeof(AbilityCooldownBufferElement));
-            _queryCasting = state.GetEntityQuery(typeof(AbilitiesMapIndex), typeof(AbilityCooldownBufferElement), typeof(CurrentlyCasting),typeof(AbilityInput));
+            _queryCasting = state.GetEntityQuery(typeof(AbilitiesMapIndex), typeof(AbilityCooldownBufferElement), typeof(CurrentlyCasting), typeof(AbilityInput));
             _cache = state.GetEntityQuery(ComponentType.ReadOnly(typeof(AbilityTimingsCache)));
             state.RequireSingletonForUpdate<AbilityTimingsCache>();
         }
-
 
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
@@ -56,7 +36,6 @@ namespace WaynGroup.Mgm.Ability
             {
                 DeltaTime = state.WorldUnmanaged.CurrentTime.DeltaTime,
                 AbilityCooldownBufferChunk = state.GetBufferTypeHandle<AbilityCooldownBufferElement>()
-
             }.ScheduleParallel(_queryCooldown, state.Dependency);
 
             state.Dependency = new AbilityUpdateCastingJob()
@@ -68,19 +47,32 @@ namespace WaynGroup.Mgm.Ability
                 AbilityInputChunk = state.GetComponentTypeHandle<AbilityInput>(),
                 AbilityCooldownBufferChunk = state.GetBufferTypeHandle<AbilityCooldownBufferElement>()
             }.ScheduleParallel(_queryCasting, state.Dependency);
-
         }
+
+        public void OnDestroy(ref SystemState state)
+        {
+        }
+
+        #endregion Public Methods
+
+        #region Public Structs
 
         [BurstCompile]
         public struct AbilityUpdateCastingJob : IJobChunk
         {
+            #region Public Fields
+
             [ReadOnly] public float DeltaTime;
             [ReadOnly] public AbilityTimingsCache Cache;
-            [ReadOnly]  public ComponentTypeHandle<AbilitiesMapIndex> AbilityMapIndexChunk;
+            [ReadOnly] public ComponentTypeHandle<AbilitiesMapIndex> AbilityMapIndexChunk;
 
             public ComponentTypeHandle<CurrentlyCasting> CurrentlyCastingChunk;
             public ComponentTypeHandle<AbilityInput> AbilityInputChunk;
             public BufferTypeHandle<AbilityCooldownBufferElement> AbilityCooldownBufferChunk;
+
+            #endregion Public Fields
+
+            #region Public Methods
 
             public void Execute(ArchetypeChunk chunk, int chunkIndex, int firstEntityIndex)
             {
@@ -95,7 +87,12 @@ namespace WaynGroup.Mgm.Ability
                 {
                     CurrentlyCasting cc = currentlyCastingArray[entityIndex];
                     AbilityInput ai = abilityInputArray[entityIndex];
-                    
+                    // if casting
+                    // want to start casting while casting ? add restriction
+                    if (ai.IsEnabled() && cc.IsCasting)
+                    {
+                        ai.AddRestriction(8);
+                    }
                     if (cc.castTime < 0)
                     {
                         // If casting finished, star coolingdown
@@ -111,22 +108,14 @@ namespace WaynGroup.Mgm.Ability
                         // and stop casting
                         cc.castTime = float.NaN;
                     }
-                    // if casting 
                     if (cc.IsCasting)
                     {
                         // Reduce casting time left
                         cc.castTime -= DeltaTime;
                     }
 
-
-
-                    // want to start casting while casting ? add restriction
-                    if (ai.IsEnabled() && cc.IsCasting)
-                    {
-                        ai.AddRestriction(8);
-                    }
                     // if applicable (enabled and no retriction)
-                    if (ai.IsApplicable())
+                    if (ai.IsApplicable() && !cc.IsCasting)
                     {
                         // Start casting
                         cc.abilityGuid = ai.AbilityId;
@@ -138,14 +127,22 @@ namespace WaynGroup.Mgm.Ability
                 }
             }
 
+            #endregion Public Methods
         }
 
         [BurstCompile]
         public struct AbilityUpdpdateCooldownJob : IJobChunk
         {
+            #region Public Fields
+
             [ReadOnly] public float DeltaTime;
 
             public BufferTypeHandle<AbilityCooldownBufferElement> AbilityCooldownBufferChunk;
+
+            #endregion Public Fields
+
+            #region Public Methods
+
             public void Execute(ArchetypeChunk chunk, int chunkIndex, int firstEntityIndex)
             {
                 BufferAccessor<AbilityCooldownBufferElement> abilityBufferAccessor = chunk.GetBufferAccessor(AbilityCooldownBufferChunk);
@@ -155,7 +152,7 @@ namespace WaynGroup.Mgm.Ability
                     NativeArray<AbilityCooldownBufferElement> sbArray = abilityBufferAccessor[entityIndex].AsNativeArray();
                     Cooldown(sbArray, DeltaTime);
                 }
-              
+
                 void Cooldown(NativeArray<AbilityCooldownBufferElement> sbArray, float DeltaTime)
                 {
                     for (int i = 0; i < sbArray.Length; i++)
@@ -167,11 +164,9 @@ namespace WaynGroup.Mgm.Ability
                 }
             }
 
+            #endregion Public Methods
         }
 
-        public void OnDestroy(ref SystemState state)
-        {
-
-        }
+        #endregion Public Structs
     }
 }

@@ -7,11 +7,15 @@ using UnityEngine.UIElements;
 [Serializable]
 public class AbilityUiLink : ScriptableObject
 {
+    #region Public Fields
+
+    [HideInInspector]
     public uint Id;
+
     public GameObject UiPrefab;
     public PanelSettings PanelSettings;
     public VisualTreeAsset UxmlUi;
     public float SortingOrder;
 
-
+    #endregion Public Fields
 }

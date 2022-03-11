@@ -13,49 +13,35 @@ using UnityEngine.UIElements;
 
 using WaynGroup.Mgm.Ability;
 
-
 [CustomEditor(typeof(ScriptableAbility))]
 public class ScriptableAbilityEditor : Editor
 {
-    VisualElement root;
-
-    List<Type> EffectTypes;
-    List<Type> CostTypes;
-
-    PopupField<Type> effectDropDown;
-
-    PopupField<Type> costDropDown;
-
-    Type SelectedEffectType;
-
-    Type SelectedCostType;
-
-    SerializedProperty EffectsProperty;
-
-    SerializedProperty CostsProperty;
-    SerializedProperty SpawnablesProperty;
-
+    #region Private Fields
 
     private readonly string[] _costStirngParams = new string[] { "costs-container", "Undefined ability cost type on {0} cost.", "Undefined ability cost type to remove" };
     private readonly string[] _effectStirngParams = new string[] { "effects-container", "Undefined ability effect type on {0} effect.", "Undefined effect type to remove" };
+    private VisualElement root;
 
+    private List<Type> EffectTypes;
+    private List<Type> CostTypes;
 
+    private PopupField<Type> effectDropDown;
 
+    private PopupField<Type> costDropDown;
 
-    public void OnEnable()
-    {
-        Undo.RecordObject(target, "Ability Change");
-        Undo.undoRedoPerformed += RefreshInspector;
-    }
+    private Type SelectedEffectType;
 
-    private void RefreshInspector()
-    {
-        CreateInspectorGUI();
-    }
-    public void OnDisable()
-    {
-        Undo.undoRedoPerformed -= RefreshInspector;
-    }
+    private Type SelectedCostType;
+
+    private SerializedProperty EffectsProperty;
+
+    private SerializedProperty CostsProperty;
+    private SerializedProperty SpawnablesProperty;
+
+    #endregion Private Fields
+
+    #region Public Methods
+
     public override VisualElement CreateInspectorGUI()
     {
         Initialization();
@@ -71,24 +57,9 @@ public class ScriptableAbilityEditor : Editor
         Display(CostsProperty, CostTypes, _costStirngParams);
 
         MakeSpawnablesList();
-        SaveData();
         return root;
     }
 
-    private void MakeSpawnablesList()
-    {
-        VisualElement spawnablesContainer = root.Query<VisualElement>("spawnables-container").First();
-        PropertyField propertyField = new PropertyField(SpawnablesProperty);
-        propertyField.Bind(serializedObject);
-        spawnablesContainer.Add(propertyField);
-    }
-
-    private void Initialization()
-    {
-        ScriptableAbility ability = (ScriptableAbility)target;
-        Undo.RecordObject(ability, "Ability Change");
-        RegisterAsAddressable(ability);
-    }
     public void RegisterAsAddressable(ScriptableAbility ability)
     {
         string Guid = AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(target));
@@ -113,9 +84,7 @@ public class ScriptableAbilityEditor : Editor
                 AssetDatabase.SaveAssets();
             }
             return;
-
         }
-
 
         AddressableAssetGroup grp = settings.FindGroup("MGM-Abilities");
         if (grp == null)
@@ -133,18 +102,53 @@ public class ScriptableAbilityEditor : Editor
             settings.SetDirty(AddressableAssetSettings.ModificationEvent.EntryMoved, entry, true);
         }
         AssetDatabase.SaveAssets();
-
     }
 
+    // This method allow to dynamicaly override the preview icon bath in hte inspector window and the project view to the ability ingame icon.
+    // In the porject window, if the view is to small it will default to the unity scriptable object icon.
+    // If the ability in game icon is not set, it will default to the unity scriptable object icon.
+    public override Texture2D RenderStaticPreview(string assetPath, UnityEngine.Object[] subAssets, int width, int height)
+    {
+        ScriptableAbility ability = (ScriptableAbility)target;
 
+        if (ability == null || ability.Icon == null)
+            return null;
+
+        Texture2D tex = new Texture2D(width, height);
+        EditorUtility.CopySerialized(ability.Icon, tex);
+
+        return tex;
+    }
+
+    #endregion Public Methods
+
+    #region Private Methods
+
+    private void RefreshInspector()
+    {
+        CreateInspectorGUI();
+    }
+
+    private void MakeSpawnablesList()
+    {
+        VisualElement spawnablesContainer = root.Query<VisualElement>("spawnables-container").First();
+        PropertyField propertyField = new PropertyField(SpawnablesProperty);
+        propertyField.Bind(serializedObject);
+        spawnablesContainer.Add(propertyField);
+    }
+
+    private void Initialization()
+    {
+        ScriptableAbility ability = (ScriptableAbility)target;
+        Undo.RecordObject(ability, "Ability Change");
+        RegisterAsAddressable(ability);
+    }
 
     private void Cache()
     {
-
         EffectsProperty = serializedObject.FindProperty("Effects");
 
         EffectTypes = TypeCache.GetTypesDerivedFrom<IEffect>().ToList();
-
 
         CostsProperty = serializedObject.FindProperty("Costs");
 
@@ -166,8 +170,6 @@ public class ScriptableAbilityEditor : Editor
         // The style will be applied to the VisualElement and all of its children.
         StyleSheet styleSheet = Resources.Load<StyleSheet>("ScriptableAbilityEditor");
         root.styleSheets.Add(styleSheet);
-
-
     }
 
     private void MakeEffectTypePicker()
@@ -227,13 +229,7 @@ public class ScriptableAbilityEditor : Editor
         serializedObject.Update();
         listProperty.GetArrayElementAtIndex(listProperty.arraySize - 1).managedReferenceValue = Activator.CreateInstance(selectedType);
         serializedObject.ApplyModifiedProperties();
-        SaveData();
         Display(listProperty, types, stringParams);
-    }
-
-    private void MakeSpawnableList()
-    {
-
     }
 
     private void Display(SerializedProperty listPorperty, List<Type> types, string[] paramStrings)
@@ -272,9 +268,6 @@ public class ScriptableAbilityEditor : Editor
         }
     }
 
-
-
-
     private VisualElement BuildGenericElement(Type type, SerializedProperty sp)
     {
         Foldout foldout = new Foldout()
@@ -283,7 +276,8 @@ public class ScriptableAbilityEditor : Editor
         };
         foreach (PropertyInfo property in type.GetProperties().Where(p => p.DeclaringType.Equals(type)))
         {
-            SerializedProperty local_sp = sp.FindPropertyRelative(string.Format("<{0}>k__BackingField", property.Name));
+            SerializedProperty local_sp = sp.FindPropertyRelative($"<{property.Name}>k__BackingField");
+            Debug.Log($"{sp.name}.<{property.Name}>k__BackingField was found{local_sp != null}");
             if (local_sp == null) continue;
             PropertyField propField = new PropertyField(local_sp, property.Name)
             {
@@ -311,29 +305,8 @@ public class ScriptableAbilityEditor : Editor
         serializedObject.Update();
         listPorperty.DeleteArrayElementAtIndex(index);
         serializedObject.ApplyModifiedPropertiesWithoutUndo();
-        SaveData();
         Display(listPorperty, types, paramStrings);
     }
 
-    void SaveData()
-    {
-        Undo.RecordObject(target, "Ability Change");
-        AssetDatabase.SaveAssets();
-    }
-
-    // This method allow to dynamicaly override the preview icon bath in hte inspector window and the project view to the ability ingame icon.
-    // In the porject window, if the view is to small it will default to the unity scriptable object icon.
-    // If the ability in game icon is not set, it will default to the unity scriptable object icon. 
-    public override Texture2D RenderStaticPreview(string assetPath, UnityEngine.Object[] subAssets, int width, int height)
-    {
-        ScriptableAbility ability = (ScriptableAbility)target;
-
-        if (ability == null || ability.Icon == null)
-            return null;
-
-        Texture2D tex = new Texture2D(width, height);
-        EditorUtility.CopySerialized(ability.Icon, tex);
-
-        return tex;
-    }
+    #endregion Private Methods
 }

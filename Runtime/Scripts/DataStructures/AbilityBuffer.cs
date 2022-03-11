@@ -1,5 +1,4 @@
-﻿
-using Unity.Entities;
+﻿using Unity.Entities;
 
 namespace WaynGroup.Mgm.Ability
 {
@@ -9,7 +8,10 @@ namespace WaynGroup.Mgm.Ability
     [InternalBufferCapacity(0)] // Force the ability buffer to be stord out of chunk
     public struct AbilityCooldownBufferElement : IBufferElementData
     {
-        public float CooldownTime;
-    }
+        #region Public Fields
 
+        public float CooldownTime;
+
+        #endregion Public Fields
+    }
 }

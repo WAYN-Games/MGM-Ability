@@ -6,31 +6,21 @@ using UnityEngine.UIElements;
 
 namespace WaynGroup.Mgm.Ability.UI
 {
-
-
-    class ActionSlot : VisualElement
-    {
-        public new class UxmlFactory : UxmlFactory<ActionSlot, UxmlTraits>
-        {
-        }
-
-        public new class UxmlTraits : VisualElement.UxmlTraits { }
-
-        public ActionSlot()
-        {
-            VisualTreeAsset visualTree = Resources.Load<VisualTreeAsset>("ActionSlot");
-            visualTree.CloneTree(this);
-            AbilityUIData.Instance.AddDropArea(this);
-        }
-
-
-    }
-
-
     public sealed class AbilityUIData
     {
-        private List<VisualElement> DropAreas = new List<VisualElement>();
+        #region Internal Fields
+
         internal AbilityUITooltip AbilityTooltip;
+
+        #endregion Internal Fields
+
+        #region Private Fields
+
+        private List<VisualElement> DropAreas = new List<VisualElement>();
+
+        #endregion Private Fields
+
+        #region Public Constructors
 
         // Explicit static constructor to tell C# compiler
         // not to mark type as beforefieldinit
@@ -38,9 +28,23 @@ namespace WaynGroup.Mgm.Ability.UI
         {
         }
 
+        #endregion Public Constructors
+
+        #region Private Constructors
+
         private AbilityUIData()
         {
         }
+
+        #endregion Private Constructors
+
+        #region Public Properties
+
+        public static AbilityUIData Instance { get; } = new AbilityUIData();
+
+        #endregion Public Properties
+
+        #region Public Methods
 
         public void AddDropArea(VisualElement dropArea)
         {
@@ -57,6 +61,31 @@ namespace WaynGroup.Mgm.Ability.UI
             return DropAreas.Where(x => x.worldBound.Contains(mousePosition)).FirstOrDefault();
         }
 
-        public static AbilityUIData Instance { get; } = new AbilityUIData();
+        #endregion Public Methods
+    }
+
+    internal class ActionSlot : VisualElement
+    {
+        #region Public Constructors
+
+        public ActionSlot()
+        {
+            VisualTreeAsset visualTree = Resources.Load<VisualTreeAsset>("ActionSlot");
+            visualTree.CloneTree(this);
+            AbilityUIData.Instance.AddDropArea(this);
+        }
+
+        #endregion Public Constructors
+
+        #region Public Classes
+
+        public new class UxmlFactory : UxmlFactory<ActionSlot, UxmlTraits>
+        {
+        }
+
+        public new class UxmlTraits : VisualElement.UxmlTraits
+        { }
+
+        #endregion Public Classes
     }
 }

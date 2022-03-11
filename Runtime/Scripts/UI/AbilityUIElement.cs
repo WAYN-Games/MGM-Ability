@@ -10,42 +10,56 @@ namespace WaynGroup.Mgm.Ability.UI
 {
     public interface ICommand
     {
+        #region Public Methods
+
         void Execute();
+
+        #endregion Public Methods
     }
 
     public struct AbilityUICommand : ICommand
     {
+        #region Public Fields
+
         public Entity CommandedEntity;
         public uint AbilityID;
         public EntityManager EntityManager;
+
+        #endregion Public Fields
+
+        #region Public Methods
 
         public void Execute()
         {
             if (!EntityManager.Exists(CommandedEntity) || !EntityManager.HasComponent<AbilityInput>(CommandedEntity)) return;
             var ai = new AbilityInput(AbilityID);
             ai.Enable();
-            EntityManager.SetComponentData(CommandedEntity,ai);
+            EntityManager.SetComponentData(CommandedEntity, ai);
         }
+
+        #endregion Public Methods
     }
 
-    class AbilityUIElement : EntityOwnedUpdatableVisualElement
+    internal class AbilityUIElement : EntityOwnedUpdatableVisualElement
     {
-        public new class UxmlFactory : UxmlFactory<AbilityUIElement, UxmlTraits>
-        {
-        }
-
-        public new class UxmlTraits : VisualElement.UxmlTraits { }
+        #region Private Fields
 
         private ICommand _command;
 
-
         private Texture2D Icon;
+
         private ScriptableAbility _ability;
+
         private ProgressBar _CoolDown;
+
+        private int _cachedAbilityIndex;
+
+        #endregion Private Fields
+
+        #region Public Constructors
 
         public AbilityUIElement()
         {
-
             VisualTreeAsset visualTree = Resources.Load<VisualTreeAsset>("AbilityUIElement");
             visualTree.CloneTree(this);
             VisualElement root = this.Q<VisualElement>(name: "Shape");
@@ -55,6 +69,16 @@ namespace WaynGroup.Mgm.Ability.UI
             _command = default;
             this.AddManipulator(new DragableAbility());
         }
+
+        #endregion Public Constructors
+
+        #region Public Properties
+
+        public bool IsAssigned => !_command.Equals(default);
+
+        #endregion Public Properties
+
+        #region Public Methods
 
         public AbilityUIElement Clone()
         {
@@ -84,46 +108,13 @@ namespace WaynGroup.Mgm.Ability.UI
             // Need to force the first update on assignement because the ability assignement happens after the first catalogue update
             UpdatedCachedInfo(entityManager.World.GetOrCreateSystem<AddressableAbilityCatalogSystem>().AbilityCatalog, abilityID);
 
-
             RegisterCallback<PointerEnterEvent>(MouseOver);
             RegisterCallback<PointerLeaveEvent>(MouseUnOver);
-
-        }
-
-
-        private void MouseUnOver(PointerLeaveEvent evt)
-        {
-            VisualElement ve = (VisualElement)evt.target;
-            AbilityUIData.Instance.AbilityTooltip.Hide();
-            evt.StopPropagation();
-        }
-
-        private void MouseOver(PointerEnterEvent evt)
-        {
-            VisualElement ve = (VisualElement)evt.target;
-            AbilityUIData.Instance.AbilityTooltip.Show(_ability);
-            evt.StopPropagation();
         }
 
         public void ExecuteAction()
         {
             _command.Execute();
-        }
-
-        private void UpdateCalatoguedInfo(Dictionary<uint, ScriptableAbility> abilityCatalogue)
-        {
-            UpdatedCachedInfo(abilityCatalogue, _ability.Id);
-        }
-
-        private void UpdatedCachedInfo(Dictionary<uint, ScriptableAbility> abilityCatalogue, uint abilityID)
-        {
-            if (abilityCatalogue.TryGetValue(abilityID, out ScriptableAbility ability))
-            {
-
-                SetIcon(ability.Icon);
-                _ability = ability;
-                UpdateCoolDown();
-            }
         }
 
         public void UnassignAbility()
@@ -133,14 +124,10 @@ namespace WaynGroup.Mgm.Ability.UI
 
             this.Q<Button>(name: "abilityButton").clicked -= _command.Execute;
             World.DefaultGameObjectInjectionWorld.GetOrCreateSystem<AddressableAbilityCatalogSystem>().OnAbilityUpdate -= UpdateCalatoguedInfo;
-
         }
-
-        public bool IsAssigned => !_command.Equals(default);
 
         public void UpdateCoolDown()
         {
-
             if (_ability == null) return;
             if (!IsAssigned) return;
 
@@ -156,23 +143,62 @@ namespace WaynGroup.Mgm.Ability.UI
                 _CoolDown.Value = 0;
                 _CoolDown.Title = $"";
             }
-
-        }
-
-
-        private int _cachedAbilityIndex;       
-
-        private void SetIcon(Texture2D icon)
-        {
-            this.Q(name: "Icon").style.backgroundImage = new StyleBackground(icon);
         }
 
         public override void Update()
         {
             UpdateCoolDown();
         }
+
+        #endregion Public Methods
+
+        #region Private Methods
+
+        private void MouseUnOver(PointerLeaveEvent evt)
+        {
+            VisualElement ve = (VisualElement)evt.target;
+            AbilityUIData.Instance.AbilityTooltip.Hide();
+            evt.StopPropagation();
+        }
+
+        private void MouseOver(PointerEnterEvent evt)
+        {
+            VisualElement ve = (VisualElement)evt.target;
+            AbilityUIData.Instance.AbilityTooltip.Show(_ability);
+            evt.StopPropagation();
+        }
+
+        private void UpdateCalatoguedInfo(Dictionary<uint, ScriptableAbility> abilityCatalogue)
+        {
+            UpdatedCachedInfo(abilityCatalogue, _ability.Id);
+        }
+
+        private void UpdatedCachedInfo(Dictionary<uint, ScriptableAbility> abilityCatalogue, uint abilityID)
+        {
+            if (abilityCatalogue.TryGetValue(abilityID, out ScriptableAbility ability))
+            {
+                SetIcon(ability.Icon);
+                _ability = ability;
+                UpdateCoolDown();
+            }
+        }
+
+        private void SetIcon(Texture2D icon)
+        {
+            this.Q(name: "Icon").style.backgroundImage = new StyleBackground(icon);
+        }
+
+        #endregion Private Methods
+
+        #region Public Classes
+
+        public new class UxmlFactory : UxmlFactory<AbilityUIElement, UxmlTraits>
+        {
+        }
+
+        public new class UxmlTraits : VisualElement.UxmlTraits
+        { }
+
+        #endregion Public Classes
     }
-
-
-
 }

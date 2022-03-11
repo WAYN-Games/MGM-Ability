@@ -1,15 +1,26 @@
 ﻿using UnityEngine;
 using UnityEngine.UIElements;
+
 namespace WaynGroup.Mgm.Ability.UI
 {
     public class DragableAbility : MouseManipulator
     {
-        #region Init
+        #region Protected Fields
+
+        protected bool m_Active;
+        protected bool m_Dragging;
+
+        #endregion Protected Fields
+
+        #region Private Fields
+
         private Vector2 m_Start;
         private StyleLength m_topStart;
         private StyleLength m_leftStart;
-        protected bool m_Active;
-        protected bool m_Dragging;
+
+        #endregion Private Fields
+
+        #region Public Constructors
 
         public DragableAbility()
         {
@@ -17,9 +28,11 @@ namespace WaynGroup.Mgm.Ability.UI
             m_Active = false;
             m_Dragging = false;
         }
-        #endregion
 
-        #region Registrations
+        #endregion Public Constructors
+
+        #region Protected Methods
+
         protected override void RegisterCallbacksOnTarget()
         {
             target.RegisterCallback<MouseDownEvent>(OnMouseDown);
@@ -33,9 +46,7 @@ namespace WaynGroup.Mgm.Ability.UI
             target.UnregisterCallback<MouseMoveEvent>(OnMouseMove);
             target.UnregisterCallback<MouseUpEvent>(OnMouseUp);
         }
-        #endregion
 
-        #region OnMouseDown
         protected void OnMouseDown(MouseDownEvent e)
         {
             if (m_Active)
@@ -54,9 +65,7 @@ namespace WaynGroup.Mgm.Ability.UI
                 e.StopPropagation();
             }
         }
-        #endregion
 
-        #region OnMouseMove
         protected void OnMouseMove(MouseMoveEvent e)
         {
             if (!m_Active || !target.HasMouseCapture())
@@ -69,12 +78,9 @@ namespace WaynGroup.Mgm.Ability.UI
 
             e.StopPropagation();
         }
-        #endregion
 
-        #region OnMouseUp
         protected void OnMouseUp(MouseUpEvent e)
         {
-
             if (!m_Dragging) ((AbilityUIElement)target).ExecuteAction();
 
             if (!m_Active || !target.HasMouseCapture() || !CanStopManipulation(e))
@@ -85,8 +91,6 @@ namespace WaynGroup.Mgm.Ability.UI
             target.style.top = m_topStart;
             target.style.left = m_leftStart;
             VisualElement actionSlot = AbilityUIData.Instance.FindDropArea(e.mousePosition);
-
-
 
             if (target.parent is ActionSlot)
             {
@@ -117,7 +121,6 @@ namespace WaynGroup.Mgm.Ability.UI
             }
             else if (actionSlot != null)
             {
-
                 AbilityUIElement copy = ((AbilityUIElement)target).Clone();
                 actionSlot.Clear();
                 actionSlot.Add(copy);
@@ -125,16 +128,12 @@ namespace WaynGroup.Mgm.Ability.UI
                 copy.style.left = 0;
                 copy.style.width = new StyleLength(new Length(100, LengthUnit.Percent));
                 copy.style.height = new StyleLength(new Length(100, LengthUnit.Percent));
-
             }
-
-
 
             target.ReleaseMouse();
             e.StopPropagation();
         }
-        #endregion
+
+        #endregion Protected Methods
     }
-
-
 }

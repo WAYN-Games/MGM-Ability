@@ -1,29 +1,30 @@
-﻿
-using Unity.Entities;
+﻿using Unity.Entities;
 
 using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace WaynGroup.Mgm.Ability.UI
 {
-
-    class AbilityBookUIElement : VisualElement
+    internal class AbilityBookUIElement : VisualElement
     {
+        #region Private Fields
+
         private VisualElement _bookRoot;
 
-        public new class UxmlFactory : UxmlFactory<AbilityBookUIElement, UxmlTraits>
-        {
-        }
+        #endregion Private Fields
 
-        public new class UxmlTraits : VisualElement.UxmlTraits { }
+        #region Public Constructors
 
         public AbilityBookUIElement()
         {
             VisualTreeAsset visualTree = Resources.Load<VisualTreeAsset>("AbilityBookUIElement");
             visualTree.CloneTree(this);
             _bookRoot = this;
-            // this.AddManipulator(new DragableAbility());
         }
+
+        #endregion Public Constructors
+
+        #region Public Methods
 
         public void Populate(Entity owner, EntityManager entityManager)
         {
@@ -45,10 +46,20 @@ namespace WaynGroup.Mgm.Ability.UI
                 uint abilityId = array[0];
                 uiAbility.AssignAbility(owner, abilityId, entityManager);
                 _bookRoot.Add(uiAbility);
-
-
             }
-            
         }
+
+        #endregion Public Methods
+
+        #region Public Classes
+
+        public new class UxmlFactory : UxmlFactory<AbilityBookUIElement, UxmlTraits>
+        {
+        }
+
+        public new class UxmlTraits : VisualElement.UxmlTraits
+        { }
+
+        #endregion Public Classes
     }
 }
