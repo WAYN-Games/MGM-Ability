@@ -81,7 +81,6 @@ public class ScriptableAbilityEditor : Editor
             if (GuidHash != ability.Id)
             {
                 ability.Id = GuidHash;
-                AssetDatabase.SaveAssets();
             }
             return;
         }
@@ -101,7 +100,6 @@ public class ScriptableAbilityEditor : Editor
             //You'll need these to run to save the changes!
             settings.SetDirty(AddressableAssetSettings.ModificationEvent.EntryMoved, entry, true);
         }
-        AssetDatabase.SaveAssets();
     }
 
     // This method allow to dynamicaly override the preview icon bath in hte inspector window and the project view to the ability ingame icon.

@@ -1,10 +1,12 @@
 using Unity.Collections;
 using Unity.Entities;
+using UnityEngine;
 
 using _NAMESPACE_;
 
 using WaynGroup.Mgm.Ability;
 
+// Mandatory for Burst to work
 [assembly: RegisterGenericJobType(typeof(AbilityEffectTriggerSystem<#SCRIPTNAME#, #SCRIPTNAME#ConsumerSystem, #SCRIPTNAME#TriggerSystem.EffectWriter,#SCRIPTNAME#Context>.TriggerJob))]
 
 
@@ -12,7 +14,10 @@ namespace _NAMESPACE_
 {
     public struct #SCRIPTNAME# : IEffect
     {
+        [field: SerializeField]
         public TargetingMode Affects { get; set; }
+        [field: SerializeField]
+        public ActivationPhase Phase { get; set; }
     }
 
     public struct #SCRIPTNAME#Context : IEffectContext

@@ -1,4 +1,6 @@
-﻿using UnityEditor;
+﻿using System.Reflection;
+using UnityEditor;
+using UnityEngine;
 
 namespace WaynGroup.Mgm.Ability
 {
@@ -6,7 +8,7 @@ namespace WaynGroup.Mgm.Ability
     {
         #region Public Fields
 
-        public const string TemplatesRoot = "Packages/wayn-group.mgm.ability/Editor/ScriptTemplates";
+        public static string TemplatesRoot = UnityEditor.PackageManager.PackageInfo.FindForAssembly(Assembly.GetAssembly(typeof(ScriptTemplates))).resolvedPath;
 
         #endregion Public Fields
 
@@ -16,7 +18,7 @@ namespace WaynGroup.Mgm.Ability
         public static void CreateAbilityEffectType()
         {
             ProjectWindowUtil.CreateScriptAssetFromTemplateFile(
-                $"{TemplatesRoot}/EffectType.txt",
+                $"{TemplatesRoot}/Editor/ScriptTemplates/EffectType.txt",
                 "NewEffect.cs");
         }
 
@@ -24,7 +26,7 @@ namespace WaynGroup.Mgm.Ability
         public static void CreateAbilityCostType()
         {
             ProjectWindowUtil.CreateScriptAssetFromTemplateFile(
-                $"{TemplatesRoot}/CostType.txt",
+                $"{TemplatesRoot}/Editor/ScriptTemplates/CostType.txt",
                 "NewCost.cs");
         }
 
