@@ -11,12 +11,14 @@ namespace WaynGroup.Mgm.Ability
     /// </summary>
     [UpdateInGroup(typeof(AbilityUpdateSystemGroup))]
     [BurstCompile]
-    public struct AbilityUpdateRangeSystem : ISystemBase
+    public struct AbilityUpdateRangeSystem : ISystem
     {
         #region Private Fields
 
         private EntityQuery _cache;
         private EntityQuery _query;
+
+        private ComponentTypeHandle<AbilityInput> _abilityInputTypeHandle;
 
         #endregion Private Fields
 
@@ -33,6 +35,8 @@ namespace WaynGroup.Mgm.Ability
             });
             _cache = state.GetEntityQuery(ComponentType.ReadOnly(typeof(SquaredRangeCache)));
             state.RequireSingletonForUpdate<SquaredRangeCache>();
+
+            _abilityInputTypeHandle = state.GetComponentTypeHandle<AbilityInput>(false);
         }
 
         public void OnDestroy(ref SystemState state)
@@ -41,14 +45,16 @@ namespace WaynGroup.Mgm.Ability
 
         public void OnUpdate(ref SystemState state)
         {
+            _abilityInputTypeHandle.Update(ref state);
+
             state.Dependency = new UpdateRangeJob()
             {
-                AbilityInputChunk = state.GetComponentTypeHandle<AbilityInput>(false),
+                AbilityInputChunk = _abilityInputTypeHandle,
                 Cache = _cache.GetSingleton<SquaredRangeCache>(),
                 Position = state.GetComponentDataFromEntity<LocalToWorld>(true),
                 TargetChunk = state.GetComponentTypeHandle<Target>(true),
                 TranslationChunk = state.GetComponentTypeHandle<Translation>(true)
-            }.ScheduleParallel(_query, 1, state.Dependency);
+            }.ScheduleParallel(_query, state.Dependency);
         }
 
         #endregion Public Methods

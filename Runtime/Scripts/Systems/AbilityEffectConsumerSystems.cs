@@ -1,12 +1,14 @@
-﻿using Unity.Burst;
+using System.Collections.Generic;
+using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs;
+using UnityEngine;
 
 namespace WaynGroup.Mgm.Ability
 {
     [UpdateInGroup(typeof(AbilityConsumerSystemGroup))]
-    public abstract class AbilityEffectConsumerSystem<EFFECT, EFFECT_CTX> : SystemBase where EFFECT : struct, IEffect
+    public abstract partial class AbilityEffectConsumerSystem<EFFECT, EFFECT_CTX> : SystemBase where EFFECT : struct, IEffect
         where EFFECT_CTX : struct, IEffectContext
     {
         #region Protected Fields
@@ -23,9 +25,9 @@ namespace WaynGroup.Mgm.Ability
         /// <summary>
         ///  The stream to Read/Write the contextualized effect.
         /// </summary>
-        private NativeStream _effectStream;
+        private List<NativeStream> _effectStreams;
 
-        private int _forEachCount;
+        private List<int> _forEachCounts;
 
         /// <summary>
         /// The trigger job handle to make sure we finished trigerring all necessary effect before consuming the effects.
@@ -52,14 +54,11 @@ namespace WaynGroup.Mgm.Ability
         /// <returns></returns>
         public NativeStream.Writer CreateConsumerWriter(int foreachCount)
         {
-            _effectStream = new NativeStream(foreachCount, Allocator.TempJob);
-            _forEachCount = foreachCount;
+            var _effectStream = new NativeStream(foreachCount, Allocator.TempJob);
+            _effectStreams.Add(_effectStream);
+            _forEachCounts.Add(foreachCount);
+            Debug.Log($"New Writer ({_effectStreams.Count})");
             return _effectStream.AsWriter();
-        }
-
-        public NativeStream.Reader GetEffectReader()
-        {
-            return _effectStream.AsReader();
         }
 
         #endregion Public Methods
@@ -69,7 +68,8 @@ namespace WaynGroup.Mgm.Ability
         protected override void OnCreate()
         {
             base.OnCreate();
-
+            _effectStreams = new List<NativeStream>();
+            _forEachCounts = new List<int>();
             // Allocate the map only on create to avoid allocating every frame.
             _effects = new NativeMultiHashMap<Entity, ContextualizedEffect>(0, Allocator.Persistent);
         }
@@ -77,10 +77,12 @@ namespace WaynGroup.Mgm.Ability
         protected override void OnDestroy()
         {
             base.OnDestroy();
-
-            if (_effectStream.IsCreated)
+            foreach (var stream in _effectStreams)
             {
-                _effectStream.Dispose(Dependency);
+                if (stream.IsCreated)
+                {
+                    stream.Dispose(Dependency);
+                }
             }
             if (_effects.IsCreated)
             {
@@ -97,30 +99,80 @@ namespace WaynGroup.Mgm.Ability
         {
             Dependency = JobHandle.CombineDependencies(Dependency, TriggerJobHandle);
 
-            // If the producer did not actually write anything to the stream, the native stream will not be flaged as created.
-            // In that case we don't need to do anything.
-            // Not doing the IsCreated check actually result in a non authrorized access to the memory and crashes Unity.
-            if (!_effectStream.IsCreated) return;
-            NativeStream.Reader effectReader = GetEffectReader();
-            SetupEffectMap AllocateJob = new SetupEffectMap()
+            #region Make sure there is something to do
+
+            // If the producer did not actually write anything to the stream, the native stream will
+            // not be flaged as created. In that case we don't need to do anything and we can remove
+            // the stream from the list of stream to process Not doing the IsCreated check actually
+            // result in a non authrorized access to the memory and crashes Unity.
+            for (int i = _effectStreams.Count - 1; i >= 0; i--)
             {
-                EffectReader = effectReader,
+                if (!_effectStreams[i].IsCreated)
+                {
+                    _effectStreams.RemoveAt(i);
+                    _forEachCounts.RemoveAt(i);
+                }
+            }
+
+            // if there are no stream left to process, do nothing
+            if (_effectStreams.Count == 0) return;
+
+            Debug.Log($"Something to do");
+
+            #endregion Make sure there is something to do
+
+            #region Setup effect map and ensure it's capacity
+
+            NativeArray<int> effectCounts = new NativeArray<int>(_effectStreams.Count, Allocator.TempJob);
+            var inputDeps = Dependency;
+            var outDeps = new NativeArray<JobHandle>(_effectStreams.Count + 1, Allocator.TempJob);
+            outDeps[0] = Dependency;
+            for (int i = 0; i < _effectStreams.Count; i++)
+            {
+                Debug.Log($"Counting effect for stream n°{i}");
+                outDeps[i + 1] = new CountEffectJob()
+                {
+                    streamReader = _effectStreams[i].AsReader(),
+                    index = i,
+                    count = effectCounts
+                }.Schedule(inputDeps);
+            }
+            Dependency = JobHandle.CombineDependencies(outDeps);
+            outDeps.Dispose(Dependency);
+            EnsureCapcityJob AllocateJob = new EnsureCapcityJob()
+            {
+                EffectCounts = effectCounts,
                 Effects = _effects
             };
             Dependency = AllocateJob.Schedule(Dependency);
+            effectCounts.Dispose(Dependency);
+
+            #endregion Setup effect map and ensure it's capacity
+
+            #region Remap Effect to their targeted entity
 
             NativeMultiHashMap<Entity, ContextualizedEffect>.ParallelWriter effectsWriter = _effects.AsParallelWriter();
-            RemapEffects RemapEffectsJob = new RemapEffects()
+
+            for (int i = 0; i < _effectStreams.Count; i++)
             {
-                EffectReader = effectReader,
-                EffectsWriter = _effects.AsParallelWriter()
-            };
-            Dependency = RemapEffectsJob.Schedule(_forEachCount, 1, Dependency);
+                Dependency = new RemapEffects()
+                {
+                    EffectReader = _effectStreams[i].AsReader(),
+                    EffectsWriter = _effects.AsParallelWriter()
+                }.Schedule(_forEachCounts[i], 1, Dependency);
+            }
 
-            // Call the effect consumption logic defined in hte derived class.
+            #endregion Remap Effect to their targeted entity
+
+            // Call the effect consumption logic defined in the derived class.
             Consume();
-
-            Dependency = _effectStream.Dispose(Dependency);
+            Debug.Log($"{_effectStreams.Count}");
+            for (int i = 0; i < _effectStreams.Count; i++)
+            {
+                Debug.Log($"Disposing of {i}");
+                _effectStreams[i].Dispose(Dependency);
+            }
+            _effectStreams.Clear();
         }
 
         #endregion Protected Methods
@@ -140,6 +192,29 @@ namespace WaynGroup.Mgm.Ability
         #endregion Protected Structs
 
         #region Private Structs
+
+        [BurstCompatible]
+        private struct CountEffectJob : IJob
+        {
+            #region Public Fields
+
+            [NativeDisableParallelForRestriction]
+            public NativeArray<int> count;
+
+            [ReadOnly] public int index;
+            [ReadOnly] public NativeStream.Reader streamReader;
+
+            #endregion Public Fields
+
+            #region Public Methods
+
+            public void Execute()
+            {
+                count[index] = streamReader.Count();
+            }
+
+            #endregion Public Methods
+        }
 
         /// <summary>
         /// This job reads all the effects to apply and dsipatche them into a map by targeted entity.
@@ -180,11 +255,11 @@ namespace WaynGroup.Mgm.Ability
         /// Clear the effect map and allocate additional capacity if needed.
         /// </summary>
         [BurstCompile]
-        private struct SetupEffectMap : IJob
+        private struct EnsureCapcityJob : IJob
         {
             #region Public Fields
 
-            [ReadOnly] public NativeStream.Reader EffectReader;
+            [ReadOnly] public NativeArray<int> EffectCounts;
             public NativeMultiHashMap<Entity, ContextualizedEffect> Effects;
 
             #endregion Public Fields
@@ -193,10 +268,17 @@ namespace WaynGroup.Mgm.Ability
 
             public void Execute()
             {
-                Effects.Clear();
-                if (Effects.Capacity < EffectReader.Count())
+                var count = 0;
+                for (int i = 0; i < EffectCounts.Length; i++)
                 {
-                    Effects.Capacity = EffectReader.Count();
+                    count += EffectCounts[i];
+                }
+
+                Debug.Log($"{count} Effect in total.");
+                Effects.Clear();
+                if (Effects.Capacity < count)
+                {
+                    Effects.Capacity = count;
                 }
             }
 

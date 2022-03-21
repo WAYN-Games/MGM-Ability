@@ -7,7 +7,7 @@ using Unity.Entities;
 namespace WaynGroup.Mgm.Ability
 {
     [UpdateInGroup(typeof(AbilityCostsConsumerSystemGroup))]
-    public abstract class AbilityCostConsumerSystem<COST, RESOURCE, COST_HANDLER> : SystemBase
+    public abstract partial class AbilityCostConsumerSystem<COST, RESOURCE, COST_HANDLER> : SystemBase
         where COST : struct, IAbilityCost
         where RESOURCE : struct, IComponentData
         where COST_HANDLER : struct, ICostHandler<COST, RESOURCE>

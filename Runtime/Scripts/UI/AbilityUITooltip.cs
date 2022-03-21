@@ -23,8 +23,8 @@ namespace WaynGroup.Mgm.Ability.UI
         {
             if (ability == null) return;
             visible = true;
-            if (ability.Name.IsEmpty) return;
-            this.Q<Label>(name: "Title").text = ability.Name.GetLocalizedString();
+            //if (ability.Name.IsEmpty) return;
+            this.Q<Label>(name: "Title").text = ability.Name;
         }
 
         public void Hide()

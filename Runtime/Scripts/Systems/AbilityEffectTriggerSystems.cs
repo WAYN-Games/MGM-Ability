@@ -1,9 +1,8 @@
-﻿using System;
+using System;
 using System.Linq;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
-using UnityEngine;
 
 namespace WaynGroup.Mgm.Ability
 {
@@ -15,7 +14,7 @@ namespace WaynGroup.Mgm.Ability
     /// <typeparam name="CTX_BUILDER">The writer struct in charge of populating the context surroinding the triggered effect like informations about the caster (position, strength,...).</typeparam>
     /// <typeparam name="EFFECT_CTX">The struct containing the effect and it's context like informations about the caster (position, strength,...)</typeparam>
     [UpdateInGroup(typeof(AbilityTriggerSystemGroup))]
-    public abstract class AbilityEffectTriggerSystem<EFFECT, CONSUMER, CTX_BUILDER, EFFECT_CTX> : SystemBase
+    public abstract partial class AbilityEffectTriggerSystem<EFFECT, CONSUMER, CTX_BUILDER, EFFECT_CTX> : SystemBase
         where EFFECT : struct, IEffect
         where CONSUMER : AbilityEffectConsumerSystem<EFFECT, EFFECT_CTX>
         where CTX_BUILDER : struct, IEffectContextWriter<EFFECT_CTX>

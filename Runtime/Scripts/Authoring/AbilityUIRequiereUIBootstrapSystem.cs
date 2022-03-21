@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Entities;
 
@@ -11,7 +11,7 @@ using WaynGroup.Mgm.Ability.UI;
 
 [UpdateInGroup(typeof(InitializationSystemGroup))]
 [UpdateAfter(typeof(AddressableAbilityCatalogSystem))]
-public struct AbilitiesInitializationSystem : ISystemBase
+public struct AbilitiesInitializationSystem : ISystem
 {
     #region Private Fields
 
@@ -75,7 +75,7 @@ public struct AbilitiesInitializationSystem : ISystemBase
             NativeArray<AbilitiesMapIndex> inputArray = chunk.GetNativeArray(AbilityMapChunk);
             NativeArray<Entity> entitiesArray = chunk.GetNativeArray(EntityChunk);
 
-            ref var cahcheMap = ref Cache.Value;
+            ref var cacheMap = ref Cache.Value;
 
             for (int entityIndex = 0; entityIndex < chunk.Count; ++entityIndex)
             {
@@ -89,7 +89,7 @@ public struct AbilitiesInitializationSystem : ISystemBase
                 {
                     abilityBuffer[i] = new AbilityCooldownBufferElement()
                     {
-                        CooldownTime = 2 // cahcheMap.GetValuesForKey(indexToGuid.GetValuesForKey(i)[0])[0].CoolDown
+                        CooldownTime = cacheMap.GetValuesForKey(indexToGuid.GetValuesForKey(i)[0])[0].CoolDown
                     };
                 }
 
@@ -108,7 +108,7 @@ public struct AbilitiesInitializationSystem : ISystemBase
     #endregion Public Structs
 }
 
-internal class AbilityUIRequiereUIBootstrapSystem : SystemBase
+internal partial class AbilityUIRequiereUIBootstrapSystem : SystemBase
 {
     #region Private Fields
 
@@ -139,31 +139,37 @@ internal class AbilityUIRequiereUIBootstrapSystem : SystemBase
     #endregion Public Methods
 
     #region Protected Methods
-
+    UIDocument uiDoc;
     protected override void OnCreate()
     {
         base.OnCreate();
         Enabled = false;
         EntityManager.World.GetOrCreateSystem<AddressableAbilityCatalogSystem>().OnAbilityUpdate += BootstrapUi;
+        uiDoc = Object.FindObjectsOfType<UIDocument>()[0];
     }
 
     protected override void OnUpdate()
     {
         Entities.WithStructuralChanges().ForEach((Entity entity, ref RequiereUIBootstrap boostrap) =>
         {
+            Debug.Log($"Boostrapping entity UI {entity.Index}:{entity.Version}");
+
             if (uiMap.TryGetValue(boostrap.uiAssetGuid, out var link))
             {
-                UIDocument uiDoc = Object.Instantiate(link.UiPrefab).GetComponent<UIDocument>();
-
+               
                 if (uiDoc != null)
                 {
+                    Debug.Log($"Instantiated UI Document");
                     uiDoc.panelSettings = link.PanelSettings;
                     uiDoc.visualTreeAsset = link.UxmlUi;
                     uiDoc.sortingOrder = link.SortingOrder;
                     AbilityBookUIElement book = uiDoc.rootVisualElement.Q<AbilityBookUIElement>();
                     if (book != null) book.Populate(entity, EntityManager);
+                    Debug.Log($"Found Ability Book");
                     CastBar CastBar = uiDoc.rootVisualElement.Q<CastBar>();
                     if (CastBar != null) CastBar.SetOwnership(entity, EntityManager);
+                    Debug.Log($"Found Cast Bar");
+                    uiDoc.enabled = true;
                 }
             }
             EntityManager.RemoveComponent<RequiereUIBootstrap>(entity);

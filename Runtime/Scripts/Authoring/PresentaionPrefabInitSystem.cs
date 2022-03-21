@@ -1,8 +1,8 @@
-﻿using Unity.Entities;
+using Unity.Entities;
 using UnityEngine;
 using Unity.Transforms;
 
-public class PresentaionPrefabInitSystem : SystemBase
+public partial class PresentaionPrefabInitSystem : SystemBase
 {
     #region Protected Methods
 

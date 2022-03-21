@@ -8,7 +8,7 @@ namespace WaynGroup.Mgm.Ability
 {
     [UpdateAfter(typeof(AbilityCostsCheckerSystemGroup))]
     [BurstCompile]
-    public struct AbilityUpdateStateAndTimingsSystem : ISystemBase
+    public struct AbilityUpdateStateAndTimingsSystem : ISystem
     {
         #region Private Fields
 

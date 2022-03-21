@@ -9,7 +9,7 @@ using Unity.Jobs;
 namespace WaynGroup.Mgm.Ability
 {
     [UpdateInGroup(typeof(AbilityCostsCheckerSystemGroup))]
-    public abstract class AbilityCostCheckerSystem<COST, RESOURCE, COST_HANDLER> : SystemBase
+    public abstract partial class AbilityCostCheckerSystem<COST, RESOURCE, COST_HANDLER> : SystemBase
       where COST : struct, IAbilityCost
       where RESOURCE : struct, IComponentData
       where COST_HANDLER : struct, ICostHandler<COST, RESOURCE>

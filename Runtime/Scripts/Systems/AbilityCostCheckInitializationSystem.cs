@@ -1,10 +1,10 @@
-﻿using Unity.Entities;
+using Unity.Entities;
 using UnityEngine;
 
 namespace WaynGroup.Mgm.Ability
 {
     [UpdateAfter(typeof(AbilityConsumerSystemGroup))]
-    public class AbilityCostCheckInitializationSystem : SystemBase
+    public partial class AbilityCostCheckInitializationSystem : SystemBase
     {
         #region Protected Methods
 

@@ -1,9 +1,9 @@
-﻿using Unity.Entities;
+using Unity.Entities;
 
 namespace WaynGroup.Mgm.Ability
 {
     [UpdateInGroup(typeof(AbilityUpdateSystemGroup))]
-    public class CooldownRestrictionSystem : SystemBase
+    public partial class CooldownRestrictionSystem : SystemBase
     {
         #region Protected Methods
 

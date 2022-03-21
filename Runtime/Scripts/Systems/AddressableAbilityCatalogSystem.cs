@@ -1,4 +1,5 @@
-﻿using System;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -7,11 +8,12 @@ using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
 
 namespace WaynGroup.Mgm.Ability
 {
     [UpdateInGroup(typeof(InitializationSystemGroup))]
-    public class AddressableAbilityCatalogSystem : SystemBase
+    public partial class AddressableAbilityCatalogSystem : SystemBase
     {
         #region Public Fields
 
@@ -116,14 +118,18 @@ namespace WaynGroup.Mgm.Ability
 
         private void LoadAbilityCatalogueAsync()
         {
+            Debug.Log($"Loading Addressable Abilities...");
             Addressables.LoadAssetsAsync<ScriptableAbility>(new AssetLabelReference()
             {
                 labelString = AbilityHelper.ADDRESSABLE_ABILITY_LABEL
             }, null, false).Completed += objects =>
             {
+                Debug.Log($"Loading Addressable Abilities complete");
                 if (objects.Result == null) return;
+                Debug.Log($"Found {objects.Result.Count} Addressable Abilities");
                 foreach (ScriptableAbility ability in objects.Result)
                 {
+                    Debug.Log($"Adding {ability.Id} to catalogue");
                     AbilityCatalog.Add(ability.Id, ability);
                 }
                 OnAbilityUpdate.Invoke(AbilityCatalog);
