@@ -114,6 +114,8 @@ internal partial class AbilityUIRequiereUIBootstrapSystem : SystemBase
 
     private Dictionary<uint, AbilityUiLink> uiMap;
 
+    private UIDocument uiDoc;
+
     #endregion Private Fields
 
     #region Public Methods
@@ -139,13 +141,17 @@ internal partial class AbilityUIRequiereUIBootstrapSystem : SystemBase
     #endregion Public Methods
 
     #region Protected Methods
-    UIDocument uiDoc;
+
     protected override void OnCreate()
     {
         base.OnCreate();
         Enabled = false;
         EntityManager.World.GetOrCreateSystem<AddressableAbilityCatalogSystem>().OnAbilityUpdate += BootstrapUi;
-        uiDoc = Object.FindObjectsOfType<UIDocument>()[0];
+        var uiDocs = Object.FindObjectsOfType<UIDocument>();
+        if (uiDocs != null && uiDocs.Length > 0)
+        {
+            uiDoc = Object.FindObjectsOfType<UIDocument>()[0];
+        }
     }
 
     protected override void OnUpdate()
@@ -156,7 +162,6 @@ internal partial class AbilityUIRequiereUIBootstrapSystem : SystemBase
 
             if (uiMap.TryGetValue(boostrap.uiAssetGuid, out var link))
             {
-               
                 if (uiDoc != null)
                 {
                     Debug.Log($"Instantiated UI Document");

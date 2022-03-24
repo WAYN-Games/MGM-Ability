@@ -9,6 +9,7 @@ using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
+using UnityEngine.ResourceManagement.ResourceLocations;
 
 namespace WaynGroup.Mgm.Ability
 {
@@ -49,7 +50,7 @@ namespace WaynGroup.Mgm.Ability
             OnAbilityUpdate += BuildCostCatalogueAsync;
             OnAbilityUpdate += RefreshRangeCache;
             OnAbilityUpdate += RefreshTimmingsCache;
-            LoadAbilityCatalogueAsync();
+            StartLoadingAbilities();
         }
 
         protected override void OnUpdate()
@@ -133,7 +134,25 @@ namespace WaynGroup.Mgm.Ability
                     AbilityCatalog.Add(ability.Id, ability);
                 }
                 OnAbilityUpdate.Invoke(AbilityCatalog);
-            }; ;
+
+                Addressables.Release(objects);
+            };
+        }
+
+        private void StartLoadingAbilities()
+        {
+            //Returns any IResourceLocations that are mapped to the key "AssetKey"
+            Addressables.LoadResourceLocationsAsync(new AssetLabelReference()
+            {
+                labelString = AbilityHelper.ADDRESSABLE_ABILITY_LABEL
+            }, typeof(ScriptableAbility)).Completed += objects =>
+           {
+               if (objects.Result.Count > 0)
+               {
+                   LoadAbilityCatalogueAsync();
+               }
+               Addressables.Release(objects);
+           };
         }
 
         private void BuildEffectCatalogueAsync(Dictionary<uint, ScriptableAbility> _abilities)
