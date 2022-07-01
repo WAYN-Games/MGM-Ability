@@ -1,0 +1,20 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:VisualElement name="scripatable-ability-container" class="container">
+        <ui:Label name="id-property" binding-path="Id" />
+        <uie:PropertyField name="name-property" binding-path="Name" />
+        <uie:PropertyField name="icon-property" binding-path="Icon" />
+        <uie:PropertyField name="range-property" binding-path="Range" />
+        <uie:PropertyField name="timings-property" binding-path="Timings" />
+        <ui:Foldout text="Costs" class="header">
+            <ui:VisualElement name="cost-picker-container" class="container" />
+            <ui:VisualElement name="costs-container" class="container" />
+        </ui:Foldout>
+        <ui:Foldout text="Effects" class="header">
+            <ui:VisualElement name="effect-picker-container" class="container" />
+            <ui:VisualElement name="effects-container" class="container" />
+        </ui:Foldout>
+        <ui:Foldout text="Spawnables" class="header">
+            <ui:VisualElement name="spawnables-container" class="container" />
+        </ui:Foldout>
+    </ui:VisualElement>
+</ui:UXML>

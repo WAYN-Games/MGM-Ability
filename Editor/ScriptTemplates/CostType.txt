@@ -1,54 +1,37 @@
 using Unity.Entities;
+
+using _NAMESPACE_;
+
 using WaynGroup.Mgm.Ability;
 
-namespace #NAMESPACE#
+[assembly: RegisterGenericJobType(typeof(AbilityCostCheckerSystem<#SCRIPTNAME#, _RESOURCE_, #SCRIPTNAME#Handler>.CostHandlerJob))]
+[assembly: RegisterGenericJobType(typeof(AbilityCostConsumerSystem<#SCRIPTNAME#, _RESOURCE_, #SCRIPTNAME#Handler>.CostHandlerJob))]
+
+namespace _NAMESPACE_
 {
     public struct #SCRIPTNAME# : IAbilityCost
     {
         public float Cost;
+    }
 
-        public void Convert(Entity entity, EntityManager dstManager, int abilityIndex)
+    public struct #SCRIPTNAME#Handler : ICostHandler<#SCRIPTNAME#, _RESOURCE_>
+    {
+        public void ConsumeCost(#SCRIPTNAME# cost, ref _RESOURCE_ resource)
         {
-            EffectUtility.AddCost<#SCRIPTNAME#Buffer, #SCRIPTNAME#>(entity, dstManager, abilityIndex, this);
+            resource.Value -= cost.Cost;
         }
-    }
 
-    public struct #SCRIPTNAME#Buffer : IAbilityCostBufferElement<#SCRIPTNAME#>
-    {
-        public int AbilityIndex { get; set; }
-        public #SCRIPTNAME# Cost { get; set; }
-    }
-
-    public struct #SCRIPTNAME#Checker : ICostChecker<#RESOURCE#, #SCRIPTNAME#>
-    {
-        public bool HasEnougthResourceLeft(#SCRIPTNAME# cost, in #RESOURCE# resource)
+        public bool HasEnougthResourceLeft(#SCRIPTNAME# cost, in _RESOURCE_ resource)
         {
             return resource.Value >= cost.Cost;
         }
     }
 
-    public struct #SCRIPTNAME#Conusmer : ICostConsumer<#SCRIPTNAME#, #RESOURCE#>
+    public class #SCRIPTNAME#CheckerSystem : AbilityCostCheckerSystem<#SCRIPTNAME#, Mana, #SCRIPTNAME#Handler>
     {
-        public void ConsumeCost(#SCRIPTNAME# cost, ref #RESOURCE# resource)
-        {
-            resource.Value -= cost.Cost;
-        }
     }
-
-    public class #SCRIPTNAME#ConsumerSystem : AbilityCostConsumerSystem<#SCRIPTNAME#, #SCRIPTNAME#Buffer, #RESOURCE#, #SCRIPTNAME#Conusmer>
+    public class #SCRIPTNAME#ConsumerSystem : AbilityCostConsumerSystem<#SCRIPTNAME#, Mana, #SCRIPTNAME#Handler>
     {
-        protected override #SCRIPTNAME#Conusmer GetCostConsumer()
-        {
-            return new #SCRIPTNAME#Conusmer();
-        }
-    }
-
-    public class #SCRIPTNAME#CheckerSystem : AbilityCostCheckerSystem<#SCRIPTNAME#Buffer, #SCRIPTNAME#, #SCRIPTNAME#Checker, #RESOURCE#>
-    {
-        protected override #SCRIPTNAME#Checker GetCostChecker()
-        {
-            return new #SCRIPTNAME#Checker();
-        }
     }
 
 }

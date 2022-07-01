@@ -1,0 +1,23 @@
+{
+    "name": "WaynGames.Mgm.Ability.Editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:734d92eba21c94caba915361bd5ac177",
+        "GUID:69448af7b92c7f342b298e06a37122aa",
+        "GUID:9e24947de15b9834991c9d8411ea37cf",
+        "GUID:eec0964c48f6f4e40bc3ec2257ccf8c5",
+        "GUID:709f50f6df67d954dacc4b3c142ab558",
+        "GUID:6844ddcdb94ee44488ef59a17960fc59"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

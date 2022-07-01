@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 68bab39dcf961d640bd8e6dfc6b3f754, type: 3}
+  m_Name: AbilityUiLink
+  m_EditorClassIdentifier: 
+  Id: 960063025
+  UiPrefab: {fileID: 3430629774996621187, guid: a026aaf90cba5d645af6635f3728fed1, type: 3}
+  PanelSettings: {fileID: 11400000, guid: a3b1a812e3048aa4eacfb2a265c8bbc4, type: 2}
+  UxmlUi: {fileID: 9197481963319205126, guid: 1a8dc8ad5d9d5484fbe46293c92a6973, type: 3}
+  SortingOrder: 0

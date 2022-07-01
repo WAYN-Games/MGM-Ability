@@ -1,0 +1,7 @@
+﻿<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+  <Style src="AbilityUIElement.uss" />
+  <ui:VisualElement name="Shape" class="abolitySlotShape" style="width: 100%; height: 100%;">
+    <ui:VisualElement name="Icon" class="abilityIcon" style="position: absolute;" />
+    <WaynGroup.Mgm.Ability.UI.ProgressBar name="coolDown" style="width: 100%; height: 100%; flex-direction: column-reverse; position: absolute; -unity-text-align: middle-center;" />
+  </ui:VisualElement>
+</ui:UXML>

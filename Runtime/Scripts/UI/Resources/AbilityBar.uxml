@@ -1,0 +1,12 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" mgm-ability="WaynGroup.Mgm.Ability.UI" editor-extension-mode="False">
+    <ui:VisualElement name="Bar1" style="flex-direction: row;">
+        <WaynGroup.Mgm.Ability.UI.AbilityUIElement name="Slot1" />
+        <WaynGroup.Mgm.Ability.UI.AbilityUIElement name="Slot2" />
+        <WaynGroup.Mgm.Ability.UI.AbilityUIElement name="Slot3" />
+    </ui:VisualElement>
+    <ui:VisualElement name="Bar2" style="flex-direction: row;">
+        <WaynGroup.Mgm.Ability.UI.AbilityUIElement name="Slot1" />
+        <WaynGroup.Mgm.Ability.UI.AbilityUIElement name="Slot2" />
+        <WaynGroup.Mgm.Ability.UI.AbilityUIElement name="Slot3" />
+    </ui:VisualElement>
+</ui:UXML>

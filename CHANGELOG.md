@@ -4,6 +4,22 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [0.4.0] - Unreleased 
+
+### Informations
+
+- This version requires UNITY 2020.2.0a15 or higher, for the UI to work (in editor)
+- Bug have been reported to unity for the zero sized UI panel in 2020.1 and non working cutom UI Element in 2020.1 and 2020.2 alpha
+
+### Added
+
+- Simple ability UI support (this feature is highly experimental and uses the unity runtime package for UI Elements (UI Toolkit)) it does not work in builds yet (see informations).
+
+### Changed 
+
+- Updated package dependency
+- **License** (see [LICENSE.md](./LICENSE.md))
+
 ## [0.3.0] - 05/07/2020
 
 ### Added

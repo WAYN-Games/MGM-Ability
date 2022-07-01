@@ -1,0 +1,10 @@
+.book-root {
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.book-root > * {
+    padding: 10px;
+    width: 128px;
+    height: 128px;
+}
