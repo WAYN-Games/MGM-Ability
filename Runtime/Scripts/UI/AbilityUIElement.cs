@@ -145,7 +145,7 @@ namespace WaynGroup.Mgm.Ability.UI
             }
         }
 
-        public override void Update()
+        public override void RefreshData()
         {
             UpdateCoolDown();
         }

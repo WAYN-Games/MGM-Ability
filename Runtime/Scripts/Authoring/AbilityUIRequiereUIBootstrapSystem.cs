@@ -158,22 +158,22 @@ internal partial class AbilityUIRequiereUIBootstrapSystem : SystemBase
     {
         Entities.WithStructuralChanges().ForEach((Entity entity, ref RequiereUIBootstrap boostrap) =>
         {
-            Debug.Log($"Boostrapping entity UI {entity.Index}:{entity.Version}");
+            //Debug.Log($"Boostrapping entity UI {entity.Index}:{entity.Version}");
 
             if (uiMap.TryGetValue(boostrap.uiAssetGuid, out var link))
             {
                 if (uiDoc != null)
                 {
-                    Debug.Log($"Instantiated UI Document");
+                    //Debug.Log($"Instantiated UI Document");
                     uiDoc.panelSettings = link.PanelSettings;
                     uiDoc.visualTreeAsset = link.UxmlUi;
                     uiDoc.sortingOrder = link.SortingOrder;
                     AbilityBookUIElement book = uiDoc.rootVisualElement.Q<AbilityBookUIElement>();
                     if (book != null) book.Populate(entity, EntityManager);
-                    Debug.Log($"Found Ability Book");
+                    //Debug.Log($"Found Ability Book");
                     CastBar CastBar = uiDoc.rootVisualElement.Q<CastBar>();
                     if (CastBar != null) CastBar.SetOwnership(entity, EntityManager);
-                    Debug.Log($"Found Cast Bar");
+                    //Debug.Log($"Found Cast Bar");
                     uiDoc.enabled = true;
                 }
             }

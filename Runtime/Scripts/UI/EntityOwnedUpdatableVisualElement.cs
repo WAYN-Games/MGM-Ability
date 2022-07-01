@@ -22,7 +22,7 @@ namespace WaynGroup.Mgm.Ability.UI
 
         #region Public Methods
 
-        public abstract void Update();
+        public abstract void RefreshData();
 
         public void SetOwnership(Entity owner, EntityManager entityManager)
         {

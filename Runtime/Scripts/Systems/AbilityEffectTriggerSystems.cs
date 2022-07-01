@@ -3,6 +3,7 @@ using System.Linq;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
+using UnityEngine;
 
 namespace WaynGroup.Mgm.Ability
 {
@@ -170,7 +171,7 @@ namespace WaynGroup.Mgm.Ability
         /// This job will call the WriteContextualizedEffect method of the CTX_WRITER when the efect has to be triggered.
         /// </summary>
         [BurstCompile]
-        public struct TriggerJob : IJobChunk
+        public struct TriggerJob : IJobEntityBatch
         {
             #region Public Fields
 
@@ -185,18 +186,17 @@ namespace WaynGroup.Mgm.Ability
 
             #region Public Methods
 
-            public void Execute(ArchetypeChunk chunk, int chunkIndex, int firstEntityIndex)
+            public void Execute(ArchetypeChunk batchInChunk, int batchIndex)
             {
-                NativeArray<CurrentlyCasting> CurrentlyCastingComponent = chunk.GetNativeArray(CurrentlyCastingChunk);
-                NativeArray<Target> targets = chunk.GetNativeArray(TargetChunk);
-                NativeArray<Entity> entities = chunk.GetNativeArray(EntityChunk);
-                EffectContextBuilder.PrepareChunk(chunk);
+                NativeArray<CurrentlyCasting> CurrentlyCastingComponent = batchInChunk.GetNativeArray(CurrentlyCastingChunk);
+                NativeArray<Target> targets = batchInChunk.GetNativeArray(TargetChunk);
+                NativeArray<Entity> entities = batchInChunk.GetNativeArray(EntityChunk);
+                EffectContextBuilder.PrepareChunk(batchInChunk);
 
                 // removing this result in exception for more than 2 chunks whatever the index passed to BeginForEachIndex
-                ConsumerWriter.PatchMinMaxRange(chunkIndex);
-
-                ConsumerWriter.BeginForEachIndex(chunkIndex);
-                for (int entityIndex = 0; entityIndex < chunk.Count; ++entityIndex)
+                ConsumerWriter.PatchMinMaxRange(batchIndex);
+                ConsumerWriter.BeginForEachIndex(batchIndex);
+                for (int entityIndex = 0; entityIndex < batchInChunk.Count; ++entityIndex)
                 {
                     CurrentlyCasting cc = CurrentlyCastingComponent[entityIndex];
                     NativeMultiHashMap<uint, EFFECT>.Enumerator effectEnumerator = EffectMap.GetValuesForKey(cc.abilityGuid);

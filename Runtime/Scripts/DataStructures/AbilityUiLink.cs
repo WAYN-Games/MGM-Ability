@@ -12,7 +12,6 @@ public class AbilityUiLink : ScriptableObject
     [HideInInspector]
     public uint Id;
 
-    public GameObject UiPrefab;
     public PanelSettings PanelSettings;
     public VisualTreeAsset UxmlUi;
     public float SortingOrder;

@@ -18,42 +18,50 @@ namespace WaynGroup.Mgm.Ability
         private EntityQuery _cache;
         private EntityQuery _query;
 
+        private ComponentTypeHandle<Target> _targetTypeHande;
+        private ComponentTypeHandle<Translation> _translationTypeHande;
         private ComponentTypeHandle<AbilityInput> _abilityInputTypeHandle;
 
         #endregion Private Fields
 
         #region Public Methods
-
+        [BurstCompile]
         public void OnCreate(ref SystemState state)
         {
-            _query = state.GetEntityQuery(new EntityQueryDesc()
-            {
-                All = new ComponentType[]
-    {
-                        ComponentType.ReadWrite<AbilityInput>()
-    }
-            });
-            _cache = state.GetEntityQuery(ComponentType.ReadOnly(typeof(SquaredRangeCache)));
+            NativeArray<ComponentType> types = new NativeArray<ComponentType>(1, Allocator.Temp);
+            types[0] = ComponentType.ReadWrite<AbilityInput>();
+            _query = state.GetEntityQuery(types);
+            types[0] = ComponentType.ReadOnly<SquaredRangeCache>();
+            _cache = state.GetEntityQuery(types);
+            types.Dispose();
+
             state.RequireSingletonForUpdate<SquaredRangeCache>();
 
+
+            _targetTypeHande = state.GetComponentTypeHandle<Target>(true);
+            _translationTypeHande = state.GetComponentTypeHandle<Translation>(true);
             _abilityInputTypeHandle = state.GetComponentTypeHandle<AbilityInput>(false);
         }
 
+        [BurstCompile]
         public void OnDestroy(ref SystemState state)
         {
         }
-
+        [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
             _abilityInputTypeHandle.Update(ref state);
+            _translationTypeHande.Update(ref state);
+            _targetTypeHande.Update(ref state);
+
 
             state.Dependency = new UpdateRangeJob()
             {
                 AbilityInputChunk = _abilityInputTypeHandle,
                 Cache = _cache.GetSingleton<SquaredRangeCache>(),
                 Position = state.GetComponentDataFromEntity<LocalToWorld>(true),
-                TargetChunk = state.GetComponentTypeHandle<Target>(true),
-                TranslationChunk = state.GetComponentTypeHandle<Translation>(true)
+                TargetChunk = _targetTypeHande,
+                TranslationChunk = _translationTypeHande
             }.ScheduleParallel(_query, state.Dependency);
         }
 

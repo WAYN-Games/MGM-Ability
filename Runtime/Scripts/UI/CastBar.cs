@@ -1,4 +1,5 @@
-﻿using Unity.Mathematics;
+﻿using Unity.Entities;
+using Unity.Mathematics;
 
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -61,8 +62,10 @@ namespace WaynGroup.Mgm.Ability.UI
             pb.Title = "";
         }
 
-        public override void Update()
+        public override void RefreshData()
         {
+            if (Entity.Null.Equals(_owner)) return;
+
             CurrentlyCasting cc = _entityManager.GetComponentData<CurrentlyCasting>(_owner);
             if (cc.IsCasting)
             {

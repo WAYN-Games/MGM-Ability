@@ -58,7 +58,7 @@ public class ScriptableAbility : ScriptableObject
     /// <summary>
     /// The name of the ability.
     /// </summary>
-    public String Name;
+    public LocalizedString Name;
 
     /// <summary>
     /// The skill Icon.

@@ -16,8 +16,6 @@ public partial class AbilityAuthoring : MonoBehaviour, IConvertGameObjectToEntit
     [Tooltip("Optional : Data bout the UI that control this entity.")]
     public AbilityUiLink AbilityUiLink;
 
-    public Animator Animator;
-
     public GameObject PresentationPrefab;
 
     #endregion Public Fields

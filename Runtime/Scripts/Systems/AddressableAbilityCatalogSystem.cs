@@ -119,18 +119,18 @@ namespace WaynGroup.Mgm.Ability
 
         private void LoadAbilityCatalogueAsync()
         {
-            Debug.Log($"Loading Addressable Abilities...");
+            //Debug.Log($"Loading Addressable Abilities...");
             Addressables.LoadAssetsAsync<ScriptableAbility>(new AssetLabelReference()
             {
                 labelString = AbilityHelper.ADDRESSABLE_ABILITY_LABEL
             }, null, false).Completed += objects =>
             {
-                Debug.Log($"Loading Addressable Abilities complete");
+                //Debug.Log($"Loading Addressable Abilities complete");
                 if (objects.Result == null) return;
-                Debug.Log($"Found {objects.Result.Count} Addressable Abilities");
+                //Debug.Log($"Found {objects.Result.Count} Addressable Abilities");
                 foreach (ScriptableAbility ability in objects.Result)
                 {
-                    Debug.Log($"Adding {ability.Id} to catalogue");
+                    //Debug.Log($"Adding {ability.Id} to catalogue");
                     AbilityCatalog.Add(ability.Id, ability);
                 }
                 OnAbilityUpdate.Invoke(AbilityCatalog);

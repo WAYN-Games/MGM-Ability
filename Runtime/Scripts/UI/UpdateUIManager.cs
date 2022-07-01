@@ -23,7 +23,9 @@ public class UpdateUIManager : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
-        _uiDocument.rootVisualElement.Query<EntityOwnedUpdatableVisualElement>().ForEach((EntityOwnedUpdatableVisualElement ve) => { ve.Update(); });
+        if (_uiDocument.rootVisualElement == null) return;
+
+        _uiDocument.rootVisualElement.Query<EntityOwnedUpdatableVisualElement>().ForEach((EntityOwnedUpdatableVisualElement ve) => { ve.RefreshData(); });
     }
 
     #endregion Private Methods

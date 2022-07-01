@@ -57,7 +57,7 @@ namespace WaynGroup.Mgm.Ability
             var _effectStream = new NativeStream(foreachCount, Allocator.TempJob);
             _effectStreams.Add(_effectStream);
             _forEachCounts.Add(foreachCount);
-            Debug.Log($"New Writer ({_effectStreams.Count})");
+            //Debug.Log($"New Writer ({_effectStreams.Count})");
             return _effectStream.AsWriter();
         }
 
@@ -117,7 +117,6 @@ namespace WaynGroup.Mgm.Ability
             // if there are no stream left to process, do nothing
             if (_effectStreams.Count == 0) return;
 
-            Debug.Log($"Something to do");
 
             #endregion Make sure there is something to do
 
@@ -129,7 +128,6 @@ namespace WaynGroup.Mgm.Ability
             outDeps[0] = Dependency;
             for (int i = 0; i < _effectStreams.Count; i++)
             {
-                Debug.Log($"Counting effect for stream n°{i}");
                 outDeps[i + 1] = new CountEffectJob()
                 {
                     streamReader = _effectStreams[i].AsReader(),
@@ -166,10 +164,8 @@ namespace WaynGroup.Mgm.Ability
 
             // Call the effect consumption logic defined in the derived class.
             Consume();
-            Debug.Log($"{_effectStreams.Count}");
             for (int i = 0; i < _effectStreams.Count; i++)
             {
-                Debug.Log($"Disposing of {i}");
                 _effectStreams[i].Dispose(Dependency);
             }
             _effectStreams.Clear();

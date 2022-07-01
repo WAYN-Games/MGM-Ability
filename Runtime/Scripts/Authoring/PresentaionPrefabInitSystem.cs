@@ -1,6 +1,7 @@
 using Unity.Entities;
 using UnityEngine;
 using Unity.Transforms;
+using Unity.Mathematics;
 
 public partial class PresentaionPrefabInitSystem : SystemBase
 {
@@ -11,16 +12,25 @@ public partial class PresentaionPrefabInitSystem : SystemBase
         Entities.WithStructuralChanges().WithoutBurst().ForEach((Entity entity, PresentaionPrefab prefab) =>
         {
             GameObject Prefab = GameObject.Instantiate(prefab.prefab);
+
+
+            // link GO and Enitty to make them share position.
+            EntityManager.AddComponentObject(entity, Prefab.transform);
+            EntityManager.AddComponent<CopyTransformToGameObject>(entity);
+
+            // Give entity control over the GO's Animator
             Animator animator = Prefab.GetComponent<Animator>();
             EntityManager.AddComponentObject(entity, animator);
+
+            // Give entity control over the GO's Animator
+            VFXControler vfxControler = Prefab.GetComponent<VFXControler>();
+            EntityManager.AddComponentObject(entity, vfxControler);
+
+            // Mark entity as initised
             EntityManager.RemoveComponent<PresentaionPrefab>(entity);
         }).Run();
-
-        Entities.WithoutBurst().ForEach((Entity entity, Animator animator, in LocalToWorld ltw) =>
-        {
-            animator.gameObject.transform.position = ltw.Position;
-            animator.gameObject.transform.rotation = ltw.Rotation;
-        }).Run();
+      
+  
     }
 
     #endregion Protected Methods
