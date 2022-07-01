@@ -24,7 +24,7 @@ namespace WaynGroup.Mgm.Ability
         /// <summary>
         /// A map of all effects' unmutable data for the EFFECT type.
         /// </summary>
-        private NativeMultiHashMap<uint, COST> _costMap;
+        private NativeParallelMultiHashMap<uint, COST> _costMap;
 
         #endregion Private Fields
 
@@ -71,9 +71,9 @@ namespace WaynGroup.Mgm.Ability
 
         #region Private Methods
 
-        private static NativeMultiHashMap<uint, COST> BuildEffectMapCache(MultiHashMap<Type, CostData> effectMap)
+        private static NativeParallelMultiHashMap<uint, COST> BuildEffectMapCache(MultiHashMap<Type, CostData> effectMap)
         {
-            NativeMultiHashMap<uint, COST> map = new NativeMultiHashMap<uint, COST>(effectMap.Count(typeof(COST)), Allocator.Persistent);
+            NativeParallelMultiHashMap<uint, COST> map = new NativeParallelMultiHashMap<uint, COST>(effectMap.Count(typeof(COST)), Allocator.Persistent);
             foreach (CostData costData in effectMap[typeof(COST)])
             {
                 map.Add(costData.Guid, (COST)costData.cost);
@@ -83,12 +83,12 @@ namespace WaynGroup.Mgm.Ability
 
         private void UpdateCostCache(MultiHashMap<Type, CostData> costMap)
         {
-            NativeMultiHashMap<uint, COST> map = BuildEffectMapCache(costMap);
+            NativeParallelMultiHashMap<uint, COST> map = BuildEffectMapCache(costMap);
             RefreshEffectMapChache(map);
             Enabled = true;
         }
 
-        private void RefreshEffectMapChache(NativeMultiHashMap<uint, COST> map)
+        private void RefreshEffectMapChache(NativeParallelMultiHashMap<uint, COST> map)
         {
             if (_costMap.IsCreated) _costMap.Dispose();
             _costMap = map;
@@ -109,7 +109,7 @@ namespace WaynGroup.Mgm.Ability
 
             public COST_HANDLER CostHandler;
             public ComponentTypeHandle<AbilityInput> AbilityInputComponent;
-            [ReadOnly] public NativeMultiHashMap<uint, COST> CostMap;
+            [ReadOnly] public NativeParallelMultiHashMap<uint, COST> CostMap;
             [ReadOnly] public ComponentTypeHandle<RESOURCE> ResourceComponent;
 
             #endregion Public Fields
@@ -127,7 +127,7 @@ namespace WaynGroup.Mgm.Ability
                     {
                         RESOURCE resource = resourceComponent[entityIndex];
                         bool temp = true;
-                        NativeMultiHashMap<uint, COST>.Enumerator enumerator = CostMap.GetValuesForKey(input.AbilityId);
+                        NativeParallelMultiHashMap<uint, COST>.Enumerator enumerator = CostMap.GetValuesForKey(input.AbilityId);
                         while (enumerator.MoveNext())
                         {
                             COST cost = enumerator.Current;

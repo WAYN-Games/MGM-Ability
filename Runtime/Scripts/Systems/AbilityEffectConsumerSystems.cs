@@ -16,7 +16,7 @@ namespace WaynGroup.Mgm.Ability
         /// <summary>
         /// A map o effect per targeted entity to improve consumer job performance.
         /// </summary>
-        protected NativeMultiHashMap<Entity, ContextualizedEffect> _effects;
+        protected NativeParallelMultiHashMap<Entity, ContextualizedEffect> _effects;
 
         #endregion Protected Fields
 
@@ -71,7 +71,7 @@ namespace WaynGroup.Mgm.Ability
             _effectStreams = new List<NativeStream>();
             _forEachCounts = new List<int>();
             // Allocate the map only on create to avoid allocating every frame.
-            _effects = new NativeMultiHashMap<Entity, ContextualizedEffect>(0, Allocator.Persistent);
+            _effects = new NativeParallelMultiHashMap<Entity, ContextualizedEffect>(0, Allocator.Persistent);
         }
 
         protected override void OnDestroy()
@@ -149,7 +149,7 @@ namespace WaynGroup.Mgm.Ability
 
             #region Remap Effect to their targeted entity
 
-            NativeMultiHashMap<Entity, ContextualizedEffect>.ParallelWriter effectsWriter = _effects.AsParallelWriter();
+            NativeParallelMultiHashMap<Entity, ContextualizedEffect>.ParallelWriter effectsWriter = _effects.AsParallelWriter();
 
             for (int i = 0; i < _effectStreams.Count; i++)
             {
@@ -222,7 +222,7 @@ namespace WaynGroup.Mgm.Ability
             #region Public Fields
 
             [ReadOnly] public NativeStream.Reader EffectReader;
-            public NativeMultiHashMap<Entity, ContextualizedEffect>.ParallelWriter EffectsWriter;
+            public NativeParallelMultiHashMap<Entity, ContextualizedEffect>.ParallelWriter EffectsWriter;
 
             #endregion Public Fields
 
@@ -256,7 +256,7 @@ namespace WaynGroup.Mgm.Ability
             #region Public Fields
 
             [ReadOnly] public NativeArray<int> EffectCounts;
-            public NativeMultiHashMap<Entity, ContextualizedEffect> Effects;
+            public NativeParallelMultiHashMap<Entity, ContextualizedEffect> Effects;
 
             #endregion Public Fields
 

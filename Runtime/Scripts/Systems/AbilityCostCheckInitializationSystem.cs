@@ -3,7 +3,6 @@ using UnityEngine;
 
 namespace WaynGroup.Mgm.Ability
 {
-    [UpdateAfter(typeof(AbilityConsumerSystemGroup))]
     public partial class AbilityCostCheckInitializationSystem : SystemBase
     {
         #region Protected Methods

@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace WaynGroup.Mgm.Ability
 {
-    [UpdateAfter(typeof(AbilityCostsCheckerSystemGroup))]
+   
     [BurstCompile]
     public struct AbilityUpdateStateAndTimingsSystem : ISystem
     {

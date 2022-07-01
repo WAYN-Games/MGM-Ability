@@ -15,10 +15,10 @@
     }
   ],
   "dependencies": {
-    "com.unity.entities": "0.50.0-preview.24",
+    "com.unity.entities": "0.51.0-preview.32",
     "com.unity.addressables": "1.18.4",
     "com.unity.localization": "1.0.0-pre.9",
     "com.unity.inputsystem": "1.1.0-pre.5",
-    "com.wayn-games.blob": "0.4.0"
+    "com.wayn-games.blob": "0.5.0"
   }
 }

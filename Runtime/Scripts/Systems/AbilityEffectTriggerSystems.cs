@@ -36,7 +36,7 @@ namespace WaynGroup.Mgm.Ability
         /// <summary>
         /// A map of all effects' unmutable data for the EFFECT type.
         /// </summary>
-        private NativeMultiHashMap<uint, EFFECT> _effectMap;
+        private NativeParallelMultiHashMap<uint, EFFECT> _effectMap;
 
         #endregion Private Fields
 
@@ -99,9 +99,9 @@ namespace WaynGroup.Mgm.Ability
 
         #region Private Methods
 
-        private static NativeMultiHashMap<uint, EFFECT> BuildEffectMapCache(MultiHashMap<Type, EffectData> effectMap)
+        private static NativeParallelMultiHashMap<uint, EFFECT> BuildEffectMapCache(MultiHashMap<Type, EffectData> effectMap)
         {
-            NativeMultiHashMap<uint, EFFECT> map = new NativeMultiHashMap<uint, EFFECT>(effectMap.Count(typeof(EFFECT)), Allocator.Persistent);
+            NativeParallelMultiHashMap<uint, EFFECT> map = new NativeParallelMultiHashMap<uint, EFFECT>(effectMap.Count(typeof(EFFECT)), Allocator.Persistent);
             foreach (EffectData effectData in effectMap[typeof(EFFECT)])
             {
                 map.Add(effectData.Guid, (EFFECT)effectData.effect);
@@ -116,13 +116,13 @@ namespace WaynGroup.Mgm.Ability
                 _conusmerSystem.Enabled = false;
                 return;
             }
-            NativeMultiHashMap<uint, EFFECT> map = BuildEffectMapCache(effectMap);
+            NativeParallelMultiHashMap<uint, EFFECT> map = BuildEffectMapCache(effectMap);
             RefreshEffectMapChache(map);
             Enabled = true;
             _conusmerSystem.Enabled = true;
         }
 
-        private void RefreshEffectMapChache(NativeMultiHashMap<uint, EFFECT> map)
+        private void RefreshEffectMapChache(NativeParallelMultiHashMap<uint, EFFECT> map)
         {
             if (_effectMap.IsCreated) _effectMap.Dispose();
             _effectMap = map;
@@ -178,7 +178,7 @@ namespace WaynGroup.Mgm.Ability
             [ReadOnly] public ComponentTypeHandle<CurrentlyCasting> CurrentlyCastingChunk;
             [ReadOnly] public ComponentTypeHandle<Target> TargetChunk;
             [ReadOnly] public EntityTypeHandle EntityChunk;
-            [ReadOnly] public NativeMultiHashMap<uint, EFFECT> EffectMap;
+            [ReadOnly] public NativeParallelMultiHashMap<uint, EFFECT> EffectMap;
             public NativeStream.Writer ConsumerWriter;
             public CTX_BUILDER EffectContextBuilder;
 
@@ -199,7 +199,7 @@ namespace WaynGroup.Mgm.Ability
                 for (int entityIndex = 0; entityIndex < batchInChunk.Count; ++entityIndex)
                 {
                     CurrentlyCasting cc = CurrentlyCastingComponent[entityIndex];
-                    NativeMultiHashMap<uint, EFFECT>.Enumerator effectEnumerator = EffectMap.GetValuesForKey(cc.abilityGuid);
+                    NativeParallelMultiHashMap<uint, EFFECT>.Enumerator effectEnumerator = EffectMap.GetValuesForKey(cc.abilityGuid);
                     while (effectEnumerator.MoveNext())
                     {
                         EFFECT effect = effectEnumerator.Current;
