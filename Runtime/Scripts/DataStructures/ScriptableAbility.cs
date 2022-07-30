@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.Localization;
@@ -8,16 +8,37 @@ using UnityEngine.Localization;
 using WaynGroup.Mgm.Ability;
 
 [Serializable]
-public struct SpawnableData
+public class PrefabAssetRef : AssetReferenceGameObject
+{
+    public PrefabAssetRef(string guid) : base(guid)
+    {
+    }
+   
+    public GameObject GetAssetInEditor()
+    {
+        if(this.editorAsset != null)
+        {
+            Debug.Log("Returned from editorAsset");
+            return this.editorAsset;
+        }
+        Debug.Log("Returned from cached asset");
+        return (GameObject)this.CachedAsset;
+    }
+}
+
+[Serializable]
+public class SpawnableData : IEffect
 {
     #region Public Fields
 
     public AssetReferenceGameObject PrefabRef;
 
-    [HideInInspector]
-    public GameObject PrefabGO;
-
     public int count;
+
+    [field: SerializeField]
+    public TargetingMode Affects { get; set; }
+    [field: SerializeField]
+    public ActivationPhase Phase { get; set; }
 
     #endregion Public Fields
 }
@@ -88,12 +109,6 @@ public class ScriptableAbility : ScriptableObject
     [SerializeReference]
     public List<IEffect> Effects;
 
-    /// <summary>
-    /// The list of spawnable gameobjects.
-    /// These games object are converted to entities to be spanwed at runtime so any non convertible component will be ignored.
-    /// </summary>
-
-    public List<SpawnableData> Spawnables;
-
     #endregion Public Fields
+
 }

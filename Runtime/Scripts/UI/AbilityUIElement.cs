@@ -130,7 +130,7 @@ namespace WaynGroup.Mgm.Ability.UI
         {
             if (_ability == null) return;
             if (!IsAssigned) return;
-
+            if(!_entityManager.HasComponent<AbilityCooldownBufferElement>(_owner)) return;
             var cooldownBuffer = _entityManager.GetBuffer<AbilityCooldownBufferElement>(_owner).AsNativeArray();
             float remainingTime = cooldownBuffer[_cachedAbilityIndex].CooldownTime;
             if (remainingTime > 0)

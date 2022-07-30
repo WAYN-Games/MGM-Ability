@@ -25,7 +25,7 @@ public class AbilityUiLinkEditor : Editor
             settings.AddLabel(AbilityHelper.ADDRESSABLE_UiLink_LABEL);
         }
 
-        uint GuidHash = AbilityHelper.ComputeAbilityIdFromGuid(Guid);
+        uint GuidHash = AbilityHelper.ComputeIdFromGuid(Guid);
         AddressableAssetEntry entry = settings.FindAssetEntry(Guid);
 
         if (entry != null)

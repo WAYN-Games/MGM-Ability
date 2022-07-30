@@ -16,7 +16,7 @@ public static class AbilityHelper
 
     #region Public Methods
 
-    public static uint ComputeAbilityIdFromGuid(string Guid)
+    public static uint ComputeIdFromGuid(string Guid)
     {
         return BitConverter.ToUInt32(Encoding.ASCII.GetBytes(Guid), 0);
     }

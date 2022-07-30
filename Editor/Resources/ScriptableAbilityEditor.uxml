@@ -13,8 +13,5 @@
             <ui:VisualElement name="effect-picker-container" class="container" />
             <ui:VisualElement name="effects-container" class="container" />
         </ui:Foldout>
-        <ui:Foldout text="Spawnables" class="header">
-            <ui:VisualElement name="spawnables-container" class="container" />
-        </ui:Foldout>
     </ui:VisualElement>
 </ui:UXML>

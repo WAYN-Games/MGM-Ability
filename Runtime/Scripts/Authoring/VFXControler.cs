@@ -5,7 +5,9 @@ public class VFXControler : MonoBehaviour
 {
 
     public List<AbilityVFX> controllers = new List<AbilityVFX>();
+    [HideInInspector]
     public List<float> lifeTimes = new List<float>();
+    [HideInInspector]
     public List<bool> isLoopingVfx = new List<bool>();
 
 

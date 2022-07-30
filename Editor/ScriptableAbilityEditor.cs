@@ -36,11 +36,11 @@ public class ScriptableAbilityEditor : Editor
     private SerializedProperty EffectsProperty;
 
     private SerializedProperty CostsProperty;
-    private SerializedProperty SpawnablesProperty;
 
     #endregion Private Fields
 
     #region Public Methods
+
 
     public override VisualElement CreateInspectorGUI()
     {
@@ -56,8 +56,13 @@ public class ScriptableAbilityEditor : Editor
         Display(EffectsProperty, EffectTypes, _effectStirngParams);
         Display(CostsProperty, CostTypes, _costStirngParams);
 
-        MakeSpawnablesList();
+        finishedDefaultHeaderGUI += SaveAsset;
         return root;
+    }
+
+    private void SaveAsset(Editor obj)
+    {
+        AssetDatabase.SaveAssetIfDirty(target);
     }
 
     public void RegisterAsAddressable(ScriptableAbility ability)
@@ -73,7 +78,7 @@ public class ScriptableAbilityEditor : Editor
             settings.AddLabel(AbilityHelper.ADDRESSABLE_ABILITY_LABEL);
         }
 
-        uint GuidHash = AbilityHelper.ComputeAbilityIdFromGuid(Guid);
+        uint GuidHash = AbilityHelper.ComputeIdFromGuid(Guid);
         AddressableAssetEntry entry = settings.FindAssetEntry(Guid);
 
         if (entry != null)
@@ -122,19 +127,6 @@ public class ScriptableAbilityEditor : Editor
 
     #region Private Methods
 
-    private void RefreshInspector()
-    {
-        CreateInspectorGUI();
-    }
-
-    private void MakeSpawnablesList()
-    {
-        VisualElement spawnablesContainer = root.Query<VisualElement>("spawnables-container").First();
-        PropertyField propertyField = new PropertyField(SpawnablesProperty);
-        propertyField.Bind(serializedObject);
-        spawnablesContainer.Add(propertyField);
-    }
-
     private void Initialization()
     {
         ScriptableAbility ability = (ScriptableAbility)target;
@@ -145,13 +137,13 @@ public class ScriptableAbilityEditor : Editor
     private void Cache()
     {
         EffectsProperty = serializedObject.FindProperty("Effects");
-
-        EffectTypes = TypeCache.GetTypesDerivedFrom<IEffect>().ToList();
+        var types = TypeCache.GetTypesDerivedFrom<IEffect>().ToList();
+        types.Remove(typeof(SpawnEffect));
+        EffectTypes = types;
 
         CostsProperty = serializedObject.FindProperty("Costs");
 
-        SpawnablesProperty = serializedObject.FindProperty("Spawnables");
-
+       
         CostTypes = TypeCache.GetTypesDerivedFrom<IAbilityCost>().ToList();
     }
 
@@ -181,7 +173,7 @@ public class ScriptableAbilityEditor : Editor
         effectDropDown = new PopupField<Type>("Effect Type", EffectTypes, 0, (Type t) => t.Name, (Type t) => t.Name);
         SelectedEffectType = effectDropDown.value;
         effectDropDown.RegisterValueChangedCallback(ChangeSelectedEffectType);
-        Button addbuton = new Button(() => Add(EffectsProperty, EffectTypes, _effectStirngParams, SelectedEffectType, false))
+        Button addbuton = new Button(() => Add(EffectsProperty, EffectTypes, _effectStirngParams, SelectedEffectType))
         {
             text = "Add"
         };
@@ -201,7 +193,7 @@ public class ScriptableAbilityEditor : Editor
         costDropDown = new PopupField<Type>("Cost Type", CostTypes, 0, (Type t) => t.Name, (Type t) => t.Name);
         SelectedCostType = costDropDown.value;
         costDropDown.RegisterValueChangedCallback(ChangeSelectedCostType);
-        Button addbuton = new Button(() => Add(CostsProperty, CostTypes, _costStirngParams, SelectedCostType, true))
+        Button addbuton = new Button(() => Add(CostsProperty, CostTypes, _costStirngParams, SelectedCostType))
         {
             text = "Add"
         };
@@ -219,7 +211,7 @@ public class ScriptableAbilityEditor : Editor
         SelectedEffectType = evt.newValue;
     }
 
-    private void Add(SerializedProperty listProperty, List<Type> types, string[] stringParams, Type selectedType, bool IsCost)
+    private void Add(SerializedProperty listProperty, List<Type> types, string[] stringParams, Type selectedType)
     {
         serializedObject.Update();
         listProperty.arraySize++;

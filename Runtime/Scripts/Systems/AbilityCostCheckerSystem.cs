@@ -5,6 +5,7 @@ using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Entities;
 using Unity.Jobs;
+using UnityEngine;
 
 namespace WaynGroup.Mgm.Ability
 {
@@ -41,6 +42,7 @@ namespace WaynGroup.Mgm.Ability
                         ComponentType.ReadWrite<AbilityInput>()
                 }
             });
+            _costMap = new NativeParallelMultiHashMap<uint, COST>(0, Allocator.Persistent);
             World.GetOrCreateSystem<AddressableAbilityCatalogSystem>().OnCostUpdate += UpdateCostCache;
             Enabled = false;
         }
@@ -71,27 +73,16 @@ namespace WaynGroup.Mgm.Ability
 
         #region Private Methods
 
-        private static NativeParallelMultiHashMap<uint, COST> BuildEffectMapCache(MultiHashMap<Type, CostData> effectMap)
-        {
-            NativeParallelMultiHashMap<uint, COST> map = new NativeParallelMultiHashMap<uint, COST>(effectMap.Count(typeof(COST)), Allocator.Persistent);
-            foreach (CostData costData in effectMap[typeof(COST)])
-            {
-                map.Add(costData.Guid, (COST)costData.cost);
-            }
-            return map;
-        }
-
         private void UpdateCostCache(MultiHashMap<Type, CostData> costMap)
         {
-            NativeParallelMultiHashMap<uint, COST> map = BuildEffectMapCache(costMap);
-            RefreshEffectMapChache(map);
+            Enabled = false;
+            _costMap.Clear();
+            _costMap.Capacity = costMap.Count(typeof(COST));
+            foreach (CostData costData in costMap[typeof(COST)])
+            {
+                _costMap.Add(costData.Guid, (COST)costData.cost);
+            }
             Enabled = true;
-        }
-
-        private void RefreshEffectMapChache(NativeParallelMultiHashMap<uint, COST> map)
-        {
-            if (_costMap.IsCreated) _costMap.Dispose();
-            _costMap = map;
         }
 
         #endregion Private Methods

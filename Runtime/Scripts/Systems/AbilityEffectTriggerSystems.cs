@@ -101,9 +101,13 @@ namespace WaynGroup.Mgm.Ability
 
         private static NativeParallelMultiHashMap<uint, EFFECT> BuildEffectMapCache(MultiHashMap<Type, EffectData> effectMap)
         {
+
+            Debug.Log($"Caching for {typeof(EFFECT)}");
             NativeParallelMultiHashMap<uint, EFFECT> map = new NativeParallelMultiHashMap<uint, EFFECT>(effectMap.Count(typeof(EFFECT)), Allocator.Persistent);
             foreach (EffectData effectData in effectMap[typeof(EFFECT)])
             {
+
+                Debug.Log($"Caching for {effectData.Guid},{effectData.effect}");
                 map.Add(effectData.Guid, (EFFECT)effectData.effect);
             }
             return map;
