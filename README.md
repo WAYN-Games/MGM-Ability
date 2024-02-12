@@ -1,3 +1,4 @@
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/M4M8UEQP8)
 This package contains a performant and disigner friendly skill system.
 It allows the definition of custom effects that can be composed to form any kind of skill.
 
